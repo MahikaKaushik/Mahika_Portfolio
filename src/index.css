@@ -1,0 +1,200 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&display=swap');
+
+html {
+  scroll-behavior: smooth;
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Removed external font imports — using Apple system fonts */
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 200 15% 12%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 200 15% 12%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 200 15% 12%;
+
+    --primary: 174 55% 38%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 174 25% 94%;
+    --secondary-foreground: 174 50% 28%;
+
+    --muted: 174 15% 96%;
+    --muted-foreground: 200 8% 50%;
+
+    --accent: 174 30% 92%;
+    --accent-foreground: 174 50% 28%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 174 12% 90%;
+    --input: 174 12% 90%;
+    --ring: 174 55% 38%;
+
+    --radius: 0.75rem;
+
+    --accent-gold: 37 34% 54%;
+    --accent-green: 160 50% 42%;
+    --accent-blue: 174 55% 38%;
+
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  }
+}
+
+@layer components {
+  .font-serif {
+    font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+  }
+
+  .font-mono {
+    font-family: 'SF Mono', 'DM Mono', 'Menlo', 'Monaco', 'Courier New', monospace;
+  }
+
+  .font-body {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  }
+}
+
+/* Gooey text morphing filter */
+.gooey-filter {
+  filter: url(#gooey-threshold);
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted-foreground) / 0.3);
+  border-radius: 3px;
+}
+
+/* Breathing animation for bento card nodes */
+@keyframes breathe {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; }
+}
+
+@keyframes fill-bar {
+  from { width: 0%; }
+  to { width: var(--bar-width); }
+}
+
+.animate-breathe {
+  animation: breathe 3s ease-in-out infinite;
+}
+
+.animate-fill-bar {
+  animation: fill-bar 1.5s ease-out forwards;
+}
+
+/* Pulsing dot for open to work */
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(1.5); }
+}
+
+.animate-pulse-dot {
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+
+/* Floating animation for cards */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+/* Border tracing animation */
+@keyframes border-trace {
+  0% { background-position: 0% 0%; }
+  25% { background-position: 100% 0%; }
+  50% { background-position: 100% 100%; }
+  75% { background-position: 0% 100%; }
+  100% { background-position: 0% 0%; }
+}
+
+.collaborate-border {
+  background: linear-gradient(
+    var(--border-angle, 0deg),
+    transparent 40%,
+    hsl(174, 55%, 38%) 50%,
+    transparent 60%
+  );
+  animation: border-rotate 4s linear infinite;
+}
+
+@keyframes border-rotate {
+  0% { --border-angle: 0deg; }
+  100% { --border-angle: 360deg; }
+}
+
+/* Fallback for browsers without @property */
+@supports not (background: paint(something)) {
+  .collaborate-border {
+    background: 
+      linear-gradient(hsl(var(--background)), hsl(var(--background))) padding-box,
+      conic-gradient(
+        from var(--border-angle, 0deg),
+        transparent 20%,
+        hsl(174, 55%, 38%) 30%,
+        hsl(174, 40%, 60%) 40%,
+        transparent 50%
+      ) border-box;
+    border: 1.5px solid transparent;
+    animation: none;
+  }
+}
+
+@property --border-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+.collaborate-border {
+  background: 
+    conic-gradient(
+      from var(--border-angle),
+      transparent 30%,
+      hsl(174, 55%, 38%) 38%,
+      hsl(174, 40%, 65%) 42%,
+      transparent 50%
+    );
+  animation: border-rotate 4s linear infinite;
+}
