@@ -1,8 +1,8 @@
 import { lazy, Suspense } from "react";
 import { motion } from "framer-motion";
-import sketch1 from "@/assets/sketch-1.png";
-import sketch2 from "@/assets/sketch-2.png";
-import sketch3 from "@/assets/sketch-3.png";
+import sketch1 from "@/assets/sketch-1.webp";
+import sketch2 from "@/assets/sketch-2.webp";
+import sketch3 from "@/assets/sketch-3.webp";
 import codeMl from "@/assets/code-ml.jpg";
 import codeLogic from "@/assets/code-logic.jpg";
 import codeFrontend from "@/assets/code-frontend.jpg";
@@ -33,7 +33,7 @@ const StackedSketches = () => {
           viewport={{ once: true }}
           transition={{ duration: 0.5, delay: 0.1 * i }}
         >
-          <img src={src} alt={`Sketch ${i + 1}`} className="h-full w-full object-cover" />
+          <img src={src} alt={`Sketch ${i + 1}`} width={352} height={440} loading="lazy" decoding="async" className="h-full w-full object-cover" />
         </motion.div>
       ))}
     </div>
@@ -75,7 +75,7 @@ const StackedCodeScreens = () => {
           viewport={{ once: true }}
           transition={{ duration: 0.5, delay: 0.1 * i }}
         >
-          <img src={src} alt={codeLabels[i]} className="h-full w-full object-cover" />
+          <img src={src} alt={codeLabels[i]} loading="lazy" decoding="async" className="h-full w-full object-cover" />
           <span className="absolute bottom-1 left-2 rounded bg-black/60 px-1.5 py-0.5 font-mono text-[9px] text-white/80">
             {codeLabels[i]}
           </span>

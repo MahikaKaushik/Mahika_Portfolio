@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { useState } from "react";
-import heroImage from "@/assets/mahika-photo.png";
+import heroImage from "@/assets/mahika-photo.webp";
 
 const navLinks = [
   { label: "Work", href: "#work" },
@@ -23,7 +23,7 @@ export function Navbar() {
           href="#"
           className="flex items-center gap-2 rounded-xl px-3 py-1.5 transition-colors hover:bg-foreground/[0.04]"
         >
-          <img src={heroImage} alt="Mahika Kaushik" className="h-7 w-7 rounded-lg object-cover" />
+          <img src={heroImage} alt="Mahika Kaushik" width={28} height={28} decoding="async" className="h-7 w-7 rounded-lg object-cover" />
           <span className="hidden font-body text-sm font-medium text-foreground sm:inline">
             Mahika Kaushik
           </span>

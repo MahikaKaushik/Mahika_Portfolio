@@ -6,7 +6,7 @@ import { SkillsScrollSection } from "@/components/SkillsScrollSection";
 import { Timeline } from "@/components/ui/timeline";
 import { CollaborateSection } from "@/components/CollaborateSection";
 import { Footer } from "@/components/Footer";
-import mahikaPhoto from "@/assets/mahika-photo.png";
+import mahikaPhoto from "@/assets/mahika-photo.webp";
 
 const floatingBadges = [
   { label: "Research", icon: Search, color: "hsl(200, 70%, 50%)", top: "5%", left: "-8%" },
@@ -191,6 +191,9 @@ export default function AboutPage() {
                   <img
                     src={mahikaPhoto}
                     alt="Mahika Kaushik"
+                    width={664}
+                    height={875}
+                    decoding="async"
                     className="w-full object-cover"
                   />
                 </div>
@@ -231,12 +234,12 @@ export default function AboutPage() {
               <div className="mt-6 text-center lg:text-left">
                 <h2 className="font-serif text-2xl font-bold">
                   <span className="text-white">Mahika Kaushik</span>
-                  <span className="mx-2 text-white/30">—</span>
+                  <span className="mx-2 text-white/60">—</span>
                   <span className="text-lg text-white/60">UX Designer</span>
                 </h2>
                 <div className="mt-4 flex flex-wrap justify-center gap-3 lg:justify-start">
                   <a
-                    href="mailto:mahikakaushik@gmail.com"
+                    href="mailto:kaushikmahika@gmail.com"
                     className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-semibold text-[hsl(180,35%,20%)] transition-transform hover:scale-105"
                   >
                     <Mail className="h-3.5 w-3.5" />

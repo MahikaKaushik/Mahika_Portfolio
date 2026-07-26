@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import mahikaReflection from "@/assets/mahika-reflection.png";
+import mahikaReflection from "@/assets/mahika-reflection.webp";
 import { SubpageNav } from "@/components/SubpageNav";
 import { Footer } from "@/components/Footer";
 import { ChevronLeft, ChevronRight, Activity, BarChart3, Database, Users, X } from "lucide-react";
@@ -33,6 +33,24 @@ function SlideProject() {
           designers from a 17-minute stakeholder recording, with a backend team
           still building the data layer in parallel.
         </motion.p>
+
+        {/* The argument we lost, and why losing was right — the most useful
+            thing in this case study, so it opens rather than closes it. */}
+        <motion.blockquote
+          className="mb-8 border-l-2 border-amber-400/60 pl-4"
+          initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.17, duration: 0.5 }}
+        >
+          <p className="font-serif text-[15px] italic text-foreground leading-relaxed">
+            "We pushed for actionability — a dashboard that tells you what to do next.
+            The business needed visibility first. We lost that argument, and they were
+            right: you can't skip to actionability while the data underneath is still
+            being built."
+          </p>
+          <p className="mt-2 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+            Phase 1 shipped visibility · Phase 2 scoped, documented, waiting
+          </p>
+        </motion.blockquote>
+
         <motion.div
           className="flex flex-wrap gap-8"
           initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.22, duration: 0.5 }}
@@ -111,14 +129,15 @@ function SlideRole() {
         initial={{ opacity: 0, x: -16 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5 }}
       >
         <div className="relative">
-          <img src={mahikaReflection} alt="Mahika Kaushik" className="w-36 h-36 rounded-2xl object-cover object-top shadow-lg" />
-          <span className="absolute -bottom-2 -right-2 rounded-full bg-primary px-3 py-1 font-mono text-[11px] font-bold text-primary-foreground shadow">
-            Co-Lead UX
+          <img src={mahikaReflection} alt="Mahika Kaushik" width={144} height={144} loading="lazy" decoding="async" className="w-36 h-36 rounded-2xl object-cover object-top shadow-lg" />
+          <span className="absolute -bottom-2 -right-2 whitespace-nowrap rounded-full bg-primary px-3 py-1 font-mono text-[10px] font-bold text-primary-foreground shadow">
+            1 of 2 designers
           </span>
         </div>
         <div>
           <p className="font-serif text-lg font-semibold text-foreground">Mahika Kaushik</p>
           <p className="font-body text-sm text-muted-foreground">UX Design · Cisco Systems</p>
+          <p className="mt-1 font-mono text-[10px] uppercase tracking-wider text-primary">Scope: dashboard design, Phase 1</p>
         </div>
         <div className="flex flex-wrap gap-2">
           {["Dashboard Design", "Data Viz", "Scope Mgmt", "Eng Collab"].map((tag) => (

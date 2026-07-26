@@ -188,7 +188,7 @@ html {
 }
 
 .collaborate-border {
-  background: 
+  background:
     conic-gradient(
       from var(--border-angle),
       transparent 30%,
@@ -197,4 +197,39 @@ html {
       transparent 50%
     );
   animation: border-rotate 4s linear infinite;
+}
+
+/* ── Accessibility ─────────────────────────────────────────── */
+
+/* Visible keyboard focus on every interactive element.
+   Previously only shadcn primitives carried a focus style; anything
+   hand-written was keyboard-invisible. */
+:where(a, button, input, textarea, select, summary, [tabindex]):focus-visible {
+  outline: 2px solid hsl(174, 55%, 45%);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Dark surfaces need a light ring to stay visible. */
+.bg-foreground :where(a, button, [tabindex]):focus-visible,
+[data-dark-surface] :where(a, button, [tabindex]):focus-visible {
+  outline-color: hsl(174, 50%, 75%);
+}
+
+/* WCAG 2.3.3 — honour a reduced-motion preference globally.
+   Framer Motion animations are handled per-component via useReducedMotion;
+   this covers CSS animations and transitions. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .collaborate-border {
+    animation: none;
+  }
 }

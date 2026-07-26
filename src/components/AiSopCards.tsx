@@ -87,7 +87,7 @@ export const AiSopCards = () => (
                   <span className="font-serif text-4xl font-bold leading-none text-white">
                     {sop.stat}
                   </span>
-                  <p className="mt-0.5 font-mono text-[10px] uppercase tracking-wider text-white/50">
+                  <p className="mt-0.5 font-mono text-[10px] uppercase tracking-wider text-white/80">
                     {sop.statLabel}
                   </p>
                 </div>
@@ -100,7 +100,7 @@ export const AiSopCards = () => (
 
               {/* Impact row */}
               <div className="mt-6 flex items-center gap-3 border-t border-white/[0.08] pt-5">
-                <span className="font-mono text-[10px] uppercase tracking-wider text-white/40">
+                <span className="font-mono text-[10px] uppercase tracking-wider text-white/75">
                   Impact
                 </span>
                 <div className="flex flex-wrap gap-2">

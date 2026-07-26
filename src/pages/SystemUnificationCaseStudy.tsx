@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import mahikaReflection from "@/assets/mahika-reflection.png";
+import mahikaReflection from "@/assets/mahika-reflection.webp";
 import { SubpageNav } from "@/components/SubpageNav";
 import { Footer } from "@/components/Footer";
 import { ChevronLeft, ChevronRight, Search, GitBranch, BarChart3, BookOpen, X } from "lucide-react";
@@ -166,14 +166,15 @@ function SlideRole() {
         initial={{ opacity: 0, x: -16 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5 }}
       >
         <div className="relative">
-          <img src={mahikaReflection} alt="Mahika Kaushik" className="w-36 h-36 rounded-2xl object-cover object-top shadow-lg" />
-          <span className="absolute -bottom-2 -right-2 rounded-full bg-primary px-3 py-1 font-mono text-[11px] font-bold text-primary-foreground shadow">
-            UX Lead
+          <img src={mahikaReflection} alt="Mahika Kaushik" width={144} height={144} loading="lazy" decoding="async" className="w-36 h-36 rounded-2xl object-cover object-top shadow-lg" />
+          <span className="absolute -bottom-2 -right-2 whitespace-nowrap rounded-full bg-primary px-3 py-1 font-mono text-[10px] font-bold text-primary-foreground shadow">
+            Design lead
           </span>
         </div>
         <div>
           <p className="font-serif text-lg font-semibold text-foreground">Mahika Kaushik</p>
           <p className="font-body text-sm text-muted-foreground">UX Design · Cisco Systems</p>
+          <p className="mt-1 font-mono text-[10px] uppercase tracking-wider text-primary">Scope: audit &amp; governance framework</p>
         </div>
         <div className="flex flex-wrap gap-2">
           {["Experience Audit", "Design Systems", "Governance", "Traceability"].map((tag) => (

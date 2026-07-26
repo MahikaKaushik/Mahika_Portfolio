@@ -1,7 +1,7 @@
 import * as React from "react";
 import { motion, useMotionValue, useSpring } from "framer-motion";
 import { cn } from "@/lib/utils";
-import heroImage from "@/assets/mahika-photo.png";
+import heroImage from "@/assets/mahika-photo.webp";
 import { CrmDashboardMockup } from "@/components/CrmDashboardMockup";
 
 interface IconData {
@@ -117,7 +117,7 @@ export const FloatingIconsHero = React.forwardRef<
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.6 }}
         >
-          <img src={heroImage} alt="Mahika Kaushik" className="h-full w-full object-cover" />
+          <img src={heroImage} alt="Mahika Kaushik" width={112} height={112} decoding="async" className="h-full w-full object-cover" />
         </motion.div>
 
         <motion.h1

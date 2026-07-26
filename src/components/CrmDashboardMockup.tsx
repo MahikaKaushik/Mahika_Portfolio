@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import crmScreen from "@/assets/crm-dashboard.png";
+import crmScreen from "@/assets/crm-dashboard.webp";
 
 export function CrmDashboardMockup() {
   return (
@@ -18,6 +18,9 @@ export function CrmDashboardMockup() {
           <img
             src={crmScreen}
             alt="Enterprise CRM Dashboard — At a Glance view"
+            width={1920}
+            height={1199}
+            decoding="async"
             className="w-full h-auto block"
           />
           {/* Progressive blur fade at bottom */}

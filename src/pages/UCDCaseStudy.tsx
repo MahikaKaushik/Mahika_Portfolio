@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import mahikaReflection from "@/assets/mahika-reflection.png";
+import mahikaReflection from "@/assets/mahika-reflection.webp";
 import { SubpageNav } from "@/components/SubpageNav";
 import { Footer } from "@/components/Footer";
 import { ChevronLeft, ChevronRight, Search, Users, Layers, Zap, X } from "lucide-react";
@@ -34,7 +34,7 @@ function LayerStack() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: i * 0.1, duration: 0.55, ease: "backOut" }}
         >
-          <span className="font-mono text-xs font-bold text-white/50 shrink-0 w-6">{l.code}</span>
+          <span className="font-mono text-xs font-bold text-white/80 shrink-0 w-6">{l.code}</span>
           <div className="min-w-0">
             <p className="font-serif text-sm font-semibold text-white truncate">{l.label}</p>
             <p className="font-body text-[11px] text-white/55 truncate">{l.sub}</p>
@@ -126,15 +126,20 @@ function SlideRole() {
           <img
             src={mahikaReflection}
             alt="Mahika Kaushik"
+            width={144}
+            height={144}
+            loading="lazy"
+            decoding="async"
             className="w-36 h-36 rounded-2xl object-cover object-top shadow-lg"
           />
-          <span className="absolute -bottom-2 -right-2 rounded-full bg-primary px-3 py-1 font-mono text-[11px] font-bold text-primary-foreground shadow">
-            Lead UX
+          <span className="absolute -bottom-2 -right-2 whitespace-nowrap rounded-full bg-primary px-3 py-1 font-mono text-[10px] font-bold text-primary-foreground shadow">
+            Sole designer
           </span>
         </div>
         <div>
           <p className="font-serif text-lg font-semibold text-foreground">Mahika Kaushik</p>
           <p className="font-body text-sm text-muted-foreground">UX Design · Cisco Systems</p>
+          <p className="mt-1 font-mono text-[10px] uppercase tracking-wider text-primary">Scope: steward workflow &amp; customer model</p>
         </div>
         <div className="flex flex-wrap gap-2">
           {["Research", "Systems Design", "Facilitation", "Storytelling"].map((tag) => (
@@ -521,6 +526,12 @@ function SlideOutcome() {
           Sellers stopped fighting over ownership. Commissions traced cleanly.
           And the questions nobody could answer — answered.
         </motion.p>
+        <motion.p
+          className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground mb-2.5"
+          initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2, duration: 0.5 }}
+        >
+          Program outcomes · multi-year, multi-team
+        </motion.p>
         <motion.div
           className="grid grid-cols-2 gap-3"
           initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.22, duration: 0.5 }}
@@ -540,6 +551,15 @@ function SlideOutcome() {
             </div>
           ))}
         </motion.div>
+
+        <motion.p
+          className="mt-4 border-l-2 border-primary/40 pl-3.5 font-body text-sm text-muted-foreground leading-relaxed"
+          initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3, duration: 0.5 }}
+        >
+          <span className="font-semibold text-foreground">My contribution:</span> the steward
+          review-and-disposition workflow — the daily-use surface of the program — plus the
+          four-layer customer model and the cross-GEO alignment that got it adopted.
+        </motion.p>
       </div>
 
       <motion.div

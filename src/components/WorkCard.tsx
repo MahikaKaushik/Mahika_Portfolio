@@ -18,6 +18,9 @@ interface WorkCardProps {
   className?: string;
   titleClassName?: string;
   onOpenModal?: () => void;
+  /** Span both grid columns. Widens the preview panel to keep the
+      content/preview balance from going lopsided at double width. */
+  wide?: boolean;
 }
 
 const WorkCard = ({
@@ -32,6 +35,7 @@ const WorkCard = ({
   className,
   titleClassName,
   onOpenModal,
+  wide,
 }: WorkCardProps) => {
   const [showModal, setShowModal] = useState(false);
   const isClickable = !disabled && !comingSoon;
@@ -47,6 +51,7 @@ const WorkCard = ({
       className={cn(
         "group relative grid grid-cols-1 overflow-hidden rounded-2xl border border-border/50 bg-card shadow-sm lg:grid-cols-[1fr_auto]",
         (disabled || comingSoon || onOpenModal) && "cursor-pointer",
+        wide && "md:col-span-2",
         className
       )}
       initial={{ opacity: 0, y: 30 }}
@@ -105,7 +110,12 @@ const WorkCard = ({
       </div>
 
       {/* Right - Preview */}
-      <div className="relative hidden h-full w-[160px] overflow-hidden bg-gradient-to-br from-muted/30 via-muted/50 to-muted/70 lg:block xl:w-[180px]">
+      <div
+        className={cn(
+          "relative hidden h-full overflow-hidden bg-gradient-to-br from-muted/30 via-muted/50 to-muted/70 lg:block",
+          wide ? "w-[340px] xl:w-[420px]" : "w-[160px] xl:w-[180px]"
+        )}
+      >
         <div
           className="absolute inset-0 opacity-20"
           style={{

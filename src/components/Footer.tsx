@@ -24,7 +24,7 @@ export function Footer() {
 
       <div className="mx-auto mt-8 flex max-w-5xl items-center justify-between border-t border-primary-foreground/10 pt-6 font-mono text-[11px] text-primary-foreground/30">
         <span>© {new Date().getFullYear()} Mahika Kaushik</span>
-        <span>Designed using Claude</span>
+        <span>Design, code and content by me</span>
       </div>
     </footer>
   );
