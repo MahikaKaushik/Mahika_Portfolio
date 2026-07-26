@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
-import { Search, LayoutGrid, Monitor, Zap, PenTool, Lightbulb, Mail, Linkedin } from "lucide-react";
+import { Search, LayoutGrid, Monitor, Zap, PenTool, Lightbulb, Mail, Linkedin, Download } from "lucide-react";
 import { SubpageNav } from "@/components/SubpageNav";
 import { SkillsScrollSection } from "@/components/SkillsScrollSection";
 import { Timeline } from "@/components/ui/timeline";
@@ -253,6 +253,14 @@ export default function AboutPage() {
                   >
                     <Linkedin className="h-3.5 w-3.5" />
                     LinkedIn
+                  </a>
+                  <a
+                    href="/resume.pdf"
+                    download="Mahika-Kaushik-Resume.pdf"
+                    className="group inline-flex items-center gap-2 rounded-full border border-white/25 px-4 py-2 text-sm font-semibold text-white transition-all hover:border-white/50 hover:bg-white/10"
+                  >
+                    <Download className="h-3.5 w-3.5 transition-transform group-hover:translate-y-0.5" />
+                    Resume
                   </a>
                 </div>
               </div>

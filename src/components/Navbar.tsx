@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { useState } from "react";
+import { Download } from "lucide-react";
 import heroImage from "@/assets/mahika-photo.webp";
 
 const navLinks = [
@@ -64,6 +65,17 @@ export function Navbar() {
           </a>
         ))}
 
+        <div className="mx-1 hidden h-5 w-px bg-foreground/[0.08] md:block" />
+
+        <a
+          href="/resume.pdf"
+          download="Mahika-Kaushik-Resume.pdf"
+          className="group hidden items-center gap-1.5 rounded-xl bg-foreground/[0.06] px-3.5 py-1.5 font-body text-sm font-medium text-foreground transition-colors hover:bg-foreground/[0.1] md:inline-flex"
+        >
+          <Download className="h-3.5 w-3.5 transition-transform group-hover:translate-y-0.5" />
+          Resume
+        </a>
+
       </motion.nav>
 
       {/* Mobile dropdown */}
@@ -83,6 +95,15 @@ export function Navbar() {
               {link.label}
             </a>
           ))}
+          <a
+            href="/resume.pdf"
+            download="Mahika-Kaushik-Resume.pdf"
+            onClick={() => setOpen(false)}
+            className="flex items-center gap-1.5 rounded-xl bg-foreground/[0.06] px-5 py-2 font-body text-sm font-medium text-foreground transition-colors hover:bg-foreground/[0.1]"
+          >
+            <Download className="h-3.5 w-3.5" />
+            Resume
+          </a>
         </motion.div>
       )}
     </div>
