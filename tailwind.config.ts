@@ -18,6 +18,8 @@ export default {
         mono: ['"SF Mono"', '"DM Mono"', 'Menlo', 'Monaco', 'monospace'],
         body: ['-apple-system', 'BlinkMacSystemFont', '"SF Pro Text"', '"Helvetica Neue"', 'sans-serif'],
         hand: ['"Caveat"', '"Kalam"', 'cursive'],
+        toon: ['"Comic Neue"', '"Nunito"', '"Comic Sans MS"', 'ui-rounded', 'sans-serif'],
+        display: ['"Playfair Display"', 'Georgia', 'serif'],
       },
       colors: {
         border: "hsl(var(--border))",

@@ -1,8 +1,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import { Search, LayoutGrid, Monitor, Zap, PenTool, Lightbulb, Mail, Linkedin, Download } from "lucide-react";
-import { SubpageNav } from "@/components/SubpageNav";
-import { SkillsScrollSection } from "@/components/SkillsScrollSection";
+import { Navbar } from "@/components/Navbar";
 import { Timeline } from "@/components/ui/timeline";
 import { CollaborateSection } from "@/components/CollaborateSection";
 import { Footer } from "@/components/Footer";
@@ -153,8 +152,8 @@ export default function AboutPage() {
   const activeContent = tabs.find((t) => t.id === activeTab)?.content;
 
   return (
-    <div className="min-h-screen bg-[hsl(0,0%,96%)]">
-      <SubpageNav label="About" darkSectionId="hero-dark" />
+    <div className="min-h-screen bg-[hsl(180,35%,20%)]">
+      <Navbar />
 
       {/* Hero — dark teal bg */}
       <div id="hero-dark" className="bg-[hsl(180,35%,20%)]">
@@ -309,8 +308,10 @@ export default function AboutPage() {
       </section>
       </div>
 
-      {/* Skills Section */}
-      <SkillsScrollSection />
+      {/* Hairline between the intro and the timeline — both sit on the same teal */}
+      <div className="px-4 sm:px-6">
+        <div className="mx-auto h-px max-w-6xl bg-gradient-to-r from-transparent via-white/15 to-transparent" />
+      </div>
 
       {/* Journey Timeline */}
       <section className="bg-[hsl(180,35%,20%)] px-4 sm:px-6">

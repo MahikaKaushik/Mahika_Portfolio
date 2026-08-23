@@ -1,16 +1,48 @@
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { Link, useLocation } from "react-router-dom";
 import { Download } from "lucide-react";
 import heroImage from "@/assets/mahika-photo.webp";
 
 const navLinks = [
-  { label: "Work", href: "#work" },
-  { label: "About", href: "#about" },
-  { label: "Contact", href: "#contact" },
+  { label: "Work", href: "/#work", id: "work" },
+  { label: "About", href: "/#about", id: "about" },
+  { label: "Contact", href: "/#contact", id: "contact" },
 ];
 
 export function Navbar() {
   const [open, setOpen] = useState(false);
+  const { pathname } = useLocation();
+  const [inView, setInView] = useState<string | null>(null);
+
+  /* Which home section is on screen. Hash matching was unreliable — it kept
+     whatever you last clicked, so Contact stayed lit halfway up the page. */
+  useEffect(() => {
+    if (pathname !== "/") {
+      setInView(null);
+      return;
+    }
+    const els = ["work", "about", "contact"]
+      .map((id) => document.getElementById(id))
+      .filter(Boolean) as HTMLElement[];
+    if (!els.length) return;
+
+    const obs = new IntersectionObserver(
+      (entries) => {
+        const top = entries
+          .filter((e) => e.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+        if (top) setInView(top.target.id);
+      },
+      { rootMargin: "-35% 0px -45% 0px", threshold: [0, 0.2, 0.5, 1] }
+    );
+    els.forEach((el) => obs.observe(el));
+    return () => obs.disconnect();
+  }, [pathname]);
+
+  /* /about keeps About lit, so the tab survives "Know more about me". */
+  const isActive = (id: string) =>
+    id === "about" ? pathname.startsWith("/about") || inView === "about" : pathname === "/" && inView === id;
 
   return (
     <div className="fixed left-0 right-0 top-5 z-50 flex justify-center px-4">
@@ -20,15 +52,15 @@ export function Navbar() {
         animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 0.3, duration: 0.5 }}
       >
-        <a
-          href="#"
+        <Link
+          to="/"
           className="flex items-center gap-2 rounded-xl px-3 py-1.5 transition-colors hover:bg-foreground/[0.04]"
         >
           <img src={heroImage} alt="Mahika Kaushik" width={28} height={28} decoding="async" className="h-7 w-7 rounded-lg object-cover" />
           <span className="hidden font-body text-sm font-medium text-foreground sm:inline">
             Mahika Kaushik
           </span>
-        </a>
+        </Link>
 
         {/* Mobile hamburger */}
         <button
@@ -55,15 +87,23 @@ export function Navbar() {
         {/* Desktop links */}
         <div className="mx-1 hidden h-5 w-px bg-foreground/[0.08] md:block" />
 
-        {navLinks.map((link) => (
-          <a
-            key={link.label}
-            href={link.href}
-            className="hidden rounded-xl px-3.5 py-1.5 font-body text-sm text-foreground/80 transition-all hover:bg-foreground/[0.04] hover:text-foreground md:block"
-          >
-            {link.label}
-          </a>
-        ))}
+        {navLinks.map((link) => {
+          const active = isActive(link.id);
+          return (
+            <a
+              key={link.label}
+              href={link.href}
+              aria-current={active ? "page" : undefined}
+              className={`hidden rounded-xl px-3.5 py-1.5 font-body text-sm transition-all md:block ${
+                active
+                  ? "bg-foreground/[0.08] font-medium text-foreground"
+                  : "text-foreground/80 hover:bg-foreground/[0.04] hover:text-foreground"
+              }`}
+            >
+              {link.label}
+            </a>
+          );
+        })}
 
         <div className="mx-1 hidden h-5 w-px bg-foreground/[0.08] md:block" />
 
@@ -85,16 +125,24 @@ export function Navbar() {
           initial={{ opacity: 0, y: -8 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          {navLinks.map((link) => (
-            <a
-              key={link.label}
-              href={link.href}
-              onClick={() => setOpen(false)}
-              className="rounded-xl px-5 py-2 font-body text-sm text-foreground/80 transition-all hover:bg-foreground/[0.04]"
-            >
-              {link.label}
-            </a>
-          ))}
+          {navLinks.map((link) => {
+            const active = isActive(link.id);
+            return (
+              <a
+                key={link.label}
+                href={link.href}
+                onClick={() => setOpen(false)}
+                aria-current={active ? "page" : undefined}
+                className={`rounded-xl px-5 py-2 font-body text-sm transition-all ${
+                  active
+                    ? "bg-foreground/[0.08] font-medium text-foreground"
+                    : "text-foreground/80 hover:bg-foreground/[0.04]"
+                }`}
+              >
+                {link.label}
+              </a>
+            );
+          })}
           <a
             href="/resume.pdf"
             download="Mahika-Kaushik-Resume.pdf"

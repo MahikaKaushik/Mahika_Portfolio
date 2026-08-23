@@ -11,6 +11,8 @@ interface IconData {
 }
 
 export interface FloatingIconsHeroProps {
+  /** Rendered in the display serif, italic — a second accent alongside highlightWord. */
+  italicWord?: string;
   title: string;
   highlightWord?: string;
   subtitle: string;
@@ -81,7 +83,7 @@ const FloatingIcon = ({
 export const FloatingIconsHero = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement> & FloatingIconsHeroProps
->(({ className, title, highlightWord, subtitle, ctaText, ctaHref, icons, ...props }, ref) => {
+>(({ className, title, highlightWord, italicWord, subtitle, ctaText, ctaHref, icons, ...props }, ref) => {
   const mouseX = React.useRef(0);
   const mouseY = React.useRef(0);
 
@@ -126,15 +128,34 @@ export const FloatingIconsHero = React.forwardRef<
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3, duration: 0.6 }}
         >
-          {highlightWord && title.includes(highlightWord)
-            ? <>
-                {title.split(highlightWord)[0]}
-                <span className="animate-gradient-text bg-gradient-to-r from-foreground via-primary/60 to-foreground bg-[length:300%_auto] bg-clip-text text-transparent">
-                  {highlightWord}
+          {(() => {
+            const highlight = (text: string, key: string) =>
+              highlightWord && text.includes(highlightWord) ? (
+                <span key={key}>
+                  {text.split(highlightWord)[0]}
+                  <span className="animate-gradient-text bg-gradient-to-r from-foreground via-primary/60 to-foreground bg-[length:300%_auto] bg-clip-text text-transparent">
+                    {highlightWord}
+                  </span>
+                  {text.split(highlightWord)[1]}
                 </span>
-                {title.split(highlightWord)[1]}
-              </>
-            : title}
+              ) : (
+                <span key={key}>{text}</span>
+              );
+
+            if (italicWord && title.includes(italicWord)) {
+              const [before, after] = title.split(italicWord);
+              return (
+                <>
+                  {highlight(before, "a")}
+                  <span className="font-display italic font-semibold tracking-[-0.005em] pr-[0.05em]">
+                    {italicWord}
+                  </span>
+                  {highlight(after, "b")}
+                </>
+              );
+            }
+            return highlight(title, "t");
+          })()}
         </motion.h1>
 
         <motion.p
@@ -147,12 +168,12 @@ export const FloatingIconsHero = React.forwardRef<
         </motion.p>
 
         <motion.p
-          className="max-w-2xl font-body text-xs text-muted-foreground/60 sm:text-sm"
+          className="max-w-2xl font-body text-[13px] text-muted-foreground sm:text-[15px]"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.6, duration: 0.6 }}
         >
-          50+ spreadsheets replaced · 4 enterprise platforms · 2 AI tools · 11 product verticals unified
+          Enterprise Data Platforms · Governance &amp; Policy UX · Design Systems · AI-Native Tooling
         </motion.p>
 
         <motion.div

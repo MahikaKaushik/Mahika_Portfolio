@@ -44,7 +44,7 @@ export const Timeline = ({ data }: { data: TimelineEntry[] }) => {
   return (
     <div className="w-full font-body" ref={containerRef}>
       {/* Header */}
-      <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6 md:px-8">
+      <div className="mx-auto max-w-6xl py-12">
         <motion.h2
           className="font-serif text-2xl font-bold text-white sm:text-3xl md:text-4xl"
           initial={{ opacity: 0, y: 20 }}
@@ -66,7 +66,7 @@ export const Timeline = ({ data }: { data: TimelineEntry[] }) => {
       </div>
 
       {/* Timeline entries */}
-      <div ref={ref} className="relative mx-auto max-w-5xl pb-20">
+      <div ref={ref} className="relative mx-auto max-w-6xl pb-20">
         {data.map((item, index) => {
           const isActive = index <= activeIndex;
 
