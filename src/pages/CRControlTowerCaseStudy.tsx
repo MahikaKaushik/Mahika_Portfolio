@@ -722,14 +722,30 @@ const SLIDES: Slide[] = [
 function TitleSlide() {
   return (
     <div className="relative h-full">
-      {/* just the office plate from the player, vignetted so white type holds.
-          No product screen here — the story earns the dashboard on slide 4. */}
+      {/* A real control tower, for the one this study is named after. The sun
+          sits dead centre — exactly where the title does — so the vignette is
+          darkest in the middle to kill the glare under the type, and lets the
+          warm edges stay lit. No product screen here; the story earns the
+          dashboard in Act 2. */}
       <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
+        <img
+          src={`${IMG}/tower-title.webp`}
+          alt=""
+          className="absolute inset-0 h-full w-full object-cover"
+          style={{ opacity: 0.88 }}
+        />
         <span
           className="absolute inset-0"
           style={{
             background:
-              "radial-gradient(52% 48% at 50% 44%, rgba(8,8,7,.82) 0%, rgba(8,8,7,.58) 58%, rgba(8,8,7,.30) 100%)",
+              "radial-gradient(58% 56% at 50% 47%, rgba(8,8,7,.92) 0%, rgba(8,8,7,.76) 40%, rgba(8,8,7,.34) 74%, rgba(8,8,7,.12) 100%)",
+          }}
+        />
+        <span
+          className="absolute inset-0"
+          style={{
+            background:
+              "linear-gradient(180deg, rgba(8,8,7,.42) 0%, transparent 26%, transparent 60%, rgba(8,8,7,.78) 100%)",
           }}
         />
       </div>
