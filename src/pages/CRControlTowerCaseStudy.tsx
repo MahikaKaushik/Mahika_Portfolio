@@ -732,13 +732,13 @@ function TitleSlide() {
           src={`${IMG}/tower-title.webp`}
           alt=""
           className="absolute inset-0 h-full w-full object-cover"
-          style={{ opacity: 0.88 }}
+          style={{ opacity: 0.66 }}
         />
         <span
           className="absolute inset-0"
           style={{
             background:
-              "radial-gradient(58% 56% at 50% 47%, rgba(8,8,7,.92) 0%, rgba(8,8,7,.76) 40%, rgba(8,8,7,.34) 74%, rgba(8,8,7,.12) 100%)",
+              "radial-gradient(58% 56% at 50% 47%, rgba(8,8,7,.94) 0%, rgba(8,8,7,.80) 40%, rgba(8,8,7,.42) 74%, rgba(8,8,7,.20) 100%)",
           }}
         />
         <span
@@ -953,7 +953,9 @@ export default function CRControlTowerCaseStudy() {
       slides={SLIDES}
       fallbackAvatar={P.neutral}
       containAvatars={[SYS_AV]}
-      defaultBackdrop="/case-study/office-bg.webp"
+      defaultBackdrop={`${IMG}/tower-title.webp`}
+      backdropOpacity={0.3}
+      backdropScrim="linear-gradient(180deg, rgba(8,8,7,.80) 0%, rgba(8,8,7,.64) 45%, rgba(8,8,7,.90) 100%), radial-gradient(70% 50% at 50% 0%, rgba(150,84,32,.20), transparent 70%)"
       renderTitle={() => <TitleSlide />}
       renderSummary={() => <SummarySlide />}
       renderEnd={() => <EndSlide />}

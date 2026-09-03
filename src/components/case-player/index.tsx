@@ -748,6 +748,8 @@ export function CasePlayer({
   fallbackAvatar,
   containAvatars = [],
   defaultBackdrop,
+  backdropOpacity = 0.22,
+  backdropScrim = "linear-gradient(180deg, rgba(8,8,7,.72) 0%, rgba(8,8,7,.55) 45%, rgba(8,8,7,.88) 100%), radial-gradient(70% 50% at 50% 0%, rgba(45,110,105,.22), transparent 70%)",
   renderTitle,
   renderSummary,
   renderEnd,
@@ -758,6 +760,11 @@ export function CasePlayer({
   /** Avatars drawn as marks, not portraits — rendered object-contain. */
   containAvatars?: string[];
   defaultBackdrop: string;
+  /** The ambient plate is tuned per study — a dark office interior and a
+      lit sunset need different weight to sit behind a screenshot equally
+      quietly. Defaults are UCD's. */
+  backdropOpacity?: number;
+  backdropScrim?: string;
   renderTitle: () => ReactNode;
   renderSummary: () => ReactNode;
   renderEnd: () => ReactNode;
@@ -845,7 +852,7 @@ export function CasePlayer({
           alt=""
           aria-hidden
           className="pointer-events-none absolute inset-0 h-full w-full object-cover"
-          style={{ opacity: 0.22 }}
+          style={{ opacity: backdropOpacity }}
         />
       )}
       <div
@@ -854,7 +861,7 @@ export function CasePlayer({
         style={{
           background: slideBackdrop
             ? "linear-gradient(180deg, transparent 55%, rgba(8,8,7,.55) 100%)"
-            : "linear-gradient(180deg, rgba(8,8,7,.72) 0%, rgba(8,8,7,.55) 45%, rgba(8,8,7,.88) 100%), radial-gradient(70% 50% at 50% 0%, rgba(45,110,105,.22), transparent 70%)",
+            : backdropScrim,
         }}
       />
 
