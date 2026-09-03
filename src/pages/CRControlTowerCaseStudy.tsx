@@ -34,24 +34,26 @@ const AV = "/case-study/avatars";
 const IMG = "/case-study/cr";
 const SYS_AV = `${AV}/system.svg`;
 
+/* CR has its own cast. The two studies sit side by side on the work
+   page, so sharing UCD's two faces made them read as stock art rather
+   than as people. Same house illustration (Open Peeps, CC0), different
+   silhouettes — long hair and a full beard both survive the 60px the
+   speech bubble actually renders at. */
 const P = {
-  neutral: `${AV}/priya-neutral.svg`,
-  happy: `${AV}/priya-happy.svg`,
-  worried: `${AV}/priya-worried.svg`,
-  flat: `${AV}/priya-flat.svg`,
-  angry: `${AV}/priya-angry.svg`,
-  delighted: `${AV}/priya-delighted.svg`,
-  doubt: `${AV}/priya-doubt.svg`,
-  done: `${AV}/priya-done.svg`,
+  neutral: `${AV}/cr-priya-neutral.svg`,
+  happy: `${AV}/cr-priya-happy.svg`,
+  worried: `${AV}/cr-priya-worried.svg`,
+  flat: `${AV}/cr-priya-flat.svg`,
+  angry: `${AV}/cr-priya-angry.svg`,
+  delighted: `${AV}/cr-priya-delighted.svg`,
+  doubt: `${AV}/cr-priya-doubt.svg`,
+  done: `${AV}/cr-priya-done.svg`,
 };
-/* The agent reuses the second character set — same house illustration,
-   different name. Swap for a dedicated set if these two studies ever
-   sit side by side. */
 const D = {
-  neutral: `${AV}/appr-neutral.svg`,
-  worried: `${AV}/appr-worried.svg`,
-  happy: `${AV}/appr-happy.svg`,
-  explain: `${AV}/appr-explain.svg`,
+  neutral: `${AV}/cr-daniel-neutral.svg`,
+  worried: `${AV}/cr-daniel-worried.svg`,
+  happy: `${AV}/cr-daniel-happy.svg`,
+  explain: `${AV}/cr-daniel-explain.svg`,
 };
 
 /* ─────────────── in-slide mock screens ───────────────
@@ -586,11 +588,11 @@ const SLIDES: Slide[] = [
     frame: F_BUCKET,
     beat: "correct · picked up",
     psych: 84,
-    avatar: D.neutral,
-    who: AGENT,
+    avatar: P.neutral,
+    who: STEWARD,
     say: (
       <>
-        It lands in the shared bucket, not a mailbox. <b>Mine now.</b>
+        It lands in a shared bucket, not a mailbox. <b>Somebody owns it now.</b>
       </>
     ),
   },
@@ -662,7 +664,8 @@ const SLIDES: Slide[] = [
     who: STEWARD,
     say: (
       <>
-        Under review. Needs more info. Approved. Rejected — <b>and why</b>. I never have to ask.
+        Under review. Needs more info. Approved. Rejected — <b>and why</b>. Nobody has to chase
+        it.
       </>
     ),
   },
@@ -735,10 +738,10 @@ function TitleSlide() {
           initial={{ opacity: 0, scale: 0.9, y: 18 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           transition={{ duration: 0.55 }}
-          className="mb-9 flex items-end justify-center"
+          className="mb-9 flex items-end justify-center gap-4 sm:gap-6"
         >
-          <Avatar src={P.worried} size="clamp(72px,17vh,164px)" />
-          <Avatar src={D.explain} size="clamp(54px,13vh,124px)" />
+          <Avatar src={P.worried} size="clamp(68px,16vh,150px)" />
+          <Avatar src={D.explain} size="clamp(68px,16vh,150px)" />
         </motion.div>
 
         <motion.h1
@@ -759,6 +762,7 @@ function TitleSlide() {
             project="CR Control Tower"
             client="Cisco"
             role="Designer + stand-in PM"
+            run="7 months"
           />
         </motion.div>
         <motion.p
