@@ -152,13 +152,12 @@ const projects = [
   },
   {
     title: "CR Control Tower",
-    description: "Created a centralized dashboard to monitor CRM data quality, detect system pollution, and track operational SLAs across enterprise data sources.",
-    tags: ["15 Systems", "8K Issues", "3 Views"],
-    projectType: "Data Quality / Analytics",
+    description: "Twenty million customer records, and no safe way to fix a single one. Built the tower that watches them, finds them across ten systems, and turns “this looks wrong” into someone accountable.",
+    tags: ["20M Records", "10 Domains", "1 Front Door"],
+    projectType: "Data Governance / Decision Tooling",
     href: "/work/control-tower",
     icon: <BarChart3 className="h-7 w-7" />,
     preview: <ControlTowerPreview />,
-    comingSoon: true,
   },
   {
     title: "Experience Unification",

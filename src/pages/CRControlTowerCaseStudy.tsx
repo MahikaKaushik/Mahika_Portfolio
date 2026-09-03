@@ -1,643 +1,942 @@
-import { useState, useEffect, useCallback } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import mahikaReflection from "@/assets/mahika-reflection.webp";
-import { SubpageNav } from "@/components/SubpageNav";
-import { Footer } from "@/components/Footer";
-import { ChevronLeft, ChevronRight, Activity, BarChart3, Database, Users, X } from "lucide-react";
+import { useMemo } from "react";
+import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
+import { ArrowLeft, Clock } from "lucide-react";
+import {
+  CasePlayer,
+  Avatar,
+  Sticky,
+  KeyboardHint,
+  TitleCredits,
+  journeyBeats,
+  type Frame,
+  type Slide,
+} from "@/components/case-player";
 
-/* ═══════════════════════════════════════════
-   SLIDE 1 — THE PROJECT
-   ═══════════════════════════════════════════ */
-function SlideProject() {
-  return (
-    <div className="w-full max-w-5xl mx-auto grid lg:grid-cols-2 gap-10 lg:gap-16 items-center px-6 py-4">
-      <div>
-        <motion.p
-          className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground mb-3"
-          initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}
-        >
-          Enterprise Analytics · Cisco Systems · Active
-        </motion.p>
-        <motion.h1
-          className="font-serif text-4xl sm:text-5xl font-semibold text-foreground tracking-tight leading-[1.08] mb-5"
-          initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.06, duration: 0.5 }}
-        >
-          CR Control Tower
-        </motion.h1>
-        <motion.p
-          className="font-body text-base text-muted-foreground leading-relaxed mb-8"
-          initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.12, duration: 0.5 }}
-        >
-          The first consolidated visibility dashboard for Customer Records data
-          health — pulling from 15 source systems into one place. Built by two
-          designers from a 17-minute stakeholder recording, with a backend team
-          still building the data layer in parallel.
-        </motion.p>
+/* ══════════════════════════════════════════════════════════════
+   CR CONTROL TOWER — slide-player case study.
+   Engine lives in @/components/case-player.
 
-        {/* The argument we lost, and why losing was right — the most useful
-            thing in this case study, so it opens rather than closes it. */}
-        <motion.blockquote
-          className="mb-8 border-l-2 border-amber-400/60 pl-4"
-          initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.17, duration: 0.5 }}
-        >
-          <p className="font-serif text-[15px] italic text-foreground leading-relaxed">
-            "We pushed for actionability — a dashboard that tells you what to do next.
-            The business needed visibility first. We lost that argument, and they were
-            right: you can't skip to actionability while the data underneath is still
-            being built."
-          </p>
-          <p className="mt-2 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
-            Phase 1 shipped visibility · Phase 2 scoped, documented, waiting
-          </p>
-        </motion.blockquote>
+   Thesis: closing the distance between noticing something is wrong
+   and it actually getting fixed. The platform argument (build
+   finding once, build changing once, in the right place) rides in
+   the design-call cards and lands as payoff, not preamble.
 
-        <motion.div
-          className="flex flex-wrap gap-8"
-          initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.22, duration: 0.5 }}
-        >
-          {[
-            { n: "15",       l: "source systems consolidated" },
-            { n: "2",        l: "designers on the project" },
-            { n: "Phase 1",  l: "visibility shipped" },
-            { n: "Phase 2",  l: "actionability — coming" },
-          ].map((s) => (
-            <div key={s.n}>
-              <p className="font-serif text-2xl font-bold text-primary">{s.n}</p>
-              <p className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground mt-0.5">{s.l}</p>
-            </div>
-          ))}
-        </motion.div>
-      </div>
+   Cast is taken from the real screens: Priya Mehta raises,
+   Daniel Cruz works it. The meter never leaves Priya — including
+   the stretch after she submits where she is blind by design.
+   ══════════════════════════════════════════════════════════════ */
 
-      {/* Three-tier hierarchy visual */}
-      <motion.div
-        className="flex flex-col items-center gap-3 w-full max-w-xs mx-auto"
-        initial={{ opacity: 0, scale: 0.96 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ delay: 0.18, duration: 0.6 }}
-      >
-        {[
-          { label: "At a Glance",   sub: "How bad is it?",              w: "100%", shade: 0.9 },
-          { label: "Data Quality",  sub: "Where is it coming from?",    w: "84%",  shade: 0.7 },
-          { label: "Demographics",  sub: "Is it getting better?",       w: "68%",  shade: 0.5 },
-        ].map((tier, i) => (
-          <motion.div
-            key={tier.label}
-            className="flex items-center gap-3 rounded-xl px-5 py-3.5"
-            style={{
-              width: tier.w,
-              background: `rgba(13,148,136,${tier.shade * 0.22 + 0.08})`,
-              border: `1px solid rgba(13,148,136,${tier.shade * 0.3})`,
-              boxShadow: "0 4px 12px rgba(0,0,0,0.10)",
-            }}
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 + i * 0.1, duration: 0.5, ease: "backOut" }}
-          >
-            <div className="min-w-0">
-              <p className="font-serif text-sm font-semibold text-foreground">{tier.label}</p>
-              <p className="font-mono text-[10px] text-muted-foreground">{tier.sub}</p>
-            </div>
-          </motion.div>
-        ))}
-        <motion.p
-          className="font-mono text-xs text-muted-foreground text-center mt-1"
-          initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.65 }}
-        >
-          three tiers · three questions · phase 1
-        </motion.p>
-      </motion.div>
-    </div>
-  );
-}
+const STEWARD = "Priya · Data Steward";
+const AGENT = "Daniel · Data Operations";
 
-/* ═══════════════════════════════════════════
-   SLIDE 2 — MY ROLE
-   ═══════════════════════════════════════════ */
-const DELIVERABLES = [
-  { icon: Database,  label: "Dashboard Architecture", desc: "Designed the 3-tier hierarchy — At a Glance, Data Quality, Demographics — mapping each view to the questions ops leads actually asked" },
-  { icon: BarChart3, label: "Chart & Metric Design",  desc: "Decided what to surface, what to defer, and when a bar chart was a crutch vs the right answer. Pushed back on trend-lining everything" },
-  { icon: Users,     label: "Backend Collaboration",  desc: "Worked with data engineers to align on what was computable vs desirable. Design changed when data changed — and vice versa" },
-  { icon: Activity,  label: "Scope Negotiation",      desc: "Held the line on Phase 1 = visibility only. Documented what got deferred and why, so Phase 2 doesn't start from scratch" },
-];
+const AV = "/case-study/avatars";
+const IMG = "/case-study/cr";
+const SYS_AV = `${AV}/system.svg`;
 
-function SlideRole() {
-  return (
-    <div className="w-full max-w-5xl mx-auto grid lg:grid-cols-[1fr_1.6fr] gap-10 lg:gap-16 items-center px-6 py-4">
-      <motion.div
-        className="flex flex-col items-center lg:items-start gap-5"
-        initial={{ opacity: 0, x: -16 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5 }}
-      >
-        <div className="relative">
-          <img src={mahikaReflection} alt="Mahika Kaushik" width={144} height={144} loading="lazy" decoding="async" className="w-36 h-36 rounded-2xl object-cover object-top shadow-lg" />
-          <span className="absolute -bottom-2 -right-2 whitespace-nowrap rounded-full bg-primary px-3 py-1 font-mono text-[10px] font-bold text-primary-foreground shadow">
-            1 of 2 designers
-          </span>
-        </div>
-        <div>
-          <p className="font-serif text-lg font-semibold text-foreground">Mahika Kaushik</p>
-          <p className="font-body text-sm text-muted-foreground">UX Design · Cisco Systems</p>
-          <p className="mt-1 font-mono text-[10px] uppercase tracking-wider text-primary">Scope: dashboard design, Phase 1</p>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          {["Dashboard Design", "Data Viz", "Scope Mgmt", "Eng Collab"].map((tag) => (
-            <span key={tag} className="rounded-full border border-border px-3 py-1 font-mono text-[10px] text-muted-foreground">
-              {tag}
-            </span>
-          ))}
-        </div>
-      </motion.div>
-
-      <div className="grid sm:grid-cols-2 gap-4">
-        {DELIVERABLES.map((d, i) => (
-          <motion.div
-            key={d.label}
-            className="rounded-2xl border border-border/60 bg-card p-5"
-            initial={{ opacity: 0, y: 14 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.08, duration: 0.45 }}
-          >
-            <d.icon size={18} className="text-primary mb-3" />
-            <p className="font-serif text-sm font-semibold text-foreground mb-1.5">{d.label}</p>
-            <p className="font-body text-xs text-muted-foreground leading-relaxed">{d.desc}</p>
-          </motion.div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-/* ═══════════════════════════════════════════
-   SLIDE 3 — THE PROBLEM
-   ═══════════════════════════════════════════ */
-function SlideProblem() {
-  const fragments = [
-    { text: "15 source systems",     sub: "no shared health view",               x: "2%",  y: "4%",  rot: -5  },
-    { text: "8000 bucket",           sub: "~400 unresolved party IDs / day",      x: "60%", y: "2%",  rot: 6   },
-    { text: "Manual weekly reports", sub: "already stale on arrival",             x: "2%",  y: "54%", rot: -3  },
-    { text: "Duplicate GUIDs",       sub: "across 8 source systems",              x: "65%", y: "54%", rot: 5   },
-    { text: "Data or UI change?",    sub: "nobody knew which to fix first",       x: "30%", y: "76%", rot: -4  },
-  ];
-
-  return (
-    <div className="w-full max-w-5xl mx-auto grid lg:grid-cols-[1fr_1.4fr] gap-10 lg:gap-14 items-center px-6 py-4">
-      <div>
-        <motion.p
-          className="font-mono text-[10px] uppercase tracking-widest text-destructive/70 mb-3"
-          initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}
-        >
-          The Problem
-        </motion.p>
-        <motion.h2
-          className="font-serif text-3xl sm:text-4xl font-semibold text-foreground leading-tight mb-5"
-          initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.07, duration: 0.5 }}
-        >
-          The data existed across 15 systems. None of it talked to each other.
-        </motion.h2>
-        <motion.p
-          className="font-body text-base text-muted-foreground leading-relaxed mb-6"
-          initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.14, duration: 0.5 }}
-        >
-          Customer Records data was fragmented across 15 source systems with no
-          consolidated view. The 8000 bucket — unresolved party IDs stuck in
-          a holding geo — accumulated ~400 records daily. Ops teams caught
-          problems after deals broke, not before. And there was no first place
-          to even look.
-        </motion.p>
-        <motion.div
-          className="flex gap-8"
-          initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.22, duration: 0.5 }}
-        >
-          <div>
-            <p className="font-serif text-2xl font-bold" style={{ color: "hsl(var(--destructive))" }}>~400</p>
-            <p className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground mt-0.5">unresolved records / day</p>
-          </div>
-          <div>
-            <p className="font-serif text-2xl font-bold" style={{ color: "hsl(var(--destructive))" }}>0</p>
-            <p className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground mt-0.5">shared views before this</p>
-          </div>
-        </motion.div>
-      </div>
-
-      {/* Fragment cloud */}
-      <div className="relative h-[320px] w-full">
-        {fragments.map((f, i) => (
-          <motion.div
-            key={i}
-            className="absolute rounded-xl border border-border/60 bg-card px-4 py-3"
-            style={{ left: f.x, top: f.y, transform: `rotate(${f.rot}deg)`, maxWidth: 180 }}
-            initial={{ opacity: 0, scale: 0.8, y: 14 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            transition={{ delay: i * 0.1, duration: 0.5, ease: "backOut" }}
-          >
-            <p className="font-mono text-[11px] font-semibold text-foreground">{f.text}</p>
-            <p className="font-body text-xs text-muted-foreground mt-0.5 leading-snug">{f.sub}</p>
-          </motion.div>
-        ))}
-        {/* Connecting lines hint */}
-        <motion.div
-          className="absolute inset-0 flex items-center justify-center pointer-events-none"
-          initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.7 }}
-        >
-          <svg width="100%" height="100%" className="absolute inset-0">
-            {[[120,80,220,150],[80,180,200,200],[260,60,200,150],[60,260,220,220]].map(([x1,y1,x2,y2], i) => (
-              <line key={i} x1={x1} y1={y1} x2={x2} y2={y2}
-                stroke="hsl(var(--border))" strokeWidth="1" strokeDasharray="4 4" opacity="0.5" />
-            ))}
-          </svg>
-        </motion.div>
-      </div>
-    </div>
-  );
-}
-
-/* ═══════════════════════════════════════════
-   SLIDE 4 — THE PROCESS
-   The honest version
-   ═══════════════════════════════════════════ */
-const STEPS = [
-  {
-    n: "01",
-    label: "17 Minutes",
-    desc: "Our entire source of truth was a 17-minute stakeholder recording. Two designers mapped every ask, every implied need, every pain point from those minutes into a working brief. No follow-up session for weeks.",
-    delay: 0.12,
-  },
-  {
-    n: "02",
-    label: "Design Before Data",
-    desc: "The backend team had no data yet — they were building the pipelines in parallel. We designed against what should exist. They built toward what could exist. We met in the middle over two months of weekly syncs.",
-    delay: 0.22,
-  },
-  {
-    n: "03",
-    label: "The Fight",
-    desc: "We pushed for actionability — a dashboard that tells you what to do next. The business pushed for visibility — just show everything. New metrics arrived weekly. Everything became a bar chart. We said: it's not actionable. They said: we need visibility first.",
-    delay: 0.32,
-  },
-  {
-    n: "04",
-    label: "The Tradeoff",
-    desc: "We landed on a compromise: Phase 1 ships visibility only. Actionability is documented, scoped, and waiting for Phase 2. It's not what we wanted. But it's the right call for where the product and data both are right now.",
-    delay: 0.42,
-  },
-];
-
-function SlideProcess() {
-  return (
-    <div className="w-full max-w-5xl mx-auto grid lg:grid-cols-[1fr_1.5fr] gap-10 lg:gap-16 items-start px-6 py-4">
-      <div className="lg:pt-2">
-        <motion.p
-          className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground mb-3"
-          initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}
-        >
-          The Process
-        </motion.p>
-        <motion.h2
-          className="font-serif text-3xl sm:text-4xl font-semibold text-foreground leading-tight mb-5"
-          initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.06, duration: 0.5 }}
-        >
-          Design and data were built simultaneously — neither waiting for the other.
-        </motion.h2>
-        <motion.div
-          className="space-y-3 mb-6"
-          initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.14, duration: 0.5 }}
-        >
-          <div className="rounded-xl border border-amber-200 bg-amber-50/60 px-4 py-3">
-            <p className="font-mono text-[10px] uppercase tracking-wider text-amber-700 mb-0.5">Our position</p>
-            <p className="font-body text-sm text-amber-900">"This isn't actionable — users won't know what to do."</p>
-          </div>
-          <div className="rounded-xl border border-border/60 bg-card px-4 py-3">
-            <p className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground mb-0.5">Their position</p>
-            <p className="font-body text-sm text-foreground">"We need visibility first. Action is Phase 2."</p>
-          </div>
-          <div className="rounded-xl border border-primary/20 bg-primary/5 px-4 py-3">
-            <p className="font-mono text-[10px] uppercase tracking-wider text-primary mb-0.5">Common ground</p>
-            <p className="font-body text-sm text-foreground">Visibility ships. Actionability is scoped and documented for Phase 2.</p>
-          </div>
-        </motion.div>
-      </div>
-
-      <div className="flex flex-col gap-0">
-        {STEPS.map((step, i) => (
-          <motion.div
-            key={step.n}
-            className="flex gap-5 pb-6"
-            initial={{ opacity: 0, x: 16 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: step.delay, duration: 0.45 }}
-          >
-            <div className="flex flex-col items-center shrink-0">
-              <div className="flex h-8 w-8 items-center justify-center rounded-full border border-primary/30 bg-primary/8">
-                <span className="font-mono text-[11px] font-bold text-primary">{step.n}</span>
-              </div>
-              {i < STEPS.length - 1 && (
-                <div className="w-px flex-1 bg-border/50 my-1" style={{ minHeight: 24 }} />
-              )}
-            </div>
-            <div className="pb-1">
-              <p className="font-serif text-base font-semibold text-foreground mb-1">{step.label}</p>
-              <p className="font-body text-sm text-muted-foreground leading-relaxed">{step.desc}</p>
-            </div>
-          </motion.div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-/* ═══════════════════════════════════════════
-   SLIDE 5 — THE OUTCOME
-   Honest version + dashboard screen
-   ═══════════════════════════════════════════ */
-const SOURCES = [
-  { name: "CCW Suite",       pct: 100, color: "#EF4444" },
-  { name: "Sales CRM",       pct: 66,  color: "#F59E0B" },
-  { name: "Deal Mgmt",       pct: 47,  color: "#04A4B0" },
-  { name: "Coverage",        pct: 26,  color: "#6366F1" },
-];
-
-function DashboardScreen() {
-  return (
-    <div className="w-full rounded-2xl overflow-hidden border border-foreground/[0.07] bg-background shadow-xl" style={{ maxWidth: 420 }}>
-      {/* Chrome */}
-      <div className="flex items-center gap-2 border-b border-foreground/[0.06] bg-muted/30 px-4 py-3">
-        <div className="h-2.5 w-2.5 rounded-full bg-destructive/40" />
-        <div className="h-2.5 w-2.5 rounded-full bg-accent-gold/40" />
-        <div className="h-2.5 w-2.5 rounded-full bg-primary/40" />
-        <span className="ml-3 font-mono text-[9px] uppercase tracking-wider text-muted-foreground">CR Control Tower · At a Glance</span>
-      </div>
-
-      {/* Tabs */}
-      <div className="flex border-b border-foreground/[0.06] bg-muted/10 px-4">
-        {["At a Glance", "Data Quality", "Demographics"].map((tab, i) => (
-          <div key={tab} className="px-3 py-2 font-mono text-[9px]"
-            style={{
-              borderBottom: i === 0 ? "2px solid hsl(var(--primary))" : "2px solid transparent",
-              color: i === 0 ? "hsl(var(--primary))" : "hsl(var(--muted-foreground))",
-            }}
-          >
-            {tab}
-          </div>
-        ))}
-      </div>
-
-      {/* Health banner */}
-      <motion.div
-        className="mx-4 mt-4 rounded-xl border border-foreground/[0.06] bg-card p-4"
-        initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}
-      >
-        <p className="font-mono text-[10px] text-foreground/70 mb-1">
-          15 source systems · data health overview
-        </p>
-        <p className="font-mono text-[9px] text-muted-foreground mb-3">
-          ~400 party IDs entering 8000 bucket / day · Phase 1 visibility
-        </p>
-        <div className="flex flex-wrap gap-1.5">
-          {[
-            { l: "Systems", v: "15",      c: "#6366F1" },
-            { l: "8000 Bucket", v: "~400/day", c: "#EF4444" },
-            { l: "Theaters", v: "4",      c: "#04A4B0" },
-            { l: "Phase", v: "1 of 2",  c: "#10B981" },
-          ].map((c) => (
-            <span key={c.l} className="rounded-full px-2.5 py-1 font-mono text-[9px]"
-              style={{ background: `${c.c}1A`, color: c.c }}
-            >
-              {c.l}: <strong>{c.v}</strong>
-            </span>
-          ))}
-        </div>
-      </motion.div>
-
-      {/* Top sources */}
-      <div className="mx-4 mt-3 mb-4">
-        <p className="font-mono text-[9px] uppercase tracking-wider text-muted-foreground mb-2">Pollution by Source System</p>
-        <div className="space-y-2.5">
-          {SOURCES.map((s, i) => (
-            <motion.div key={s.name} className="flex items-center gap-2"
-              initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.25 + i * 0.07 }}
-            >
-              <span className="font-mono text-[9px] text-muted-foreground w-24 shrink-0">{s.name}</span>
-              <div className="flex-1 h-1.5 rounded-full bg-muted overflow-hidden">
-                <motion.div className="h-full rounded-full" style={{ background: s.color }}
-                  initial={{ width: 0 }} animate={{ width: `${s.pct}%` }}
-                  transition={{ delay: 0.35 + i * 0.07, duration: 0.5, ease: "easeOut" }}
-                />
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      </div>
-
-      {/* Phase badge */}
-      <div className="flex items-center justify-between border-t border-foreground/[0.04] bg-muted/20 px-4 py-2">
-        <span className="font-mono text-[9px] text-muted-foreground">Actionability → Phase 2</span>
-        <span className="font-mono text-[9px] font-semibold" style={{ color: "#F59E0B" }}>● In Development</span>
-      </div>
-    </div>
-  );
-}
-
-function SlideOutcome() {
-  return (
-    <div className="w-full max-w-5xl mx-auto grid lg:grid-cols-[1.1fr_1fr] gap-10 lg:gap-16 items-center px-6 py-4">
-      <div>
-        <motion.p
-          className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground mb-3"
-          initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}
-        >
-          The Outcome
-        </motion.p>
-        <motion.h2
-          className="font-serif text-3xl sm:text-4xl font-semibold text-foreground leading-tight mb-5"
-          initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.07, duration: 0.5 }}
-        >
-          The first single view of CR data health. Phase 1. Shipped.
-        </motion.h2>
-        <motion.p
-          className="font-body text-base text-muted-foreground leading-relaxed mb-6"
-          initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.14, duration: 0.5 }}
-        >
-          Visibility landed. Ops teams have one place to look now — not fifteen.
-          The 8000 bucket, pollution by source, duplicate clusters, theater breakdown:
-          all visible, for the first time, in one dashboard.
-        </motion.p>
-
-        {/* Honest reflection */}
-        <motion.blockquote
-          className="border-l-2 border-amber-400/50 pl-4 mb-6"
-          initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.22, duration: 0.5 }}
-        >
-          <p className="font-serif text-sm italic text-muted-foreground leading-relaxed">
-            "I'm not fully happy with it. We wanted to tell people what to do next —
-            not just what's happening. But you can't skip to actionability when the
-            underlying data is still being built. Visibility first was the right call.
-            Phase 2 is documented and waiting."
-          </p>
-        </motion.blockquote>
-
-        <motion.div
-          className="grid grid-cols-2 gap-3"
-          initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3, duration: 0.5 }}
-        >
-          {[
-            { val: "15 systems",  label: "Consolidated into one view"    },
-            { val: "3 tiers",     label: "At a Glance · DQ · Demo"       },
-            { val: "Phase 1",     label: "Visibility delivered"           },
-            { val: "Phase 2",     label: "Actionability — scoped & next"  },
-          ].map((s) => (
-            <div key={s.label} className="rounded-xl border border-border/60 bg-card p-4">
-              <p className="font-serif text-lg font-bold text-primary mb-1">{s.val}</p>
-              <p className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">{s.label}</p>
-            </div>
-          ))}
-        </motion.div>
-      </div>
-
-      <motion.div
-        className="flex justify-center"
-        initial={{ opacity: 0, x: 20 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ delay: 0.18, duration: 0.55 }}
-      >
-        <DashboardScreen />
-      </motion.div>
-    </div>
-  );
-}
-
-/* ═══════════════════════════════════════════
-   SLIDE REGISTRY + VARIANTS
-   ═══════════════════════════════════════════ */
-const SLIDES = [
-  { id: "project",  label: "Project",  component: SlideProject  },
-  { id: "role",     label: "Role",     component: SlideRole     },
-  { id: "problem",  label: "Problem",  component: SlideProblem  },
-  { id: "process",  label: "Process",  component: SlideProcess  },
-  { id: "outcome",  label: "Outcome",  component: SlideOutcome  },
-];
-
-const slideVariants = {
-  enter:  (dir: number) => ({ opacity: 0, y: dir > 0 ? 24 : -24 }),
-  center: { opacity: 1, y: 0 },
-  exit:   (dir: number) => ({ opacity: 0, y: dir > 0 ? -24 : 24 }),
+const P = {
+  neutral: `${AV}/priya-neutral.svg`,
+  happy: `${AV}/priya-happy.svg`,
+  worried: `${AV}/priya-worried.svg`,
+  flat: `${AV}/priya-flat.svg`,
+  angry: `${AV}/priya-angry.svg`,
+  delighted: `${AV}/priya-delighted.svg`,
+  doubt: `${AV}/priya-doubt.svg`,
+  done: `${AV}/priya-done.svg`,
+};
+/* The agent reuses the second character set — same house illustration,
+   different name. Swap for a dedicated set if these two studies ever
+   sit side by side. */
+const D = {
+  neutral: `${AV}/appr-neutral.svg`,
+  worried: `${AV}/appr-worried.svg`,
+  happy: `${AV}/appr-happy.svg`,
+  explain: `${AV}/appr-explain.svg`,
 };
 
-/* ═══════════════════════════════════════════
-   CRControlTowerCarousel — named export
-   ═══════════════════════════════════════════ */
-export function CRControlTowerCarousel({ onClose }: { onClose?: () => void }) {
-  const [slide, setSlide] = useState(0);
-  const [dir, setDir] = useState<1 | -1>(1);
+/* ─────────────── in-slide mock screens ───────────────
+   The "before" has no product to screenshot — it was an inbox. So it
+   gets drawn. Finalize is rebuilt too: the real capture names real
+   banks as misfiled data, which is not a claim to publish. */
 
-  const go = useCallback((n: number) => {
-    setDir(n > slide ? 1 : -1);
-    setSlide(n);
-  }, [slide]);
-
-  const prev = useCallback(() => { if (slide > 0) go(slide - 1); }, [slide, go]);
-  const next = useCallback(() => { if (slide < SLIDES.length - 1) go(slide + 1); }, [slide, go]);
-
-  useEffect(() => {
-    const handler = (e: KeyboardEvent) => {
-      if (e.key === "ArrowRight") next();
-      if (e.key === "ArrowLeft")  prev();
-      if (e.key === "Escape" && onClose) onClose();
-    };
-    window.addEventListener("keydown", handler);
-    return () => window.removeEventListener("keydown", handler);
-  }, [next, prev, onClose]);
-
-  const SlideContent = SLIDES[slide].component;
-
+/** The system of record, before any of this existed. */
+function InboxMock() {
+  const mail = [
+    ["Ops mailbox", "RE: RE: RE: Northwind sitting under the wrong parent?", "…forwarding again, I don't think anyone picked this up —", true, "9:04"],
+    ["Dana W.", "FW: duplicate party — 3rd time raising this one", "Same company, two IDs, both active. Attaching the sheet.", true, "8:41"],
+    ["Ravi K.", "URGENT: bookings landed on the wrong GU (again)", "This is the second quarter close it's broken. Who owns—", true, "Yest"],
+    ["Tom B.", "Hierarchy fix — see attached hierarchy_v7_FINAL_v2.xlsx", "Ignore the last one, that version was stale. This is the—", true, "Yest"],
+    ["Dana W.", "which spreadsheet is current??", "There are four in the drive and they don't agree.", false, "Mon"],
+    ["Ops mailbox", "Merger cleanup — who actually owns this now?", "Looping in three teams. Apologies if you're the wrong—", true, "Mon"],
+    ["Ravi K.", "RE: Halcyon subsidiaries — closing the loop", "Did we ever action this? Can't find a record either way.", false, "Fri"],
+  ] as const;
   return (
-    <motion.div
-      className="relative flex flex-col bg-background border border-border/40 shadow-2xl overflow-hidden"
-      style={{ width: "min(96vw, 1120px)", height: "min(92vh, 740px)", borderRadius: 20 }}
-      initial={{ opacity: 0, scale: 0.96, y: 16 }}
-      animate={{ opacity: 1, scale: 1, y: 0 }}
-      exit={{ opacity: 0, scale: 0.96, y: 16 }}
-      transition={{ duration: 0.3, ease: [0.32, 0, 0.68, 1] }}
-      onClick={(e) => e.stopPropagation()}
-    >
-      {/* Top bar */}
-      <div className="shrink-0 flex items-center justify-between gap-4 px-6 py-3.5 border-b border-border/40 bg-background">
-        <div className="flex items-center gap-1.5">
-          <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground mr-3">
-            {SLIDES[slide].label}
+    <div className="w-full overflow-hidden rounded-xl bg-white text-slate-900 shadow-2xl">
+      <div className="flex items-center gap-2 border-b border-slate-200 bg-slate-100 px-4 py-2.5">
+        <span className="h-2.5 w-2.5 rounded-full bg-red-400/70" />
+        <span className="h-2.5 w-2.5 rounded-full bg-amber-400/70" />
+        <span className="h-2.5 w-2.5 rounded-full bg-emerald-400/70" />
+        <span className="ml-2 font-mono text-[10px] uppercase tracking-wider text-slate-500">
+          Customer Data — shared mailbox
+        </span>
+        <span className="ml-auto rounded-full bg-red-500 px-2 py-0.5 font-mono text-[10px] font-bold text-white">
+          412 unread
+        </span>
+      </div>
+      {mail.map(([who, subj, snip, clip, when], i) => (
+        <div
+          key={subj}
+          className={`grid grid-cols-[132px_1fr_46px] items-baseline gap-3 border-b border-slate-100 px-5 py-3 last:border-0 ${
+            i < 4 ? "bg-blue-50/40" : ""
+          }`}
+        >
+          <span className={`truncate text-[12.5px] ${i < 4 ? "font-bold" : "text-slate-600"}`}>{who}</span>
+          <span className="min-w-0">
+            <span className={`block truncate text-[13px] ${i < 4 ? "font-bold" : ""}`}>
+              {clip && <span className="mr-1.5 text-slate-400">📎</span>}
+              {subj}
+            </span>
+            <span className="block truncate text-[11.5px] text-slate-400">{snip}</span>
           </span>
-          {SLIDES.map((s, i) => (
-            <button key={s.id} onClick={() => go(i)} aria-label={s.label}
-              className="transition-all duration-300 rounded-full"
-              style={{ width: i === slide ? 24 : 7, height: 7, background: i === slide ? "hsl(var(--primary))" : "hsl(var(--border))" }}
-            />
-          ))}
+          <span className="text-right font-mono text-[10.5px] text-slate-400">{when}</span>
         </div>
-        <div className="flex items-center gap-3">
-          <span className="font-mono text-[10px] text-muted-foreground tabular-nums">{slide + 1} / {SLIDES.length}</span>
-          {onClose && (
-            <button onClick={onClose}
-              className="flex h-7 w-7 items-center justify-center rounded-full border border-border/50 text-muted-foreground transition-colors hover:text-foreground hover:bg-muted"
-              aria-label="Close"
-            >
-              <X size={14} />
-            </button>
-          )}
-        </div>
-      </div>
-
-      {/* Slide area */}
-      <div className="relative flex-1 overflow-hidden flex items-center">
-        <AnimatePresence mode="wait" custom={dir}>
-          <motion.div key={slide} custom={dir} variants={slideVariants} initial="enter" animate="center" exit="exit"
-            transition={{ duration: 0.36, ease: [0.32, 0, 0.68, 1] }}
-            className="absolute inset-0 flex items-center justify-center overflow-y-auto py-6"
-          >
-            <SlideContent />
-          </motion.div>
-        </AnimatePresence>
-        <button onClick={prev} disabled={slide === 0}
-          className="absolute left-2 top-1/2 -translate-y-1/2 z-10 flex h-9 w-9 items-center justify-center rounded-full border border-border/50 bg-background/90 text-muted-foreground backdrop-blur transition-all hover:text-foreground disabled:opacity-20"
-        >
-          <ChevronLeft size={16} />
-        </button>
-        <button onClick={next} disabled={slide === SLIDES.length - 1}
-          className="absolute right-2 top-1/2 -translate-y-1/2 z-10 flex h-9 w-9 items-center justify-center rounded-full border border-border/50 bg-background/90 text-muted-foreground backdrop-blur transition-all hover:text-foreground disabled:opacity-20"
-        >
-          <ChevronRight size={16} />
-        </button>
-      </div>
-
-      {/* Bottom nav */}
-      <div className="shrink-0 flex items-center justify-between px-6 py-3 border-t border-border/40 bg-background">
-        <button onClick={prev} disabled={slide === 0}
-          className="flex items-center gap-1.5 font-body text-sm text-muted-foreground transition-colors hover:text-foreground disabled:opacity-30"
-        >
-          <ChevronLeft size={14} />
-          {slide > 0 ? SLIDES[slide - 1].label : ""}
-        </button>
-        <button onClick={next} disabled={slide === SLIDES.length - 1}
-          className="flex items-center gap-1.5 font-body text-sm text-muted-foreground transition-colors hover:text-foreground disabled:opacity-30"
-        >
-          {slide < SLIDES.length - 1 ? SLIDES[slide + 1].label : ""}
-          <ChevronRight size={14} />
-        </button>
-      </div>
-    </motion.div>
+      ))}
+    </div>
   );
 }
 
-/* ═══════════════════════════════════════════
-   DEFAULT EXPORT — standalone page
-   ═══════════════════════════════════════════ */
+/** One of those threads, opened. */
+function ThreadMock() {
+  const chain = [
+    ["Ravi K.", "Tue 09:12", "Can someone confirm Northwind's parent? Two systems disagree."],
+    ["Dana W.", "Tue 14:38", "I think it moved in the merger. Checking with the other team."],
+    ["Tom B.", "Wed 11:02", "It's not in my sheet. Which sheet are you looking at?"],
+    ["Dana W.", "Thu 08:55", "The one on the drive. There are four. Attaching mine."],
+    ["Ravi K.", "Mon 16:20", "Bumping — quarter close is Friday and this is still open."],
+  ] as const;
+  return (
+    <div className="w-full overflow-hidden rounded-xl bg-white text-slate-900 shadow-2xl">
+      <div className="border-b border-slate-200 px-6 py-3.5">
+        <p className="text-[15px] font-bold leading-tight">
+          RE: RE: RE: Northwind sitting under the wrong parent?
+        </p>
+        <p className="mt-1 font-mono text-[10.5px] uppercase tracking-wider text-slate-400">
+          9 messages · 3 teams · 11 days · nobody assigned
+        </p>
+      </div>
+      <div className="px-6 py-4">
+        {chain.map(([who, when, body], i) => (
+          <div key={when} className="border-b border-slate-100 py-2.5 last:border-0" style={{ paddingLeft: i * 14 }}>
+            <p className="mb-0.5">
+              <span className="text-[12px] font-bold">{who}</span>
+              <span className="ml-2 font-mono text-[10px] text-slate-400">{when}</span>
+            </p>
+            <p className="text-[12.5px] leading-snug text-slate-600">{body}</p>
+          </div>
+        ))}
+        <div className="mt-3 flex items-center gap-2 rounded-md border border-slate-200 bg-slate-50 px-3 py-2">
+          <span className="text-slate-400">📎</span>
+          <span className="font-mono text-[11px] text-slate-500">
+            hierarchy_fix_v7_FINAL_v2.xlsx
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/** Checking one fact, the old way: four tools, four answers. */
+function FourToolsMock() {
+  const tools = [
+    ["Customer Registry", "Party ID", "238457", "NORTHWIND TRADING", "Parent: Cisco Systems, LTD"],
+    ["Salesforce", "Account ID", "ACC-99213", "Northwind Trading Ltd.", "Parent: — not set —"],
+    ["D&B", "DUNS", "41-983-2277", "NORTHWIND TRADING LIMITED", "Parent: Halcyon Finance Group"],
+    ["Coverage (SAV)", "SAV ID", "SAV-884213", "Northwind — EMEA", "Parent: Halcyon Retail Bank"],
+  ] as const;
+  return (
+    <div className="w-full">
+      <div className="grid grid-cols-2 gap-4">
+        {tools.map(([tool, idLabel, id, name, parent]) => (
+          <div key={tool} className="overflow-hidden rounded-lg bg-white text-slate-900 shadow-2xl">
+            <div className="flex items-center gap-1.5 border-b border-slate-200 bg-slate-100 px-3 py-2">
+              <span className="h-2 w-2 rounded-full bg-slate-300" />
+              <span className="h-2 w-2 rounded-full bg-slate-300" />
+              <span className="ml-1.5 font-mono text-[9px] uppercase tracking-wider text-slate-500">
+                {tool}
+              </span>
+            </div>
+            <div className="px-4 py-3">
+              <div className="mb-2.5 rounded border border-slate-200 bg-slate-50 px-2.5 py-1.5 font-mono text-[10px] text-slate-400">
+                🔍 search by {idLabel.toLowerCase()}…
+              </div>
+              <p className="font-mono text-[10px] text-slate-400">{idLabel}</p>
+              <p className="mb-1.5 font-mono text-[12px] font-bold">{id}</p>
+              <p className="truncate text-[12.5px] font-semibold">{name}</p>
+              <p className="mt-0.5 truncate text-[11px] text-slate-500">{parent}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+      <p className="mt-4 text-center font-mono text-[11px] uppercase tracking-[0.16em] text-white/70">
+        Same company · four IDs · three different parents
+      </p>
+    </div>
+  );
+}
+
+function FinalizeMock() {
+  const rows = [
+    ["NORTHWIND TRADING", "238457"],
+    ["HALCYON FINANCE GROUP PLC", "238458"],
+    ["HALCYON RETAIL BANK", "238459"],
+    ["HALCYON COMMERCIAL FINANCE", "238460"],
+  ] as const;
+  return (
+    <div className="w-full overflow-hidden rounded-xl bg-white text-slate-900 shadow-2xl">
+      <div className="px-7 pt-6">
+        <p className="font-serif text-[20px] font-bold leading-tight">
+          Finalize Parent Party Decisions
+        </p>
+        <div className="mt-4 flex gap-3 rounded-md border border-amber-200 bg-amber-50 px-4 py-3">
+          <span className="text-[15px] leading-none text-amber-600">⚠</span>
+          <p className="text-[12px] leading-relaxed text-amber-900">
+            You are about to finalize <b>4</b> parent party assignments in a single action. Once
+            finalized, these cannot be edited from this case. To change them later a new change
+            request will be required.
+          </p>
+        </div>
+      </div>
+
+      <div className="px-7 py-5">
+        <div className="grid grid-cols-[1.5fr_1.1fr_1.3fr] gap-3 border-b border-slate-300 pb-2 font-mono text-[9px] uppercase tracking-wider text-slate-400">
+          <span>Party</span>
+          <span>Losing parent</span>
+          <span>Winning parent</span>
+        </div>
+        {rows.map(([name, id]) => (
+          <div
+            key={id}
+            className="grid grid-cols-[1.5fr_1.1fr_1.3fr] gap-3 border-b border-slate-100 py-2.5 last:border-0"
+          >
+            <span className="text-[12.5px]">
+              <b className="block truncate font-semibold">{name}</b>
+              <span className="font-mono text-[10px] text-slate-400">{id}</span>
+            </span>
+            <span className="text-[12px] text-slate-600">
+              Cisco Systems, LTD
+              <span className="block font-mono text-[10px] text-slate-400">827134</span>
+            </span>
+            <span className="text-[12px] text-slate-600">
+              Global Tech Services — Loveland
+              <span className="block font-mono text-[10px] text-slate-400">32652047</span>
+            </span>
+          </div>
+        ))}
+      </div>
+
+      <div className="flex items-center justify-end gap-3 border-t border-slate-200 bg-slate-50 px-7 py-3.5">
+        <span className="text-[12px] font-semibold text-slate-500">Cancel</span>
+        <span className="rounded bg-blue-600 px-4 py-1.5 text-[12px] font-semibold text-white">
+          Confirm &amp; Finalize
+        </span>
+      </div>
+    </div>
+  );
+}
+
+/** The head of the story. Four verbs are the whole job; none of them had a
+    product. Drawn, not captured — there was nothing here to screenshot, which
+    is exactly the finding. The right column is what each verb actually cost. */
+function FourVerbsMock() {
+  const rows = [
+    ["Find", "something in 20M records is wrong", "wait for someone downstream to complain", "no signal"],
+    ["Check", "is it actually wrong, or just different?", "four tools, five mails, two spreadsheets", "they disagree"],
+    ["Correct", "get the record changed", "email someone and hope", "no owner"],
+    ["Maintain", "make sure it stays fixed", "—", "no record either way"],
+  ] as const;
+  return (
+    <div className="w-full overflow-hidden rounded-xl bg-white text-slate-900 shadow-2xl">
+      <div className="flex items-baseline gap-3 border-b border-slate-200 bg-slate-100 px-6 py-3">
+        <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-slate-500">
+          The job · four verbs
+        </span>
+        <span className="ml-auto font-mono text-[10px] uppercase tracking-[0.18em] text-slate-400">
+          where it happened · what it cost
+        </span>
+      </div>
+      {rows.map(([verb, what, how, cost]) => (
+        <div
+          key={verb}
+          className="grid grid-cols-[104px_1fr_1fr_120px] items-baseline gap-4 border-b border-slate-100 px-6 py-4 last:border-0"
+        >
+          <span className="font-serif text-[17px] font-bold">{verb}</span>
+          <span className="text-[12.5px] leading-snug text-slate-500">{what}</span>
+          <span className="text-[13px] leading-snug">{how}</span>
+          <span className="whitespace-nowrap text-right font-mono text-[10.5px] uppercase tracking-wider font-bold text-red-500">
+            {cost}
+          </span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/* ─────────────── frames ─────────────── */
+
+const F_VERBS: Frame = { node: <FourVerbsMock />, wide: true };
+const F_DEMO: Frame = { src: `${IMG}/demographics.webp`, alt: "Demographics — what we have" };
+const F_INBOX: Frame = { node: <InboxMock />, wide: true };
+const F_THREAD: Frame = { node: <ThreadMock />, wide: true };
+const F_TOOLS: Frame = { node: <FourToolsMock />, wide: true };
+const F_OVERVIEW: Frame = { src: `${IMG}/pollution-overview.webp`, alt: "Pollution overview" };
+const F_RECORDS: Frame = { src: `${IMG}/pollution-records.webp`, alt: "Pollution records" };
+const F_SEARCH: Frame = { src: `${IMG}/search-landing.webp`, alt: "One Search" };
+const F_360: Frame = { src: `${IMG}/search-360.webp`, alt: "Party 360 view" };
+const F_AI: Frame = { src: `${IMG}/search-ai.webp`, alt: "Ask instead of search" };
+const F_RAISE: Frame = { src: `${IMG}/search-create-case.webp`, alt: "Create a case from search" };
+const F_SUBMITTED: Frame = { src: `${IMG}/case-submitted.webp`, alt: "Case submitted" };
+const F_BUCKET: Frame = { src: `${IMG}/request-bucket.webp`, alt: "Request bucket" };
+const F_MOREINFO: Frame = { src: `${IMG}/need-more-info.webp`, alt: "Agent requests more information" };
+const F_IMPACT: Frame = { src: `${IMG}/impact-view.webp`, alt: "Business impact" };
+const F_RESPONDER: Frame = { src: `${IMG}/responder-view.webp`, alt: "Responder view" };
+const F_CONCERN: Frame = { src: `${IMG}/concern-locked.webp`, alt: "Concern raised and locked" };
+const F_LOG: Frame = { src: `${IMG}/activity-log.webp`, alt: "Activity log" };
+const F_APPROVE: Frame = { src: `${IMG}/acm-approve.webp`, alt: "Attribute approval" };
+const F_NOTIFY: Frame = { src: `${IMG}/ucdm-notification.webp`, alt: "Case notifications back in UCDM" };
+const F_PUNCHOUT: Frame = {
+  src: `${IMG}/ucdm-punchout.webp`,
+  alt: "Create CR Case from UCDM",
+  /* the party list behind the modal is live customer data — light the modal only */
+  spot: { x: "18%", y: "6%", w: "63%", h: "84%" },
+};
+const F_BULK: Frame = { src: `${IMG}/bulk-apply.webp`, alt: "Bulk reason code" };
+const F_MERGE: Frame = { src: `${IMG}/create-or-merge.webp`, alt: "Create or merge draft" };
+/* Finalize stays a rebuild: the real capture names real banks as misfiled data. */
+const F_FINAL: Frame = { node: <FinalizeMock />, wide: true };
+
+/* ─────────────── the story ─────────────── */
+
+const SLIDES: Slide[] = [
+  { kind: "title" },
+
+  /* ══ ACT 1 — SEVEN MONTHS AGO ═══════════════════════════════
+     Four verbs are the job. Not one of them had a place to happen.
+     No product screens in this act on purpose: the absence is the
+     point, and it makes the first real screen in Act 2 land. */
+
+  {
+    kind: "scene",
+    avatar: P.neutral,
+    who: STEWARD,
+    psych: 62,
+    say: (
+      <>
+        My job is four verbs. <b>Find</b> what's wrong, <b>check</b> it, <b>correct</b> it, and keep
+        it fixed.
+      </>
+    ),
+  },
+  {
+    kind: "ui",
+    frame: F_VERBS,
+    beat: "four verbs, no product",
+    psych: 50,
+    delta: -12,
+    avatar: P.flat,
+    who: STEWARD,
+    say: (
+      <>
+        Not one of them had <b>anywhere to happen</b>.
+      </>
+    ),
+  },
+  {
+    kind: "ui",
+    frame: F_INBOX,
+    beat: "the inbox",
+    psych: 42,
+    delta: -8,
+    avatar: P.worried,
+    who: STEWARD,
+    say: (
+      <>
+        To correct anything, I emailed someone. <b>That was the workflow.</b>
+      </>
+    ),
+  },
+  {
+    kind: "ui",
+    frame: F_THREAD,
+    psych: 32,
+    delta: -10,
+    avatar: P.angry,
+    who: STEWARD,
+    say: (
+      <>
+        Nine messages. Three teams. Eleven days. <b>Still broken.</b>
+      </>
+    ),
+  },
+  {
+    kind: "ui",
+    frame: F_TOOLS,
+    beat: "four tools disagree",
+    psych: 24,
+    delta: -8,
+    avatar: P.doubt,
+    who: STEWARD,
+    say: (
+      <>
+        And to check <i>one fact</i> — four tools, five mails, two spreadsheets. They{" "}
+        <b>disagree</b>.
+      </>
+    ),
+  },
+  {
+    kind: "card",
+    variant: "principle",
+    tag: "#UX PRINCIPLE",
+    title: "Learned helplessness",
+    body: (
+      <>
+        Raise it once, nothing happens. Raise it twice, nothing happens. By the third time, people
+        stop raising it at all — and the data quietly rots.
+        <br />
+        <br />
+        The stewards hadn't stopped caring. They had <b>learned that acting changed nothing</b>.
+      </>
+    ),
+    refs: ["Seligman & Maier (1967)", "Learned helplessness — when action stops predicting outcome"],
+    behind: F_THREAD,
+    psych: 24,
+  },
+  {
+    kind: "statement",
+    avatar: P.neutral,
+    who: STEWARD,
+    psych: 24,
+    say: (
+      <>
+        Seven months later, <b>none of that</b> is how it works.
+      </>
+    ),
+  },
+
+  /* ══ ACT 2 — NOW ════════════════════════════════════════════
+     Same four verbs, in the order we shipped them. Each one now
+     has a place to happen. FIND · CHECK · CORRECT · MAINTAIN. */
+
+  /* ── FIND ── */
+  {
+    kind: "ui",
+    frame: F_DEMO,
+    beat: "find · what have we got",
+    psych: 38,
+    delta: 14,
+    avatar: P.neutral,
+    who: STEWARD,
+    say: (
+      <>
+        First question we answered: what do we even <i>have</i>? <b>20.1 million</b> parties, finally
+        countable.
+      </>
+    ),
+  },
+  {
+    kind: "ui",
+    frame: F_OVERVIEW,
+    beat: "find · how much is wrong",
+    psych: 46,
+    delta: 8,
+    avatar: P.doubt,
+    who: STEWARD,
+    say: (
+      <>
+        Second: how much of it is wrong. <b>1.2 million</b> of them are.
+      </>
+    ),
+  },
+  {
+    kind: "card",
+    variant: "call",
+    tag: "#MY DESIGN CALL",
+    title: "A number you can't act on is just anxiety",
+    body: (
+      <>
+        The overview is very good at <i>how bad</i>. It never says <i>which</i>.
+        <br />
+        <br />
+        So we split the tab. Charts on one side, <b>the actual list</b> on the other.
+      </>
+    ),
+    behind: F_OVERVIEW,
+    psych: 46,
+  },
+
+  /* ── CHECK ── */
+  {
+    kind: "ui",
+    frame: F_RECORDS,
+    beat: "check · which ones",
+    psych: 58,
+    delta: 12,
+    avatar: P.happy,
+    who: STEWARD,
+    say: (
+      <>
+        So the number opens. There they are — filter, select, and raise it{" "}
+        <b>without leaving the page</b>.
+      </>
+    ),
+  },
+  {
+    kind: "ui",
+    frame: F_BULK,
+    psych: 64,
+    delta: 6,
+    avatar: P.happy,
+    who: STEWARD,
+    say: (
+      <>
+        Seven rows, seven reason codes, fourteen clicks. <b>Now one.</b>
+      </>
+    ),
+  },
+  {
+    kind: "ui",
+    frame: F_SEARCH,
+    beat: "check · one bar, ten systems",
+    psych: 72,
+    delta: 8,
+    avatar: P.happy,
+    who: STEWARD,
+    say: (
+      <>
+        And checking a fact stopped meaning four tools. <b>One bar, ten systems.</b>
+      </>
+    ),
+  },
+  {
+    kind: "ui",
+    frame: F_360,
+    psych: 78,
+    delta: 6,
+    avatar: P.delighted,
+    who: STEWARD,
+    say: (
+      <>
+        Every search lands on the party. Its whole 360 — hierarchy, coverage, open cases —{" "}
+        <b>one page</b>.
+      </>
+    ),
+  },
+  {
+    kind: "card",
+    variant: "principle",
+    tag: "#UX PRINCIPLE",
+    title: "Search isn't a module. It's a primitive.",
+    body: (
+      <>
+        Every job here starts the same way: <i>find the thing first</i>. Checking, correcting,
+        merging, escalating — all of it.
+        <br />
+        <br />
+        So search isn't a page you visit. It's the <b>front door to every workflow</b> in the
+        product.
+      </>
+    ),
+    behind: F_360,
+    psych: 78,
+  },
+
+  /* ── CORRECT ── */
+  {
+    kind: "ui",
+    frame: F_RAISE,
+    beat: "correct · raise it in place",
+    psych: 84,
+    delta: 6,
+    avatar: P.happy,
+    who: STEWARD,
+    say: (
+      <>
+        And when something <i>is</i> off, I raise it <b>from where I found it</b>.
+      </>
+    ),
+  },
+  {
+    kind: "card",
+    variant: "call",
+    tag: "#MY DESIGN CALL",
+    title: "A case is a question, not a proposal",
+    body: (
+      <>
+        The first design assumed the steward already knew the fix, and asked her to submit it.
+        <br />
+        <br />
+        She usually doesn't — she knows something is <i>wrong</i>. So a case carries{" "}
+        <b>the evidence and the question</b>, and the person who owns the answer decides.
+      </>
+    ),
+    behind: F_RAISE,
+    psych: 84,
+  },
+  {
+    kind: "ui",
+    frame: F_BUCKET,
+    beat: "correct · picked up",
+    psych: 84,
+    avatar: D.neutral,
+    who: AGENT,
+    say: (
+      <>
+        It lands in the shared bucket, not a mailbox. <b>Mine now.</b>
+      </>
+    ),
+  },
+  {
+    kind: "ui",
+    frame: F_IMPACT,
+    psych: 84,
+    avatar: D.worried,
+    who: AGENT,
+    say: (
+      <>
+        Before I touch it: <b>four of six platforms break</b>. The system worked that out, not me.
+      </>
+    ),
+  },
+  {
+    kind: "ui",
+    frame: F_RESPONDER,
+    psych: 84,
+    avatar: D.neutral,
+    who: AGENT,
+    say: (
+      <>
+        One page, one row I can act on. <b>Approve, or raise a concern.</b>
+      </>
+    ),
+  },
+  {
+    kind: "ui",
+    frame: F_CONCERN,
+    beat: "correct · someone says no",
+    psych: 70,
+    delta: -14,
+    avatar: P.worried,
+    who: STEWARD,
+    say: (
+      <>
+        And someone <i>does</i>. Coverage says no — locked on the case now, <b>with their reason</b>.
+      </>
+    ),
+  },
+  {
+    kind: "card",
+    variant: "call",
+    tag: "#MY DESIGN CALL",
+    title: "Concern Raised is a state, not a stop",
+    body: (
+      <>
+        The easy build makes an objection kill the case. Then the loudest team wins and nothing is
+        ever recorded.
+        <br />
+        <br />
+        So the impact is <b>computed</b>, the objection is <b>permanent</b>, and finalizing is{" "}
+        <b>one-way</b>. Disagreement becomes part of the record instead of the end of it.
+      </>
+    ),
+    behind: F_CONCERN,
+    psych: 70,
+  },
+
+  /* ── MAINTAIN ── */
+  {
+    kind: "ui",
+    frame: F_NOTIFY,
+    beat: "maintain · she finds out",
+    psych: 86,
+    delta: 16,
+    avatar: P.happy,
+    who: STEWARD,
+    say: (
+      <>
+        Under review. Needs more info. Approved. Rejected — <b>and why</b>. I never have to ask.
+      </>
+    ),
+  },
+  {
+    kind: "ui",
+    frame: F_PUNCHOUT,
+    beat: "maintain · where the work already is",
+    psych: 92,
+    delta: 6,
+    avatar: P.delighted,
+    who: STEWARD,
+    say: (
+      <>
+        And it starts where I already work — twelve case types, one click, <b>from inside UCDM</b>.
+      </>
+    ),
+  },
+  {
+    kind: "card",
+    variant: "call",
+    tag: "#MY DESIGN CALL",
+    title: "Governance can't live inside a viewer",
+    body: (
+      <>
+        UCDM is where stewards look at customer data. The Control Tower is where it gets{" "}
+        <i>changed</i>. Two products, one job.
+        <br />
+        <br />
+        So the punch-out pre-fills the party and hands the case straight back. Nobody has to know{" "}
+        <b>which product owns the verb</b>.
+      </>
+    ),
+    behind: F_PUNCHOUT,
+    psych: 92,
+  },
+
+  {
+    kind: "statement",
+    avatar: P.done,
+    who: STEWARD,
+    psych: 92,
+    say: (
+      <>
+        Define the customer. Unify the experience. <b>Then govern the lot.</b>
+      </>
+    ),
+  },
+  { kind: "summary" },
+  { kind: "end" },
+];
+
+/* ─────────────── bespoke slides ─────────────── */
+
+function TitleSlide() {
+  return (
+    <div className="relative h-full">
+      {/* just the office plate from the player, vignetted so white type holds.
+          No product screen here — the story earns the dashboard on slide 4. */}
+      <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
+        <span
+          className="absolute inset-0"
+          style={{
+            background:
+              "radial-gradient(52% 48% at 50% 44%, rgba(8,8,7,.82) 0%, rgba(8,8,7,.58) 58%, rgba(8,8,7,.30) 100%)",
+          }}
+        />
+      </div>
+      <div className="relative mx-auto flex h-full max-w-4xl flex-col items-center justify-center px-6 text-center">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9, y: 18 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          transition={{ duration: 0.55 }}
+          className="mb-9 flex items-end justify-center"
+        >
+          <Avatar src={P.worried} size="clamp(72px,17vh,164px)" />
+          <Avatar src={D.explain} size="clamp(54px,13vh,124px)" />
+        </motion.div>
+
+        <motion.h1
+          initial={{ opacity: 0, y: 18 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1, duration: 0.5 }}
+          className="max-w-[19ch] font-serif text-[34px] font-bold leading-[1.06] tracking-tight text-white sm:text-[54px]"
+        >
+          The Distance Between Noticing and&nbsp;Fixing
+        </motion.h1>
+
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3, duration: 0.5 }}
+        >
+          <TitleCredits
+            project="CR Control Tower"
+            client="Cisco"
+            role="Designer + stand-in PM"
+          />
+        </motion.div>
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.4, duration: 0.5 }}
+          className="mt-8 flex items-center gap-2.5 font-body text-[13px] font-medium uppercase tracking-[0.14em] text-white/40 sm:text-[14px]"
+        >
+          <Clock size={16} strokeWidth={1.5} /> Story duration: 5 min
+        </motion.p>
+      </div>
+      <KeyboardHint />
+    </div>
+  );
+}
+
+function SummarySlide() {
+  const beats = useMemo(() => journeyBeats(SLIDES), []);
+  const pts = beats.map((b) => b.v);
+
+  const W = 900;
+  const H = 320;
+  const step = W / Math.max(pts.length - 1, 1);
+  const xy = pts.map((p, i) => [i * step, H - (p / 100) * H] as const);
+  const col = (v: number) => (v >= 66 ? "#4ade80" : v >= 40 ? "#fbbf24" : "#f87171");
+
+  /* a label sitting above a trough lands inside the V — drop those below instead */
+  const labelY = (i: number) => {
+    const before = pts[i - 1] ?? pts[i];
+    const after = pts[i + 1] ?? pts[i];
+    const trough = pts[i] <= before && pts[i] <= after;
+    return xy[i][1] + (trough ? 36 : -22);
+  };
+
+  return (
+    <div className="mx-auto flex h-full max-w-6xl flex-col items-center justify-center px-6 pb-20">
+      <p className="mb-6 font-body text-[13px] font-bold uppercase tracking-[0.18em] text-white/70 sm:text-[15px]">
+        One case, end to end
+      </p>
+
+      <div className="relative w-full max-w-5xl">
+        <svg viewBox={`-72 -34 ${W + 150} ${H + 116}`} className="w-full">
+          <defs>
+            <marker id="crah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M0 0 L10 5 L0 10 z" fill="rgba(255,255,255,.55)" />
+            </marker>
+          </defs>
+
+          <line x1="0" y1={H} x2={W + 34} y2={H} stroke="rgba(255,255,255,.5)" strokeWidth="3" markerEnd="url(#crah)" />
+          <line x1="0" y1={H} x2="0" y2="-18" stroke="rgba(255,255,255,.5)" strokeWidth="3" markerEnd="url(#crah)" />
+          <line
+            x1="0" y1={H / 2} x2={W + 20} y2={H / 2}
+            stroke="rgba(255,255,255,.35)" strokeWidth="2" strokeDasharray="9 9"
+          />
+
+          {xy.slice(0, -1).map(([x1, y1], i) => {
+            const [x2, y2] = xy[i + 1];
+            return (
+              <motion.line
+                key={`s${i}`}
+                x1={x1} y1={y1} x2={x2} y2={y2}
+                stroke={col(pts[i + 1])}
+                strokeWidth="5"
+                strokeLinecap="round"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.2 + i * 0.07, duration: 0.25 }}
+              />
+            );
+          })}
+
+          {xy.map(([x, y], i) => (
+            <motion.circle
+              key={`c${i}`}
+              cx={x} cy={y} r="8"
+              fill={col(pts[i])}
+              stroke="#0d0c0b"
+              strokeWidth="3"
+              initial={{ opacity: 0, scale: 0 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.25 + i * 0.07, duration: 0.2 }}
+            />
+          ))}
+
+          {beats.map((b, i) =>
+            b.label ? (
+              <motion.text
+                key={`t${i}`}
+                x={xy[i][0]}
+                y={labelY(i)}
+                textAnchor="middle"
+                fill="rgba(255,255,255,.8)"
+                style={{ fontSize: 17, fontWeight: 600 }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.5 + i * 0.07, duration: 0.3 }}
+              >
+                {b.label}
+              </motion.text>
+            ) : null
+          )}
+
+          <text x="-14" y="10" textAnchor="end" fill="rgba(255,255,255,.5)" style={{ fontSize: 15 }}>
+            trusts it
+          </text>
+          <text x="-14" y={H} textAnchor="end" fill="rgba(255,255,255,.5)" style={{ fontSize: 15 }}>
+            gives up
+          </text>
+        </svg>
+      </div>
+
+      <p className="mt-4 max-w-2xl text-center font-body text-[15px] leading-relaxed text-white/70 sm:text-[17px]">
+        Everything after <i>case raised</i> happens where she can't see it.{" "}
+        <b className="text-white">Closing that gap is the product.</b>
+      </p>
+    </div>
+  );
+}
+
+function EndSlide() {
+  return (
+    <div className="mx-auto flex h-full max-w-4xl flex-col items-center justify-center px-6 pb-24 text-center">
+      <Avatar src={P.done} size={112} />
+      <h2 className="mt-6 font-serif text-[30px] font-bold tracking-tight text-white sm:text-[38px]">
+        Where it actually is
+      </h2>
+
+      <div className="mt-9 grid w-full gap-4 sm:grid-cols-2">
+        <div className="rounded-xl border border-white/20 bg-white/[0.06] px-6 py-6 text-left">
+          <p className="mb-3 font-body text-[12px] font-bold uppercase tracking-[0.14em] text-emerald-300 sm:text-[13px]">
+            Live in production
+          </p>
+          <p className="font-body text-[15.5px] leading-relaxed text-white/85 sm:text-[17px]">
+            The watching half and the governing half.{" "}
+            <b className="text-white">Demographics, Pollution Overview, and all six attribute
+            change types.</b>
+          </p>
+        </div>
+        <div className="rounded-xl border border-white/20 bg-white/[0.06] px-6 py-6 text-left">
+          <p className="mb-3 font-body text-[12px] font-bold uppercase tracking-[0.14em] text-amber-300 sm:text-[13px]">
+            Designed, not shipped
+          </p>
+          <p className="font-body text-[15.5px] leading-relaxed text-white/85 sm:text-[17px]">
+            The fixing half — records, search, case management.{" "}
+            <b className="text-white">Gated on cleaning the data, not on the design.</b>
+          </p>
+        </div>
+      </div>
+
+      <p className="mt-8 max-w-2xl font-body text-[15.5px] leading-relaxed text-white/70 sm:text-[17px]">
+        Which is the right order, and I'd argue for it again. You can safely let people{" "}
+        <b className="text-white">see</b> twenty million records long before you let them{" "}
+        <b className="text-white">change</b> them.
+      </p>
+
+      <Link
+        to="/#work"
+        className="group mt-10 inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 font-body text-[15px] font-semibold text-slate-900 shadow-[0_10px_30px_-8px_rgba(0,0,0,.7)] transition hover:bg-white/90"
+      >
+        <ArrowLeft size={16} strokeWidth={2.4} className="transition-transform group-hover:-translate-x-0.5" />
+        Back to all work
+      </Link>
+    </div>
+  );
+}
+
+/* ─────────────── player ─────────────── */
+
 export default function CRControlTowerCaseStudy() {
   return (
-    <div className="min-h-screen flex flex-col bg-background">
-      <SubpageNav label="Case Study" darkSectionId="hero-dark" />
-      <div className="flex-1 flex items-center justify-center py-10 px-4">
-        <CRControlTowerCarousel />
-      </div>
-      <Footer />
-    </div>
+    <CasePlayer
+      slides={SLIDES}
+      fallbackAvatar={P.neutral}
+      containAvatars={[SYS_AV]}
+      defaultBackdrop="/case-study/office-bg.webp"
+      renderTitle={() => <TitleSlide />}
+      renderSummary={() => <SummarySlide />}
+      renderEnd={() => <EndSlide />}
+    />
   );
 }
