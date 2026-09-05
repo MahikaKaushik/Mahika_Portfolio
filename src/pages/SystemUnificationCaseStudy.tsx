@@ -429,15 +429,6 @@ const F_PILLARS: Frame    = { src: `${IMG}/state-of-platform.webp`, alt: "The th
 
 const SLIDES: Slide[] = [
   { kind: "title" },
-
-  /* ══ ACT 1 — THE PROBLEM IS REAL, AND WE MADE IT MEASURABLE ══
-     Establishes what the artifact actually is before any of the work:
-     nobody commissioned this. There was no redesign project to join, so
-     the audit is not diligence, it is ammunition for a room we did not
-     control. Without that framing the manual count reads as thorough
-     rather than necessary. Confidence falls through the diagnosis and
-     only climbs once evidence replaces opinion. */
-
   {
     kind: "ui",
     frame: F_GLOBE,
@@ -579,9 +570,6 @@ const SLIDES: Slide[] = [
       </>
     ),
   },
-
-  /* ══ ACT 2 — TURN IT INTO A NUMBER LEADERSHIP CAN ACT ON ══ */
-
   {
     kind: "ui",
     frame: F_HUB,
@@ -625,71 +613,16 @@ const SLIDES: Slide[] = [
     ),
   },
   {
-    kind: "ui",
-    frame: F_ROADMAP,
-    beat: "a sequenced path",
-    psych: 82,
-    delta: 10,
-    avatar: M.driven,
-    who: ME,
-    say: (
-      <>
-        So we proposed six phases — cheap visual fixes first, risky structural ones last, so{" "}
-        <b>live customers would never feel it</b>.
-      </>
-    ),
-  },
-
-  /* ══ ACT 3 — THE FIX NOBODY COULD AFFORD ══
-     Slide 14 is the obvious answer, pitched high on purpose so that
-     slide 15 — the cost of it — has somewhere to fall from. */
-
-  {
-    kind: "scene",
-    avatar: M.happy,
-    who: ME,
-    beat: "rebuild it all",
-    psych: 88,
-    say: (
-      <>
-        The obvious fix was to rebuild all twenty properly. One language, one system,{" "}
-        <b>done once.</b>
-      </>
-    ),
-  },
-  {
     kind: "statement",
     avatar: M.shocked,
     who: ME,
     psych: 40,
-    say: <>Nobody was ever going to pay for that.</>,
-  },
-  {
-    kind: "card",
-    variant: "principle",
-    tag: "The wall",
-    title: "The number never cleared",
-    body: (
-      <>
-        Twenty ageing applications, all of them live, all of them with customers working inside
-        them right now — rebuilt at the same time, by teams who each had their own roadmap
-        already. Every version of that estimate came back the same way.{" "}
-        <b>A plan nobody funds is not a plan.</b>
-      </>
-    ),
-    behind: F_ROADMAP,
-    psych: 40,
-  },
-  {
-    kind: "scene",
-    avatar: M.doubt,
-    who: ME,
-    beat: "nobody would fund it",
-    psych: 56,
     say: (
       <>
-        So the question changed. Not <i>what should it look like</i> — but{" "}
-        <b>how do you move twenty applications onto one standard you can actually afford?</b>
+        The obvious fix was to rebuild all twenty properly — one language, one system, done
+        once. <b>Nobody was ever going to pay for that.</b> Twenty live applications rebuilt at
+        the same time, by teams who each already had a roadmap: every version of that estimate
+        came back the same.
       </>
     ),
   },
@@ -697,11 +630,13 @@ const SLIDES: Slide[] = [
     kind: "statement",
     avatar: M.driven,
     who: ME,
-    psych: 74,
+    psych: 60,
     say: (
       <>
-        And we didn't have to invent the standard. Cisco already had one — <b>Magnetic</b> — and
-        every part of the company outside Commerce was already using it.
+        So the question changed. Not <i>what should it look like</i> — but{" "}
+        <b>how do you move twenty applications onto one standard you can afford?</b> And we
+        didn't have to invent the standard: Cisco already had <b>Magnetic</b>, and every part of
+        the company outside Commerce was already using it.
       </>
     ),
   },
@@ -709,14 +644,29 @@ const SLIDES: Slide[] = [
     kind: "ui",
     frame: F_HARMONISED,
     beat: "proved on one screen",
-    psych: 84,
-    delta: 10,
+    psych: 74,
+    delta: 14,
     avatar: M.happy,
     who: ME,
     say: (
       <>
-        We redesigned one real screen using Magnetic, just to show <b>it holds up in actual
-        work</b>.
+        So we designed <b>all the current screens</b> on Magnetic — not a sample, the real
+        ones — to prove it holds up in the actual work.
+      </>
+    ),
+  },
+  {
+    kind: "ui",
+    frame: F_ROADMAP,
+    beat: "a sequenced path",
+    psych: 84,
+    delta: 10,
+    avatar: M.driven,
+    who: ME,
+    say: (
+      <>
+        Then a plan to get the rest there. <b>Six phases</b> — cheap visual fixes first, risky
+        structural ones last, so live customers would never feel it.
       </>
     ),
   },
@@ -734,7 +684,7 @@ const SLIDES: Slide[] = [
         already working</b>, which is the only place a budget was ever going to come from.
       </>
     ),
-    behind: F_HARMONISED,
+    behind: F_ROADMAP,
     psych: 84,
   },
   {
@@ -751,9 +701,6 @@ const SLIDES: Slide[] = [
       </>
     ),
   },
-
-  /* ══ CLOSE ══ */
-
   {
     kind: "statement",
     avatar: M.neutral,
@@ -766,7 +713,6 @@ const SLIDES: Slide[] = [
       </>
     ),
   },
-
   { kind: "summary" },
   { kind: "end" },
 ];
@@ -867,7 +813,7 @@ function SummarySlide() {
   };
 
   return (
-    <div className="mx-auto flex h-full max-w-6xl flex-col items-center justify-center px-6 pb-20">
+    <div className="mx-auto flex h-full max-w-6xl flex-col items-center justify-center px-6 pb-20 text-center">
       <p className="mb-6 font-body text-[13px] font-bold uppercase tracking-[0.18em] text-white/70 sm:text-[15px]">
         One proposal, end to end
       </p>
@@ -955,7 +901,7 @@ function SummarySlide() {
 
 function EndSlide() {
   return (
-    <div className="relative mx-auto flex h-full max-w-4xl flex-col justify-center px-6 py-16">
+    <div className="relative mx-auto flex h-full max-w-4xl flex-col items-start justify-center px-6 py-16">
       <p className="mb-3 font-body text-[12px] font-bold uppercase tracking-[0.16em] text-amber-300">
         What it taught us
       </p>
@@ -965,7 +911,7 @@ function EndSlide() {
         actually adopt.
       </h2>
 
-      <div className="mt-10 grid gap-5 sm:grid-cols-2">
+      <div className="mt-10 grid w-full gap-5 sm:grid-cols-2">
         <div className="rounded-xl border border-white/20 bg-white/[0.06] px-6 py-6 text-left">
           <p className="mb-3 font-body text-[12px] font-bold uppercase tracking-[0.14em] text-amber-300 sm:text-[13px]">
             What we produced
@@ -997,7 +943,7 @@ function EndSlide() {
 
       <Link
         to="/#work"
-        className="group mt-10 inline-flex self-start items-center gap-2 rounded-full bg-white px-6 py-3 font-body text-[15px] font-semibold text-slate-900 shadow-[0_10px_30px_-8px_rgba(0,0,0,.7)] transition hover:bg-white/90"
+        className="group mt-10 inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 font-body text-[15px] font-semibold text-slate-900 shadow-[0_10px_30px_-8px_rgba(0,0,0,.7)] transition hover:bg-white/90"
       >
         <ArrowLeft size={16} strokeWidth={2.4} className="transition-transform group-hover:-translate-x-0.5" />
         Back to all work
