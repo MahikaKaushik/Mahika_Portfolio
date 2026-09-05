@@ -24,7 +24,7 @@ import {
    the protagonist is the design team, so it narrates in "we" with
    Mahika as the face. Structure is a three-act reversal: the audit
    earns the right to be heard, the scoring makes it actionable, and
-   then the system we built gets killed. The crash on slide 13 is the
+   then the system we built gets killed. The crash on slide 15 is the
    whole point; every beat before it exists to raise the fall.
    ══════════════════════════════════════════════════════════════ */
 
@@ -67,9 +67,12 @@ const SLIDES: Slide[] = [
   { kind: "title" },
 
   /* ══ ACT 1 — THE PROBLEM IS REAL, AND WE MADE IT MEASURABLE ══
-     Confidence falls while the mess is exposed, then climbs back only
-     once evidence replaces opinion. No screen on the opening claim:
-     the assertion has to land first so the evidence has a job. */
+     Establishes what the artifact actually is before any of the work:
+     nobody commissioned this. There was no redesign project to join, so
+     the audit is not diligence, it is ammunition for a room we did not
+     control. Without that framing the manual count reads as thorough
+     rather than necessary. Confidence falls through the diagnosis and
+     only climbs once evidence replaces opinion. */
 
   {
     kind: "scene",
@@ -78,8 +81,20 @@ const SLIDES: Slide[] = [
     psych: 70,
     say: (
       <>
-        Open three Cisco Commerce tools side by side. You'd swear{" "}
-        <b>three different companies</b> built them.
+        Cisco Commerce isn't one product. It's <b>twenty applications</b> across eleven-plus
+        verticals — sold to customers as a single platform.
+      </>
+    ),
+  },
+  {
+    kind: "scene",
+    avatar: M.worried,
+    who: ME,
+    psych: 58,
+    say: (
+      <>
+        Open three of them side by side and you'd swear <b>three different companies</b> built
+        them.
       </>
     ),
   },
@@ -87,8 +102,8 @@ const SLIDES: Slide[] = [
     kind: "ui",
     frame: F_CHALLENGES,
     beat: "eight fractures",
-    psych: 52,
-    delta: -18,
+    psych: 46,
+    delta: -12,
     avatar: M.worried,
     who: ME,
     say: (
@@ -98,13 +113,25 @@ const SLIDES: Slide[] = [
     ),
   },
   {
-    kind: "statement",
+    kind: "scene",
     avatar: M.flat,
     who: ME,
-    psych: 44,
+    psych: 40,
     say: (
       <>
-        But <b>"this feels off"</b> has never won an argument with an engineering budget.
+        And nobody had asked us to fix it. No redesign project. No budget. <b>No mandate.</b>
+      </>
+    ),
+  },
+  {
+    kind: "statement",
+    avatar: M.driven,
+    who: ME,
+    psych: 36,
+    say: (
+      <>
+        So this was never a design brief. It was <b>a case we had to build</b> — and carry to the
+        people who own the platform.
       </>
     ),
   },
@@ -112,7 +139,7 @@ const SLIDES: Slide[] = [
     kind: "ui",
     frame: F_AUDIT,
     beat: "we counted",
-    psych: 58,
+    psych: 50,
     delta: 14,
     avatar: M.driven,
     who: ME,
@@ -130,18 +157,20 @@ const SLIDES: Slide[] = [
     body: (
       <>
         Every screen in every application, read by two people. It was a rough, relentless
-        stretch — and it is the only reason the findings were <b>undeniable</b>. Nobody argues
-        with a count they can check.
+        stretch — and it is the only reason the findings were <b>undeniable</b>. We weren't
+        presenting to our own team. We were asking a leadership group that had never budgeted
+        for this to believe a problem existed, and <b>nobody argues with a count they can
+        check</b>.
       </>
     ),
     behind: F_AUDIT,
-    psych: 58,
+    psych: 50,
   },
   {
     kind: "ui",
     frame: F_BUTTONS,
     beat: "the button wall",
-    psych: 72,
+    psych: 64,
     delta: 14,
     avatar: M.happy,
     who: ME,
@@ -158,8 +187,8 @@ const SLIDES: Slide[] = [
     kind: "ui",
     frame: F_HUB,
     beat: "every app scored",
-    psych: 84,
-    delta: 12,
+    psych: 78,
+    delta: 14,
     avatar: M.delighted,
     who: ME,
     say: (
@@ -172,7 +201,7 @@ const SLIDES: Slide[] = [
     kind: "statement",
     avatar: M.neutral,
     who: ME,
-    psych: 84,
+    psych: 78,
     say: (
       <>
         Current <b>13</b>. Harmonised <b>0</b>. Northstar <b>7</b>. A vague complaint became a
@@ -184,7 +213,7 @@ const SLIDES: Slide[] = [
     kind: "ui",
     frame: F_DEVGAP,
     beat: "design ≠ shipped",
-    psych: 76,
+    psych: 70,
     delta: -8,
     avatar: M.doubt,
     who: ME,
@@ -198,7 +227,7 @@ const SLIDES: Slide[] = [
     kind: "ui",
     frame: F_ROADMAP,
     beat: "a sequenced path",
-    psych: 88,
+    psych: 82,
     delta: 12,
     avatar: M.driven,
     who: ME,
@@ -210,8 +239,8 @@ const SLIDES: Slide[] = [
   },
 
   /* ══ ACT 3 — KILL YOUR DARLING ══
-     The reversal. Slide 12 is deliberately the highest point in the
-     study so that slide 13 has somewhere to fall from. */
+     The reversal. Slide 14 is deliberately the highest point in the
+     study so that slide 15 has somewhere to fall from. */
 
   {
     kind: "scene",
