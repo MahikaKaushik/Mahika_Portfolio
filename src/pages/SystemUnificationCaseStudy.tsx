@@ -331,12 +331,16 @@ function TwoVerticalsMock({ annotated = false }: { annotated?: boolean }) {
   ];
 
   return (
-    <div className="w-full">
+    /* The stage centres its content, and with the key on top this block is
+       tall enough that centring leaves a wide band of empty slide above it
+       while the speech bubble covers the space below. Nudge it up into
+       that band. */
+    <div className="w-full" style={annotated ? { transform: "translateY(-3rem)" } : undefined}>
       {/* On the annotated pass the legend takes the place of the product
           names: by this slide the reader already knows which is which, and
           the key has to be read before the marks mean anything. */}
       {annotated && (
-        <ul className="mb-3 grid grid-flow-col grid-rows-6 gap-x-10 gap-y-1 sm:mb-4 sm:grid-rows-3">
+        <ul className="mb-2.5 grid grid-flow-col grid-rows-6 gap-x-10 gap-y-1 sm:mb-3 sm:grid-rows-3">
           {legend.map(([n, label, detail]) => (
             <li key={n} className="flex items-start gap-2">
               <span
