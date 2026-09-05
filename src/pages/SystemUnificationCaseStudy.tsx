@@ -401,18 +401,25 @@ function TitleSlide() {
   return (
     <div className="relative h-full">
       <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
-        {/* edge to edge, no gaps — cropped rather than fitted */}
+        {/* Edge to edge, and softened. The desk is uniformly bright and full
+            of fine detail — wireframes, sticky-note lettering — which sat
+            directly behind the title and fought it. A short blur turns it
+            back into a setting rather than a competing subject, and the
+            slight upscale keeps the blur from bleeding a soft edge. */}
         <img
           src={TITLE_ART}
           alt=""
-          className="absolute inset-0 h-full w-full object-cover"
-          style={{ opacity: 0.50 }}
+          className="absolute inset-0 h-full w-full scale-105 object-cover"
+          style={{ opacity: 0.62, filter: "blur(5px) saturate(.92)" }}
         />
+        {/* An even wash, not a radial. A centred dark oval over a uniformly
+            lit photo reads as a smudge; CR could use one because the tower
+            was already dark in the middle and bright at the windows. */}
         <span
           className="absolute inset-0"
           style={{
             background:
-              "radial-gradient(62% 60% at 50% 47%, rgba(8,8,7,.96) 0%, rgba(8,8,7,.88) 40%, rgba(8,8,7,.66) 74%, rgba(8,8,7,.52) 100%)",
+              "linear-gradient(180deg, rgba(8,8,7,.74) 0%, rgba(8,8,7,.60) 42%, rgba(8,8,7,.66) 70%, rgba(8,8,7,.86) 100%)",
           }}
         />
       </div>
