@@ -53,8 +53,88 @@ const M = {
    title. */
 const TITLE_ART = `${IMG}/whiteboard.webp`;
 
+/* ─────────────── drawn mock ───────────────
+   Slide 2 had no visual at all, so "twenty applications sold as one
+   thing" was a claim the reader had to take on faith. Drawn rather than
+   screenshotted because no single screenshot can show twenty products
+   at once — that is the whole problem. */
+
+function GlobeMock() {
+  const apps = [
+    "Quoting", "Estimates", "Orders", "Renewals", "Discounts",
+    "Subscriptions", "Catalog", "Trials", "Deals", "Pricing",
+  ];
+  const cx = 500, cy = 292, r = 116;
+  const rx = 322, ry = 216;
+
+  const pts = apps.map((label, i) => {
+    const right = i < 5;
+    const k = right ? i : i - 5;
+    const t = (-58 + k * 29) * (Math.PI / 180);
+    const dir = right ? 1 : -1;
+    const x = cx + dir * rx * Math.cos(t);
+    const y = cy + ry * Math.sin(t);
+    const a = Math.atan2(y - cy, x - cx);
+    return { label, x, y, right, nx: cx + r * Math.cos(a), ny: cy + r * Math.sin(a) };
+  });
+
+  return (
+    <div className="w-full overflow-hidden rounded-xl bg-[#0f1729] shadow-2xl">
+      <svg viewBox="0 0 1000 600" className="block w-full">
+        <defs>
+          <radialGradient id="euGlobe" cx="38%" cy="32%">
+            <stop offset="0%" stopColor="#2f4a7a" />
+            <stop offset="70%" stopColor="#1a2b4d" />
+            <stop offset="100%" stopColor="#121d36" />
+          </radialGradient>
+        </defs>
+
+        <text x="500" y="58" textAnchor="middle" fill="#93a4c4" fontSize="16" fontWeight="700"
+              letterSpacing="3.4" fontFamily="system-ui">CISCO COMMERCE</text>
+
+        {/* the globe */}
+        <circle cx={cx} cy={cy} r={r} fill="url(#euGlobe)" />
+        <circle cx={cx} cy={cy} r={r} fill="none" stroke="#44608f" strokeWidth="1.6" />
+        {[0.34, 0.68].map((f) => (
+          <g key={f}>
+            <ellipse cx={cx} cy={cy} rx={r} ry={r * f} fill="none" stroke="#3c568a" strokeWidth="1.1" />
+            <ellipse cx={cx} cy={cy} rx={r * f} ry={r} fill="none" stroke="#3c568a" strokeWidth="1.1" />
+          </g>
+        ))}
+        <line x1={cx - r} y1={cy} x2={cx + r} y2={cy} stroke="#3c568a" strokeWidth="1.1" />
+
+        {/* one product per node */}
+        {pts.map((p) => (
+          <g key={p.label}>
+            <line x1={p.nx} y1={p.ny} x2={p.x + (p.right ? -9 : 9)} y2={p.y}
+                  stroke="#4a6799" strokeWidth="1.3" strokeDasharray="4 4" />
+            <circle cx={p.nx} cy={p.ny} r="6.5" fill="#f8b544" />
+            <circle cx={p.nx} cy={p.ny} r="11" fill="none" stroke="#f8b544" strokeWidth="1.2" opacity=".38" />
+            <text
+              x={p.x + (p.right ? 4 : -4)}
+              y={p.y + 6}
+              textAnchor={p.right ? "start" : "end"}
+              fill="#e8edf7"
+              fontSize="21"
+              fontWeight="600"
+              fontFamily="system-ui"
+            >
+              {p.label}
+            </text>
+          </g>
+        ))}
+
+        <text x="500" y="556" textAnchor="middle" fill="#8fa0c0" fontSize="18" fontFamily="system-ui">
+          …and ten more. One platform, on the invoice.
+        </text>
+      </svg>
+    </div>
+  );
+}
+
 /* ─────────────── frames ─────────────── */
 
+const F_GLOBE: Frame      = { node: <GlobeMock />, wide: true };
 const F_CHALLENGES: Frame = { src: `${IMG}/challenges.webp`, alt: "Eight kinds of inconsistency, each with its business cost" };
 const F_AUDIT: Frame      = { src: `${IMG}/audit-assess.webp`, alt: "Every kind of component, catalogued across all twenty applications" };
 const F_BUTTONS: Frame    = { src: `${IMG}/button-variations.webp`, alt: "Thirty different button styles found across the applications" };
@@ -78,10 +158,12 @@ const SLIDES: Slide[] = [
      only climbs once evidence replaces opinion. */
 
   {
-    kind: "scene",
+    kind: "ui",
+    frame: F_GLOBE,
+    beat: "one platform, on paper",
+    psych: 70,
     avatar: M.neutral,
     who: ME,
-    psych: 70,
     say: (
       <>
         Cisco Commerce isn't one product. It's <b>twenty separate applications</b> — quoting,
