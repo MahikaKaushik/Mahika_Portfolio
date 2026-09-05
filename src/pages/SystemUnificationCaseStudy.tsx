@@ -849,8 +849,13 @@ function SummarySlide() {
   /* Thirteen labels averaging far wider than the gap between two points
      cannot all sit on one side of the line, whatever the width. Alternate
      strictly above and below by index, so no two neighbours ever share a
-     side and only every second label competes for horizontal room. */
-  const labelY = (i: number) => xy[i][1] + (i % 2 === 0 ? -26 : 42);
+     side and only every second label competes for horizontal room.
+
+     The offsets have to clear the line's own travel, not just each other:
+     where the line falls steeply, the label under a high point lands level
+     with the label over the next, lower one. 42 up and 58 down keeps them
+     apart across the steepest run here, which is the drop into the wall. */
+  const labelY = (i: number) => xy[i][1] + (i % 2 === 0 ? -42 : 58);
 
   return (
     <div className="mx-auto flex h-full w-full flex-col items-center justify-center px-8 pb-16 text-center">
@@ -859,7 +864,7 @@ function SummarySlide() {
       </p>
 
       <div className="relative w-full">
-        <svg viewBox={`-190 -52 ${W + 330} ${H + 170}`} className="w-full">
+        <svg viewBox={`-190 -100 ${W + 330} ${H + 232}`} className="w-full">
           <defs>
             <marker id="euah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
               <path d="M0 0 L10 5 L0 10 z" fill="rgba(255,255,255,.55)" />
