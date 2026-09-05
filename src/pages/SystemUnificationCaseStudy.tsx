@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { ArrowLeft, Clock } from "lucide-react";
@@ -53,79 +53,174 @@ const M = {
    title. */
 const TITLE_ART = `${IMG}/whiteboard.webp`;
 
-/* ─────────────── drawn mock ───────────────
+/* ─────────────── drawn mocks ───────────────
    Slide 2 had no visual at all, so "twenty applications sold as one
    thing" was a claim the reader had to take on faith. Drawn rather than
-   screenshotted because no single screenshot can show twenty products
-   at once — that is the whole problem. */
+   screenshotted because no single screenshot can show twenty products at
+   once — that is the whole problem.
+
+   It genuinely revolves: node positions are an orthographic projection of
+   a real sphere, so names round the limb, fade as they pass behind, and
+   come back. Cheaper than a WebGL dependency and it matches the flat
+   illustration language the rest of the player uses. */
+
+const GLOBE_APPS = [
+  { label: "Quoting", lat: 24 },
+  { label: "Estimates", lat: -12 },
+  { label: "Orders", lat: 40 },
+  { label: "Renewals", lat: -34 },
+  { label: "Discounts", lat: 10 },
+  { label: "Subscriptions", lat: 46 },
+  { label: "Catalog", lat: -22 },
+  { label: "Deals", lat: 30 },
+];
 
 function GlobeMock() {
-  const apps = [
-    "Quoting", "Estimates", "Orders", "Renewals", "Discounts",
-    "Subscriptions", "Catalog", "Trials", "Deals", "Pricing",
-  ];
-  const cx = 500, cy = 292, r = 116;
-  const rx = 322, ry = 216;
+  const [rot, setRot] = useState(0);
 
-  const pts = apps.map((label, i) => {
-    const right = i < 5;
-    const k = right ? i : i - 5;
-    const t = (-58 + k * 29) * (Math.PI / 180);
-    const dir = right ? 1 : -1;
-    const x = cx + dir * rx * Math.cos(t);
-    const y = cy + ry * Math.sin(t);
-    const a = Math.atan2(y - cy, x - cx);
-    return { label, x, y, right, nx: cx + r * Math.cos(a), ny: cy + r * Math.sin(a) };
-  });
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches) return;
+    let raf = 0;
+    let t0: number | null = null;
+    const tick = (t: number) => {
+      if (t0 === null) t0 = t;
+      setRot(((t - t0) / 1000) * 5.5); // one turn a little over a minute
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, []);
+
+  const cx = 500;
+  const cy = 322;
+  const R = 205;
+  const SQUASH = 0.32; // how flat the latitude rings sit — reads as tilt
+  const rad = (d: number) => (d * Math.PI) / 180;
+
+  const nodes = GLOBE_APPS.map((a, i) => {
+    const lon = rad(i * (360 / GLOBE_APPS.length) + rot);
+    const lat = rad(a.lat);
+    const x = Math.cos(lat) * Math.sin(lon);
+    const y = Math.sin(lat);
+    const z = Math.cos(lat) * Math.cos(lon);
+    return {
+      label: a.label,
+      x: cx + R * x,
+      y: cy - R * y * 0.88,
+      z,
+      right: x >= 0,
+    };
+  }).sort((a, b) => a.z - b.z);
+
+  const meridians = [0, 30, 60, 90, 120, 150].map((m) => ({
+    key: m,
+    rx: Math.abs(R * Math.sin(rad(m + rot))),
+  }));
 
   return (
-    <div className="w-full overflow-hidden rounded-xl bg-[#0f1729] shadow-2xl">
-      <svg viewBox="0 0 1000 600" className="block w-full">
+    <div className="w-full">
+      <svg viewBox="0 0 1000 660" className="block w-full">
         <defs>
-          <radialGradient id="euGlobe" cx="38%" cy="32%">
-            <stop offset="0%" stopColor="#2f4a7a" />
-            <stop offset="70%" stopColor="#1a2b4d" />
-            <stop offset="100%" stopColor="#121d36" />
+          {/* lit from upper left, falling to a dark limb lower right */}
+          <radialGradient id="euSphere" cx="34%" cy="27%" r="78%">
+            <stop offset="0%" stopColor="#6f9ddd" />
+            <stop offset="34%" stopColor="#3a68ad" />
+            <stop offset="70%" stopColor="#1c3564" />
+            <stop offset="100%" stopColor="#080f21" />
           </radialGradient>
+          {/* atmosphere */}
+          <radialGradient id="euAtmos" cx="50%" cy="50%">
+            <stop offset="82%" stopColor="#5f97e8" stopOpacity="0" />
+            <stop offset="94%" stopColor="#5f97e8" stopOpacity=".34" />
+            <stop offset="100%" stopColor="#5f97e8" stopOpacity="0" />
+          </radialGradient>
+          {/* keeps the wireframe inside the disc */}
+          <clipPath id="euClip">
+            <circle cx={cx} cy={cy} r={R} />
+          </clipPath>
+          <filter id="euSoft" x="-30%" y="-30%" width="160%" height="160%">
+            <feGaussianBlur stdDeviation="9" />
+          </filter>
         </defs>
 
-        <text x="500" y="58" textAnchor="middle" fill="#93a4c4" fontSize="16" fontWeight="700"
-              letterSpacing="3.4" fontFamily="system-ui">CISCO COMMERCE</text>
+        {/* atmospheric halo */}
+        <circle cx={cx} cy={cy} r={R * 1.16} fill="url(#euAtmos)" filter="url(#euSoft)" />
 
-        {/* the globe */}
-        <circle cx={cx} cy={cy} r={r} fill="url(#euGlobe)" />
-        <circle cx={cx} cy={cy} r={r} fill="none" stroke="#44608f" strokeWidth="1.6" />
-        {[0.34, 0.68].map((f) => (
-          <g key={f}>
-            <ellipse cx={cx} cy={cy} rx={r} ry={r * f} fill="none" stroke="#3c568a" strokeWidth="1.1" />
-            <ellipse cx={cx} cy={cy} rx={r * f} ry={r} fill="none" stroke="#3c568a" strokeWidth="1.1" />
-          </g>
-        ))}
-        <line x1={cx - r} y1={cy} x2={cx + r} y2={cy} stroke="#3c568a" strokeWidth="1.1" />
+        {/* the body */}
+        <circle cx={cx} cy={cy} r={R} fill="url(#euSphere)" />
 
-        {/* one product per node */}
-        {pts.map((p) => (
-          <g key={p.label}>
-            <line x1={p.nx} y1={p.ny} x2={p.x + (p.right ? -9 : 9)} y2={p.y}
-                  stroke="#4a6799" strokeWidth="1.3" strokeDasharray="4 4" />
-            <circle cx={p.nx} cy={p.ny} r="6.5" fill="#f8b544" />
-            <circle cx={p.nx} cy={p.ny} r="11" fill="none" stroke="#f8b544" strokeWidth="1.2" opacity=".38" />
-            <text
-              x={p.x + (p.right ? 4 : -4)}
-              y={p.y + 6}
-              textAnchor={p.right ? "start" : "end"}
-              fill="#e8edf7"
-              fontSize="21"
-              fontWeight="600"
-              fontFamily="system-ui"
-            >
-              {p.label}
-            </text>
-          </g>
-        ))}
+        <g clipPath="url(#euClip)" opacity=".5">
+          {[-60, -40, -20, 0, 20, 40, 60].map((l) => {
+            const yy = cy - R * Math.sin(rad(l)) * 0.88;
+            const rr = R * Math.cos(rad(l));
+            return (
+              <ellipse
+                key={l}
+                cx={cx} cy={yy} rx={rr} ry={rr * SQUASH}
+                fill="none" stroke="#9dc0f0" strokeWidth="1"
+              />
+            );
+          })}
+          {meridians.map((m) => (
+            <ellipse
+              key={m.key}
+              cx={cx} cy={cy} rx={m.rx} ry={R}
+              fill="none" stroke="#9dc0f0" strokeWidth="1"
+            />
+          ))}
+        </g>
 
-        <text x="500" y="556" textAnchor="middle" fill="#8fa0c0" fontSize="18" fontFamily="system-ui">
-          …and ten more. One platform, on the invoice.
+        {/* rim light on the lit edge, and a soft shadow on the dark one */}
+        <circle cx={cx} cy={cy} r={R} fill="none" stroke="#7fb0f5" strokeWidth="1.4" opacity=".55" />
+        <circle
+          cx={cx} cy={cy} r={R} fill="none" stroke="#bcd9ff" strokeWidth="2.6"
+          strokeDasharray={`${R * 1.7} ${R * 10}`} strokeDashoffset={R * 3.15} opacity=".6"
+        />
+
+        {/* the name sits on the sphere itself; nodes are drawn after it, so
+            products pass in front as they come round */}
+        <text
+          x={cx} y={cy + 10} textAnchor="middle" fill="#eaf1fc"
+          fontSize="31" fontWeight="700" letterSpacing="4.2" fontFamily="system-ui"
+          opacity=".93"
+          style={{ paintOrder: "stroke", stroke: "rgba(6,10,20,.55)", strokeWidth: 7 }}
+        >
+          CISCO COMMERCE
+        </text>
+
+        {nodes.map((n) => {
+          const front = n.z > 0;
+          const depth = (n.z + 1) / 2;
+          const dotO = front ? 0.5 + 0.5 * n.z : 0.14;
+          const labO = front ? Math.min(1, n.z / 0.3) : 0;
+          return (
+            <g key={n.label}>
+              {front && n.z > 0.4 && (
+                <circle cx={n.x} cy={n.y} r={13} fill="#f6b53f" opacity={0.16 * n.z} />
+              )}
+              <circle cx={n.x} cy={n.y} r={4.5 + 2.8 * depth} fill="#f8bc4e" opacity={dotO} />
+              {labO > 0.02 && (
+                <text
+                  x={n.x + (n.right ? 15 : -15)}
+                  y={n.y + 6}
+                  textAnchor={n.right ? "start" : "end"}
+                  fill="#f2f6fd"
+                  fontSize="21"
+                  fontWeight="600"
+                  fontFamily="system-ui"
+                  opacity={labO}
+                  style={{ paintOrder: "stroke", stroke: "rgba(6,8,14,.9)", strokeWidth: 6 }}
+                >
+                  {n.label}
+                </text>
+              )}
+            </g>
+          );
+        })}
+
+        <text x="500" y="628" textAnchor="middle" fill="#8497b8" fontSize="18" fontFamily="system-ui">
+          …and twelve more. One platform, on the invoice.
         </text>
       </svg>
     </div>
