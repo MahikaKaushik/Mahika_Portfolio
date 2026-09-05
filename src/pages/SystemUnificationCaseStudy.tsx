@@ -432,10 +432,14 @@ const SLIDES: Slide[] = [
     delta: -8,
     avatar: M.worried,
     who: ME,
+    /* Rings the first card's IMPACT line — the thing that turns this from
+       a list of complaints into an argument. RoughCircle positions against
+       the slide, not the screenshot, so nudge x/y if it sits off. */
+    circle: { x: "27%", y: "27%", w: "26%", h: "12%" },
     say: (
       <>
-        We wrote down every way they disagreed. <b>Eight kinds of damage</b> — and what each one
-        costs the business.
+        We wrote down every way they disagreed. <b>Eight kinds of damage</b> — and, next to each
+        one, <b>what it costs the business</b>.
       </>
     ),
   },
