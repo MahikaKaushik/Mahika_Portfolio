@@ -411,6 +411,41 @@ function DesignVsShippedMock() {
   );
 }
 
+
+/* The governance screen has three tabs, and the three tabs are the answer:
+   a checkpoint before design hands over, one during the build, and one
+   where the two are compared. Shown together because "three checkpoints"
+   is a claim about structure, and structure is legible at a glance even
+   when the body copy is not. */
+function GovernanceMock() {
+  const steps = [
+    { src: `${IMG}/gov-design.webp`, name: "Design phase", note: "before anything is handed over" },
+    { src: `${IMG}/gov-dev.webp`, name: "Dev phase", note: "while it is being built" },
+    { src: `${IMG}/gov-sync.webp`, name: "Dev–design sync", note: "where the two are compared" },
+  ];
+  return (
+    <div className="grid w-full grid-cols-3 gap-3 sm:gap-4">
+      {steps.map((t) => (
+        <figure key={t.name} className="m-0">
+          <figcaption className="mb-2 text-center">
+            <span className="block font-body text-[12.5px] font-bold uppercase tracking-[0.14em] text-amber-300 sm:text-[14px]">
+              {t.name}
+            </span>
+            <span className="mt-0.5 block font-body text-[11px] leading-snug text-white/50 sm:text-[12.5px]">
+              {t.note}
+            </span>
+          </figcaption>
+          <img
+            src={t.src}
+            alt={`Design governance checkpoint: ${t.name}`}
+            className="block w-full rounded-md border border-white/15 shadow-[0_20px_56px_-18px_rgba(0,0,0,.9)]"
+          />
+        </figure>
+      ))}
+    </div>
+  );
+}
+
 /* ─────────────── frames ─────────────── */
 
 const F_GLOBE: Frame      = { node: <GlobeMock />, wide: true };
@@ -423,7 +458,7 @@ const F_HUB: Frame        = { src: `${IMG}/unification-hub.webp`, alt: "Every ap
 const F_DEVGAP: Frame     = { node: <DesignVsShippedMock />, wide: true, scale: "96%" };
 const F_ROADMAP: Frame    = { src: `${IMG}/roadmap.webp`, alt: "The six-phase path from old patterns to the company standard", scale: "86%" };
 const F_HARMONISED: Frame = { src: `${IMG}/old-vs-new.webp`, alt: "The same Commerce screen, old design beside the rebuilt one", scale: "96%" };
-const F_PILLARS: Frame    = { src: `${IMG}/state-of-platform.webp`, alt: "The three standing rules proposed to keep it consistent", scale: "92%" };
+const F_GOV: Frame        = { node: <GovernanceMock />, wide: true, scale: "96%" };
 
 /* ─────────────── the story ─────────────── */
 
@@ -447,7 +482,7 @@ const SLIDES: Slide[] = [
   {
     kind: "ui",
     frame: F_TWO,
-    beat: "same job, different products",
+    beat: "same job, two answers",
     psych: 60,
     delta: -10,
     avatar: M.worried,
@@ -462,7 +497,7 @@ const SLIDES: Slide[] = [
   {
     kind: "ui",
     frame: F_TWO_MARKED,
-    beat: "four things to re-learn",
+    beat: "six things to re-learn",
     psych: 52,
     delta: -8,
     avatar: M.worried,
@@ -559,7 +594,7 @@ const SLIDES: Slide[] = [
   {
     kind: "ui",
     frame: F_BUTTONS,
-    beat: "what the audit found",
+    beat: "the audit result",
     psych: 72,
     delta: 10,
     avatar: M.happy,
@@ -574,7 +609,7 @@ const SLIDES: Slide[] = [
   {
     kind: "ui",
     frame: F_HUB,
-    beat: "alignment, and what it costs",
+    beat: "scored on both",
     psych: 80,
     delta: 8,
     avatar: M.delighted,
@@ -617,6 +652,7 @@ const SLIDES: Slide[] = [
     kind: "statement",
     avatar: M.shocked,
     who: ME,
+    beat: "nobody would fund it",
     psych: 40,
     delta: -32,
     say: (
@@ -632,6 +668,7 @@ const SLIDES: Slide[] = [
     kind: "statement",
     avatar: M.driven,
     who: ME,
+    beat: "the standard existed",
     psych: 60,
     delta: 20,
     say: (
@@ -646,7 +683,7 @@ const SLIDES: Slide[] = [
   {
     kind: "ui",
     frame: F_HARMONISED,
-    beat: "proved on one screen",
+    beat: "redesigned on Magnetic",
     psych: 74,
     delta: 14,
     avatar: M.happy,
@@ -692,15 +729,16 @@ const SLIDES: Slide[] = [
   },
   {
     kind: "ui",
-    frame: F_PILLARS,
-    beat: "so it can't drift back",
+    frame: F_GOV,
+    beat: "three checkpoints",
     psych: 92,
     delta: 8,
     avatar: M.done,
     who: ME,
     say: (
       <>
-        And three rules to stop it <b>quietly drifting back</b>.
+        And three checkpoints so it <b>can't quietly drift back</b> — before design hands over,
+        while it is being built, and where the two are compared.
       </>
     ),
   },
@@ -798,10 +836,10 @@ function TitleSlide() {
 /* ─────────────── summary ─────────────── */
 
 function SummarySlide() {
-  const beats = useMemo(() => journeyBeats(SLIDES), []);
+  const beats = useMemo(() => journeyBeats(SLIDES, ["ui", "scene", "statement"]), []);
   const pts = beats.map((b) => b.v);
 
-  const W = 900;
+  const W = 1180;
   const H = 320;
   const step = W / Math.max(pts.length - 1, 1);
   const xy = pts.map((p, i) => [i * step, H - (p / 100) * H] as const);
@@ -812,7 +850,10 @@ function SummarySlide() {
     const before = pts[i - 1] ?? pts[i];
     const after = pts[i + 1] ?? pts[i];
     const trough = pts[i] <= before && pts[i] <= after;
-    return xy[i][1] + (trough ? 36 : -22);
+    /* neighbours sit close enough to collide on a flat run, so alternate the
+       distance from the line as well as the side of it */
+    const stagger = (i % 2) * 21;
+    return xy[i][1] + (trough ? 34 + stagger : -20 - stagger);
   };
 
   return (
@@ -822,7 +863,7 @@ function SummarySlide() {
       </p>
 
       <div className="relative w-full max-w-5xl">
-        <svg viewBox={`-92 -34 ${W + 190} ${H + 116}`} className="w-full">
+        <svg viewBox={`-168 -40 ${W + 300} ${H + 132}`} className="w-full">
           <defs>
             <marker id="euah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
               <path d="M0 0 L10 5 L0 10 z" fill="rgba(255,255,255,.55)" />
@@ -873,7 +914,7 @@ function SummarySlide() {
                 y={labelY(i)}
                 textAnchor="middle"
                 fill="rgba(255,255,255,.8)"
-                style={{ fontSize: 17, fontWeight: 600 }}
+                style={{ fontSize: 15, fontWeight: 600 }}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.5 + i * 0.07, duration: 0.3 }}
@@ -883,10 +924,10 @@ function SummarySlide() {
             ) : null
           )}
 
-          <text x="-14" y="10" textAnchor="end" fill="rgba(255,255,255,.5)" style={{ fontSize: 15 }}>
+          <text x="-22" y="10" textAnchor="end" fill="rgba(255,255,255,.5)" style={{ fontSize: 14 }}>
             we have a case
           </text>
-          <text x="-14" y={H} textAnchor="end" fill="rgba(255,255,255,.5)" style={{ fontSize: 15 }}>
+          <text x="-22" y={H} textAnchor="end" fill="rgba(255,255,255,.5)" style={{ fontSize: 14 }}>
             no way through
           </text>
         </svg>
@@ -904,7 +945,7 @@ function SummarySlide() {
 
 function EndSlide() {
   return (
-    <div className="relative mx-auto flex h-full max-w-4xl flex-col items-start justify-center px-6 py-16">
+    <div className="relative mx-auto flex h-full max-w-4xl flex-col items-center justify-center px-6 py-16 text-center">
       <p className="mb-3 font-body text-[12px] font-bold uppercase tracking-[0.16em] text-amber-300">
         What it taught us
       </p>

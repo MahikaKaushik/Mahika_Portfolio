@@ -91,6 +91,8 @@ export type Slide =
       who?: string;
       say: ReactNode;
       psych?: number;
+      /** Label this point on the summary graph. */
+      beat?: string;
       /** How far it moved to get here, so the meter shows a change
           rather than a silent jump. */
       delta?: number;
@@ -737,9 +739,16 @@ export function CardSlide({ s }: { s: Extract<Slide, { kind: "card" }> }) {
 /* ─────────────── summary helpers ─────────────── */
 
 /** Every beat that carries a psych reading, in slide order. */
-export function journeyBeats(slides: Slide[]) {
+export function journeyBeats(
+  slides: Slide[],
+  kinds: readonly Slide["kind"][] = ["ui", "scene"],
+) {
+  /* Defaults to ui + scene so existing studies plot exactly as before. Pass
+     "statement" as well when a study puts a real move on one — otherwise the
+     graph silently omits it, which is worst precisely where the drop is
+     biggest. */
   return slides.flatMap((sl) =>
-    (sl.kind === "ui" || sl.kind === "scene") && (sl as { psych?: number }).psych !== undefined
+    kinds.includes(sl.kind) && (sl as { psych?: number }).psych !== undefined
       ? [{ v: (sl as { psych?: number }).psych as number, label: (sl as { beat?: string }).beat }]
       : []
   );
