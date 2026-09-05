@@ -457,8 +457,10 @@ const SLIDES: Slide[] = [
     kind: "ui",
     frame: F_CHALLENGES,
     beat: "eight fractures",
-    psych: 44,
-    delta: -8,
+    /* Holds at 52 rather than falling again. Slide 4 already took the
+       drop; this slide catalogues the same bad news, it does not deliver
+       worse. No delta, so the meter shows the level without a change. */
+    psych: 52,
     avatar: M.worried,
     who: ME,
     say: (
