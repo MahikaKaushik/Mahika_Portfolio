@@ -12,7 +12,6 @@ import {
   type Frame,
   type Slide,
 } from "@/components/case-player";
-import { LAND } from "./eu-land";
 
 /* ══════════════════════════════════════════════════════════════
    EXPERIENCE UNIFICATION — slide-player case study.
@@ -54,31 +53,27 @@ const M = {
    title. */
 const TITLE_ART = `${IMG}/whiteboard.webp`;
 
-/* A point-cloud earth, drawn on canvas.
+/* The platform, drawn as the thing it is made of.
 
-   SVG was the wrong tool once this needed real continents: 3445 land
-   points is far too many nodes to recreate every frame. Canvas draws the
-   whole thing in one pass.
+   Not an earth with product pins in it — the sphere IS the applications.
+   Each name sits on the surface, the whole thing turns, and you can grab
+   it and spin it yourself.
 
-   Continents are real — Natural Earth 110m land, sampled to points in
-   eu-land.ts — projected orthographically and lit by a single directional
-   source, so there is a genuine terminator and the sphere turns through
-   it. Product names ride at fixed coordinates and fade round the limb. */
+   Positioning is orthographic on purpose. A perspective divide pushes the
+   front-centre names outward past the limb, which breaks the circular
+   silhouette and makes the whole thing read as a word cloud rather than a
+   sphere. Depth is carried by size, weight, opacity and — the cue that
+   actually sells it — horizontal foreshortening, so a name at the edge is
+   squashed as though lying on a surface turning away.
 
-const GLOBE_APPS = [
-  { label: "Quoting", lat: 40, lon: -96 },
-  { label: "Estimates", lat: 52, lon: 10 },
-  { label: "Orders", lat: 22, lon: 78 },
-  { label: "Renewals", lat: -24, lon: -50 },
-  { label: "Discounts", lat: 36, lon: 138 },
-  { label: "Subscriptions", lat: 6, lon: 20 },
-  { label: "Catalog", lat: -32, lon: 142 },
-  { label: "Deals", lat: 60, lon: -110 },
-];
+   Canvas rather than DOM: forty labels re-drawn every frame is nothing for
+   a canvas and a lot of churn for React. */
 
-/* which products are wired to which — drawn as great circles */
-const GLOBE_LINKS: [number, number][] = [
-  [0, 1], [1, 5], [5, 2], [2, 4], [0, 3], [4, 6],
+const PLATFORM_APPS = [
+  "Quoting", "Estimates", "Orders", "Renewals", "Subscriptions",
+  "Discounts", "Catalog", "Trials", "Deals", "Pricing",
+  "Billing", "Approvals", "Proposals", "Contracts", "Returns",
+  "Credits", "Provisioning", "Forecasting", "Entitlements", "Notifications",
 ];
 
 function GlobeMock() {
@@ -91,222 +86,174 @@ function GlobeMock() {
     if (!ctx) return;
 
     const W = 1000;
-    const H = 660;
+    const H = 620;
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
     cv.width = W * dpr;
     cv.height = H * dpr;
 
     const cx = W / 2;
-    const cy = H / 2 - 4;
-    const R = 236;
-    const TILT = (-15 * Math.PI) / 180;
+    const cy = H / 2 - 8;
+    const R = 252;
 
-    /* one directional light, up and to the left, angled toward the viewer */
-    const LX = -0.52, LY = 0.46, LZ = 0.72;
-
-    const project = (lonDeg: number, latDeg: number, rot: number) => {
-      const lon = ((lonDeg + rot) * Math.PI) / 180;
-      const lat = (latDeg * Math.PI) / 180;
-      const cl = Math.cos(lat);
-      const ux = cl * Math.sin(lon);
-      const uy0 = Math.sin(lat);
-      const uz0 = cl * Math.cos(lon);
-      const uy = uy0 * Math.cos(TILT) - uz0 * Math.sin(TILT);
-      const uz = uy0 * Math.sin(TILT) + uz0 * Math.cos(TILT);
-      const lit = Math.max(0, ux * LX + uy * LY + uz * LZ);
-      return { x: cx + R * ux, y: cy - R * uy, z: uz, lit };
-    };
-
-    /* deterministic jitter so the sample grid does not read as halftone */
-    const jitter = (i: number) => ((Math.sin(i * 12.9898) * 43758.5453) % 1 + 1) % 1;
+    /* two of each name, so the surface is dense enough to have a silhouette */
+    const N = 40;
+    const GOLDEN = Math.PI * (3 - Math.sqrt(5));
+    const seeds = Array.from({ length: N }, (_, i) => {
+      const y = 1 - ((i + 0.5) / N) * 2;
+      const r = Math.sqrt(Math.max(0, 1 - y * y));
+      const th = GOLDEN * i;
+      return {
+        label: PLATFORM_APPS[i % PLATFORM_APPS.length],
+        x0: Math.cos(th) * r,
+        y0: y,
+        z0: Math.sin(th) * r,
+      };
+    });
 
     const still = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
-    let raf = 0;
-    let t0: number | null = null;
 
-    const draw = (rot: number) => {
+    let spin = 18;                 // degrees about the vertical axis
+    let tilt = 10;                 // degrees leaning toward the viewer
+    let vSpin = 0;                 // leftover velocity from a drag
+    let vTilt = 0;
+    let dragging = false;
+    let lastX = 0;
+    let lastY = 0;
+    let lastT = 0;
+
+    const AUTO = still ? 0 : 7;    // degrees per second
+
+    const draw = () => {
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.clearRect(0, 0, W, H);
 
-      /* ── ocean, very dark, faintly lit up-left ── */
-      const body = ctx.createRadialGradient(
-        cx - R * 0.42, cy - R * 0.46, R * 0.05,
-        cx, cy, R,
-      );
-      body.addColorStop(0, "#12233d");
-      body.addColorStop(0.45, "#0a1526");
-      body.addColorStop(1, "#03070e");
-      ctx.fillStyle = body;
-      ctx.beginPath();
-      ctx.arc(cx, cy, R, 0, Math.PI * 2);
-      ctx.fill();
+      const a = (spin * Math.PI) / 180;
+      const ca = Math.cos(a);
+      const sa = Math.sin(a);
+      const tl = (tilt * Math.PI) / 180;
+      const ct = Math.cos(tl);
+      const st = Math.sin(tl);
 
-      ctx.save();
-      ctx.beginPath();
-      ctx.arc(cx, cy, R, 0, Math.PI * 2);
-      ctx.clip();
+      const pts = seeds.map((s) => {
+        const x1 = s.x0 * ca + s.z0 * sa;
+        const z1 = -s.x0 * sa + s.z0 * ca;
+        const y2 = s.y0 * ct - z1 * st;
+        const z2 = s.y0 * st + z1 * ct;
+        return { label: s.label, x: cx + x1 * R, y: cy - y2 * R, z: z2 };
+      });
 
-      /* ── graticule, barely there ── */
-      ctx.strokeStyle = "rgba(120,170,225,.055)";
-      ctx.lineWidth = 1;
-      for (let lat = -60; lat <= 60; lat += 30) {
-        ctx.beginPath();
-        let on = false;
-        for (let lon = -180; lon <= 180; lon += 4) {
-          const p = project(lon, lat, rot);
-          if (p.z <= 0) { on = false; continue; }
-          if (!on) { ctx.moveTo(p.x, p.y); on = true; } else ctx.lineTo(p.x, p.y);
+      pts.sort((p, q) => p.z - q.z);
+
+      for (const p of pts) {
+        const t = (p.z + 1) / 2;                       // 0 back … 1 front
+        const size = 11 + 14 * Math.pow(t, 1.5);
+        const alpha = 0.12 + 0.88 * Math.pow(t, 2);
+        const weight = t > 0.78 ? 650 : t > 0.45 ? 550 : 450;
+        /* squash toward the limb — the cue that makes it a surface */
+        const sx = 0.28 + 0.72 * Math.abs(p.z);
+        const accent = t > 0.9;
+
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.scale(sx, 1);
+        ctx.font = `${weight} ${size.toFixed(1)}px system-ui, -apple-system, sans-serif`;
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        if (accent) {
+          ctx.shadowColor = "rgba(246,181,63,.45)";
+          ctx.shadowBlur = 16;
+          ctx.fillStyle = `rgba(250,200,110,${alpha.toFixed(3)})`;
+        } else {
+          ctx.shadowColor = "rgba(0,0,0,.6)";
+          ctx.shadowBlur = 7;
+          ctx.fillStyle = `rgba(226,233,244,${alpha.toFixed(3)})`;
         }
-        ctx.stroke();
-      }
-      for (let lon = -180; lon < 180; lon += 30) {
-        ctx.beginPath();
-        let on = false;
-        for (let lat = -86; lat <= 86; lat += 4) {
-          const p = project(lon, lat, rot);
-          if (p.z <= 0) { on = false; continue; }
-          if (!on) { ctx.moveTo(p.x, p.y); on = true; } else ctx.lineTo(p.x, p.y);
-        }
-        ctx.stroke();
+        ctx.fillText(p.label, 0, 0);
+        ctx.restore();
       }
 
-      /* ── land ── */
-      for (let i = 0; i < LAND.length; i += 2) {
-        const p = project(LAND[i], LAND[i + 1], rot);
-        if (p.z <= 0.015) continue;
-        const j = jitter(i);
-        const shade = 0.12 + 0.88 * p.lit;              // terminator
-        const edge = Math.min(1, p.z * 3.2);            // soften at the limb
-        const a = (0.10 + 0.72 * shade) * edge;
-        if (a < 0.03) continue;
-        ctx.fillStyle = `rgba(${132 + Math.round(70 * shade)},${186 + Math.round(48 * shade)},255,${a.toFixed(3)})`;
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, 0.55 + 0.85 * p.z + 0.35 * j, 0, Math.PI * 2);
-        ctx.fill();
-      }
-
-      /* ── links between products, as great circles ── */
-      ctx.lineWidth = 1;
-      for (const [a, b] of GLOBE_LINKS) {
-        const A = GLOBE_APPS[a];
-        const B = GLOBE_APPS[b];
-        ctx.beginPath();
-        let on = false;
-        for (let t = 0; t <= 1.0001; t += 0.02) {
-          const lat = A.lat + (B.lat - A.lat) * t;
-          const lon = A.lon + (B.lon - A.lon) * t;
-          const p = project(lon, lat, rot);
-          if (p.z <= 0.04) { on = false; continue; }
-          if (!on) { ctx.moveTo(p.x, p.y); on = true; } else ctx.lineTo(p.x, p.y);
-        }
-        ctx.strokeStyle = "rgba(246,182,74,.16)";
-        ctx.stroke();
-      }
-
-      ctx.restore();
-
-      /* ── terminator wash: darkens the side facing away from the light ── */
-      const term = ctx.createRadialGradient(
-        cx + R * 0.55, cy + R * 0.5, R * 0.12,
-        cx + R * 0.4, cy + R * 0.36, R * 1.5,
-      );
-      term.addColorStop(0, "rgba(2,5,11,.72)");
-      term.addColorStop(0.55, "rgba(2,5,11,.30)");
-      term.addColorStop(1, "rgba(2,5,11,0)");
-      ctx.save();
-      ctx.beginPath();
-      ctx.arc(cx, cy, R, 0, Math.PI * 2);
-      ctx.clip();
-      ctx.fillStyle = term;
-      ctx.fillRect(cx - R, cy - R, R * 2, R * 2);
-      ctx.restore();
-
-      /* ── atmosphere: a thin band on the limb, brightest where lit ── */
-      const rim = ctx.createRadialGradient(cx, cy, R * 0.965, cx, cy, R * 1.055);
-      rim.addColorStop(0, "rgba(96,158,236,0)");
-      rim.addColorStop(0.45, "rgba(116,176,246,.30)");
-      rim.addColorStop(1, "rgba(96,158,236,0)");
-      ctx.fillStyle = rim;
-      ctx.beginPath();
-      ctx.arc(cx, cy, R * 1.06, 0, Math.PI * 2);
-      ctx.fill();
-
-      /* a brighter crescent on the lit edge */
-      ctx.save();
-      ctx.strokeStyle = "rgba(178,214,255,.5)";
-      ctx.lineWidth = 1.2;
-      ctx.beginPath();
-      ctx.arc(cx, cy, R - 0.5, Math.PI * 0.72, Math.PI * 1.72);
-      ctx.stroke();
-      ctx.restore();
-
-      /* ── the platform name, sitting on the body ── */
-      ctx.textAlign = "center";
-      ctx.font = "500 21px system-ui, -apple-system, sans-serif";
-      ctx.letterSpacing = "7px";
-      ctx.fillStyle = "rgba(214,230,250,.72)";
-      ctx.shadowColor = "rgba(2,6,14,.95)";
-      ctx.shadowBlur = 16;
-      ctx.fillText("CISCO COMMERCE", cx + 3, cy + 8);
-      ctx.letterSpacing = "0px";
-      ctx.shadowBlur = 0;
-
-      /* ── products ── */
-      const nodes = GLOBE_APPS.map((a) => ({ ...a, ...project(a.lon, a.lat, rot) }))
-        .sort((a, b) => a.z - b.z);
-
-      for (const n of nodes) {
-        if (n.z <= 0) continue;
-        const fade = Math.min(1, n.z / 0.34);
-        if (fade < 0.04) continue;
-
-        const g = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, 15);
-        g.addColorStop(0, `rgba(255,194,92,${0.42 * fade})`);
-        g.addColorStop(1, "rgba(255,194,92,0)");
-        ctx.fillStyle = g;
-        ctx.beginPath();
-        ctx.arc(n.x, n.y, 15, 0, Math.PI * 2);
-        ctx.fill();
-
-        ctx.fillStyle = `rgba(255,201,104,${0.65 + 0.35 * fade})`;
-        ctx.beginPath();
-        ctx.arc(n.x, n.y, 3, 0, Math.PI * 2);
-        ctx.fill();
-
-        const right = n.x >= cx;
-        ctx.textAlign = right ? "left" : "right";
-        ctx.font = "500 16px system-ui, -apple-system, sans-serif";
-        ctx.letterSpacing = "0.6px";
-        ctx.shadowColor = "rgba(2,5,12,.95)";
-        ctx.shadowBlur = 10;
-        ctx.fillStyle = `rgba(226,236,250,${0.9 * fade})`;
-        ctx.fillText(n.label, n.x + (right ? 12 : -12), n.y + 5);
-        ctx.shadowBlur = 0;
-        ctx.letterSpacing = "0px";
-      }
-
+      ctx.textBaseline = "alphabetic";
       ctx.textAlign = "center";
       ctx.font = "400 16px system-ui, -apple-system, sans-serif";
-      ctx.fillStyle = "rgba(128,146,178,.85)";
-      ctx.fillText("…and twelve more. One platform, on the invoice.", cx, H - 14);
+      ctx.fillStyle = "rgba(132,151,184,.85)";
+      ctx.fillText("Cisco Commerce. Twenty applications, one invoice.", cx, H - 10);
     };
 
-    if (still) {
-      draw(0);
-      return;
-    }
-    const tick = (t: number) => {
-      if (t0 === null) t0 = t;
-      draw(((t - t0) / 1000) * 4.2); // one turn in about 85 seconds
+    let raf = 0;
+    let prev: number | null = null;
+    const tick = (now: number) => {
+      const dt = prev === null ? 0 : Math.min(0.05, (now - prev) / 1000);
+      prev = now;
+      if (!dragging) {
+        spin += AUTO * dt + vSpin * dt;
+        tilt = Math.max(-58, Math.min(58, tilt + vTilt * dt));
+        vSpin *= 0.94;             // let a flick coast, then settle
+        vTilt *= 0.94;
+        if (Math.abs(vSpin) < 0.5) vSpin = 0;
+        if (Math.abs(vTilt) < 0.5) vTilt = 0;
+      }
+      draw();
       raf = requestAnimationFrame(tick);
     };
     raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
+
+    /* ── grab and spin ── */
+    const down = (e: PointerEvent) => {
+      dragging = true;
+      lastX = e.clientX;
+      lastY = e.clientY;
+      lastT = performance.now();
+      vSpin = 0;
+      vTilt = 0;
+      cv.setPointerCapture(e.pointerId);
+      cv.style.cursor = "grabbing";
+    };
+    const move = (e: PointerEvent) => {
+      if (!dragging) return;
+      const scale = W / cv.getBoundingClientRect().width; // canvas units per css px
+      const dx = (e.clientX - lastX) * scale;
+      const dy = (e.clientY - lastY) * scale;
+      const now = performance.now();
+      const dt = Math.max(8, now - lastT) / 1000;
+
+      spin += dx * 0.22;
+      tilt = Math.max(-58, Math.min(58, tilt + dy * 0.16));
+      vSpin = (dx * 0.22) / dt;
+      vTilt = (dy * 0.16) / dt;
+
+      lastX = e.clientX;
+      lastY = e.clientY;
+      lastT = now;
+    };
+    const up = (e: PointerEvent) => {
+      dragging = false;
+      cv.releasePointerCapture?.(e.pointerId);
+      cv.style.cursor = "grab";
+    };
+
+    cv.style.cursor = "grab";
+    cv.addEventListener("pointerdown", down);
+    cv.addEventListener("pointermove", move);
+    cv.addEventListener("pointerup", up);
+    cv.addEventListener("pointercancel", up);
+
+    return () => {
+      cancelAnimationFrame(raf);
+      cv.removeEventListener("pointerdown", down);
+      cv.removeEventListener("pointermove", move);
+      cv.removeEventListener("pointerup", up);
+      cv.removeEventListener("pointercancel", up);
+    };
   }, []);
 
   return (
     <div className="w-full">
-      <canvas ref={ref} className="block h-auto w-full" style={{ aspectRatio: "1000 / 660" }} />
+      <canvas
+        ref={ref}
+        className="block h-auto w-full select-none"
+        style={{ aspectRatio: "1000 / 620", touchAction: "none" }}
+        aria-label="A sphere made of the twenty Cisco Commerce applications. Drag to spin it."
+      />
     </div>
   );
 }
