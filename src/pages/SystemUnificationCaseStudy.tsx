@@ -47,15 +47,11 @@ const M = {
   done: `${AV}/eu-mk-done.svg`,
 };
 
-/* A designer's desk — wireframes, swatches, sticky notes. The other two
-   studies are set where the work is used; this one is set where the work
-   is made, which is the right room for a study about craft.
-
-   It carries much lower than the tower does in CR, because this plate is
-   bright white paper and the screens on top of it are bright white UI.
-   At any higher value the screenshots stop separating from their own
-   background. */
-const TITLE_ART = `${IMG}/desk.webp`;
+/* A team presenting at a whiteboard. UCD is set where the work is used
+   and CR in the tower that watches it; this study is an argument made to
+   a room, so it is set in the room. Carried on every slide, not just the
+   title. */
+const TITLE_ART = `${IMG}/whiteboard.webp`;
 
 /* ─────────────── frames ─────────────── */
 
@@ -637,9 +633,9 @@ export default function SystemUnificationCaseStudy() {
     <CasePlayer
       slides={SLIDES}
       fallbackAvatar={M.neutral}
-      defaultBackdrop={`${IMG}/desk.webp`}
-      backdropOpacity={0.12}
-      backdropScrim="linear-gradient(180deg, rgba(8,8,7,.90) 0%, rgba(8,8,7,.80) 45%, rgba(8,8,7,.95) 100%), radial-gradient(70% 50% at 50% 0%, rgba(150,96,40,.12), transparent 70%)"
+      defaultBackdrop={TITLE_ART}
+      backdropOpacity={0.20}
+      backdropScrim="linear-gradient(180deg, rgba(8,8,7,.86) 0%, rgba(8,8,7,.74) 45%, rgba(8,8,7,.93) 100%), radial-gradient(70% 50% at 50% 0%, rgba(150,110,60,.14), transparent 70%)"
       renderTitle={() => <TitleSlide />}
       renderSummary={() => <SummarySlide />}
       renderEnd={() => <EndSlide />}
