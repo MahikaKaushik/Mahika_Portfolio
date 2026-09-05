@@ -839,22 +839,18 @@ function SummarySlide() {
   const beats = useMemo(() => journeyBeats(SLIDES, ["ui", "scene", "statement"]), []);
   const pts = beats.map((b) => b.v);
 
-  const W = 1180;
-  const H = 320;
+  const W = 1560;
+  const H = 360;
   const step = W / Math.max(pts.length - 1, 1);
   const xy = pts.map((p, i) => [i * step, H - (p / 100) * H] as const);
   const col = (v: number) => (v >= 66 ? "#4ade80" : v >= 40 ? "#fbbf24" : "#f87171");
 
   /* a label above a trough lands inside the V — drop those below instead */
-  const labelY = (i: number) => {
-    const before = pts[i - 1] ?? pts[i];
-    const after = pts[i + 1] ?? pts[i];
-    const trough = pts[i] <= before && pts[i] <= after;
-    /* neighbours sit close enough to collide on a flat run, so alternate the
-       distance from the line as well as the side of it */
-    const stagger = (i % 2) * 21;
-    return xy[i][1] + (trough ? 34 + stagger : -20 - stagger);
-  };
+  /* Thirteen labels averaging far wider than the gap between two points
+     cannot all sit on one side of the line, whatever the width. Alternate
+     strictly above and below by index, so no two neighbours ever share a
+     side and only every second label competes for horizontal room. */
+  const labelY = (i: number) => xy[i][1] + (i % 2 === 0 ? -22 : 34);
 
   return (
     <div className="mx-auto flex h-full max-w-6xl flex-col items-center justify-center px-6 pb-20 text-center">
@@ -863,7 +859,7 @@ function SummarySlide() {
       </p>
 
       <div className="relative w-full max-w-5xl">
-        <svg viewBox={`-168 -40 ${W + 300} ${H + 132}`} className="w-full">
+        <svg viewBox={`-190 -52 ${W + 330} ${H + 170}`} className="w-full">
           <defs>
             <marker id="euah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
               <path d="M0 0 L10 5 L0 10 z" fill="rgba(255,255,255,.55)" />
