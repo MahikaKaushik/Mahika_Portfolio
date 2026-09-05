@@ -388,13 +388,13 @@ const F_GLOBE: Frame      = { node: <GlobeMock />, wide: true };
 const F_TWO: Frame        = { node: <TwoVerticalsMock />, wide: true, scale: "92%" };
 const F_TWO_MARKED: Frame = { node: <TwoVerticalsMock annotated />, wide: true, scale: "92%" };
 const F_CHALLENGES: Frame = { src: `${IMG}/challenges.webp`, alt: "Eight kinds of inconsistency, each with its business cost", scale: "92%" };
-const F_AUDIT: Frame      = { src: `${IMG}/audit-assess.webp`, alt: "Every kind of component, catalogued across all twenty applications" };
-const F_BUTTONS: Frame    = { src: `${IMG}/button-variations.webp`, alt: "Thirty different button styles found across the applications" };
-const F_HUB: Frame        = { src: `${IMG}/unification-hub.webp`, alt: "Every application scored for consistency" };
-const F_DEVGAP: Frame     = { src: `${IMG}/design-vs-dev.webp`, alt: "What was designed, next to what engineering actually shipped" };
-const F_ROADMAP: Frame    = { src: `${IMG}/roadmap.webp`, alt: "The six-phase path from old patterns to the company standard" };
-const F_HARMONISED: Frame = { src: `${IMG}/old-vs-new.webp`, alt: "The same Commerce screen, old design beside the rebuilt one" };
-const F_PILLARS: Frame    = { src: `${IMG}/state-of-platform.webp`, alt: "The three standing rules proposed to keep it consistent" };
+const F_AUDIT: Frame      = { src: `${IMG}/audit-assess.webp`, alt: "Every kind of component, catalogued across all twenty applications", scale: "62%" };
+const F_BUTTONS: Frame    = { src: `${IMG}/button-variations.webp`, alt: "Thirty different button styles found across the applications", scale: "82%" };
+const F_HUB: Frame        = { src: `${IMG}/unification-hub.webp`, alt: "Every application scored for consistency", scale: "88%" };
+const F_DEVGAP: Frame     = { src: `${IMG}/design-vs-dev.webp`, alt: "What was designed, next to what engineering actually shipped", scale: "58%" };
+const F_ROADMAP: Frame    = { src: `${IMG}/roadmap.webp`, alt: "The six-phase path from old patterns to the company standard", scale: "86%" };
+const F_HARMONISED: Frame = { src: `${IMG}/old-vs-new.webp`, alt: "The same Commerce screen, old design beside the rebuilt one", scale: "96%" };
+const F_PILLARS: Frame    = { src: `${IMG}/state-of-platform.webp`, alt: "The three standing rules proposed to keep it consistent", scale: "92%" };
 
 /* ─────────────── the story ─────────────── */
 
@@ -452,6 +452,26 @@ const SLIDES: Slide[] = [
         Same company. Same afternoon.
       </>
     ),
+  },
+  {
+    kind: "card",
+    variant: "principle",
+    tag: "#UX PRINCIPLE",
+    title: "Jakob's Law",
+    body: (
+      <>
+        People spend nearly all their time in other software. They arrive expecting yours to work
+        the way everything else already does — and they are usually right, which is why it
+        normally goes unnoticed.
+        <br />
+        <br />
+        Two products from the same company disagreeing is where that expectation breaks. Every
+        difference above is <b>a small tax, paid again on every switch</b>.
+      </>
+    ),
+    refs: ["Nielsen (2000)", "Users prefer your product to work the way all the others do"],
+    behind: F_TWO_MARKED,
+    psych: 52,
   },
   {
     kind: "ui",
@@ -518,14 +538,15 @@ const SLIDES: Slide[] = [
   {
     kind: "ui",
     frame: F_BUTTONS,
-    beat: "the button wall",
+    beat: "one finding, in full",
     psych: 72,
     delta: 10,
     avatar: M.happy,
     who: ME,
     say: (
       <>
-        Thirty ways to draw one button. Same word, same job, <b>thirty different answers</b>.
+        One finding, as an example. <b>Six different primary buttons</b> — each with its own
+        hover, disabled and secondary state. Thirty variations, for one control.
       </>
     ),
   },
