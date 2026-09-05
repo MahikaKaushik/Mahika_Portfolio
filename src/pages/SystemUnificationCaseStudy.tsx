@@ -149,8 +149,8 @@ const SLIDES: Slide[] = [
     who: ME,
     say: (
       <>
-        So we counted. Every button, field, alert and table — <b>twenty-one kinds of
-        component, across all twenty applications</b>, by hand.
+        So we counted. <b>Every button, every form field, every alert</b> — by hand, in all
+        twenty applications.
       </>
     ),
   },
@@ -210,8 +210,8 @@ const SLIDES: Slide[] = [
     psych: 78,
     say: (
       <>
-        Thirteen still looked like the old world. Seven already looked like the new one.{" "}
-        <b>Not one was anywhere in between</b> — nobody had ever done a partial migration.
+        And there was no such thing as <b>partly fixing</b> one. A team either rebuilt an
+        application completely, or left it alone.
       </>
     ),
   },
@@ -351,8 +351,7 @@ const SLIDES: Slide[] = [
     who: ME,
     say: (
       <>
-        And three standing rules to hold it — one shared pattern library, one check that what
-        ships matches what was drawn, one review before anything new goes in.
+        And three rules to stop it <b>quietly drifting back</b>.
       </>
     ),
   },
