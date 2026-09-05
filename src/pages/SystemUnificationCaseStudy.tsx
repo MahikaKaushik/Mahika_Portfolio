@@ -22,10 +22,12 @@ import {
 
    This is the only one of the three studies with no user persona —
    the protagonist is the design team, so it narrates in "we" with
-   Mahika as the face. Structure is a three-act reversal: the audit
-   earns the right to be heard, the scoring makes it actionable, and
-   then the system we built gets killed. The crash on slide 15 is the
-   whole point; every beat before it exists to raise the fall.
+   Mahika as the face. Three acts: the audit earns the right to be
+   heard, the scoring makes it actionable, and then the obvious fix
+   turns out to be unaffordable. The wall on slide 15 is the hinge —
+   the answer is not a better system, it is adopting the one the rest
+   of the company already uses, and migrating in pieces anyone will
+   fund.
    ══════════════════════════════════════════════════════════════ */
 
 const ME = "Mahika · Design";
@@ -244,19 +246,19 @@ const SLIDES: Slide[] = [
     ),
   },
 
-  /* ══ ACT 3 — KILL YOUR DARLING ══
-     The reversal. Slide 14 is deliberately the highest point in the
-     study so that slide 15 has somewhere to fall from. */
+  /* ══ ACT 3 — THE FIX NOBODY COULD AFFORD ══
+     Slide 14 is the obvious answer, pitched high on purpose so that
+     slide 15 — the cost of it — has somewhere to fall from. */
 
   {
     kind: "scene",
     avatar: M.happy,
     who: ME,
-    psych: 92,
+    psych: 88,
     say: (
       <>
-        And for all of this, we had built our own design system. Considered. Clean.{" "}
-        <b>Ours.</b>
+        The obvious fix was to rebuild all twenty properly. One language, one system,{" "}
+        <b>done once.</b>
       </>
     ),
   },
@@ -264,34 +266,34 @@ const SLIDES: Slide[] = [
     kind: "statement",
     avatar: M.shocked,
     who: ME,
-    psych: 38,
-    say: <>Cisco didn't want it.</>,
+    psych: 40,
+    say: <>Nobody was ever going to pay for that.</>,
   },
   {
     kind: "card",
     variant: "principle",
-    tag: "Why it died",
-    title: "Not because it was bad",
+    tag: "The wall",
+    title: "The number never cleared",
     body: (
       <>
-        No other team would adopt a design system that only our team used. And Cisco already
-        had one — <b>Magnetic</b> — that the rest of the company was standardising on.
-        Meanwhile, rebuilding twenty ageing applications in one go cost far more than anyone
-        was going to approve. A good system nobody adopts is <b>an expensive opinion</b>.
+        Twenty ageing applications, all of them live, all of them with customers working inside
+        them right now — rebuilt at the same time, by teams who each had their own roadmap
+        already. Every version of that estimate came back the same way.{" "}
+        <b>A plan nobody funds is not a plan.</b>
       </>
     ),
     behind: F_ROADMAP,
-    psych: 38,
+    psych: 40,
   },
   {
     kind: "scene",
     avatar: M.doubt,
     who: ME,
-    psych: 50,
+    psych: 56,
     say: (
       <>
-        So the question changed. Not <i>what should the system be</i> — but{" "}
-        <b>how do we move twenty applications onto one we can actually afford?</b>
+        So the question changed. Not <i>what should it look like</i> — but{" "}
+        <b>how do you move twenty applications onto one standard you can actually afford?</b>
       </>
     ),
   },
@@ -302,7 +304,8 @@ const SLIDES: Slide[] = [
     psych: 74,
     say: (
       <>
-        Don't invent. <b>Adopt.</b>
+        And we didn't have to invent the standard. Cisco already had one — <b>Magnetic</b> — and
+        every part of the company outside Commerce was already using it.
       </>
     ),
   },
@@ -410,9 +413,9 @@ function TitleSlide() {
           initial={{ opacity: 0, y: 18 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1, duration: 0.5 }}
-          className="max-w-[18ch] font-serif text-[34px] font-bold leading-[1.06] tracking-tight text-white sm:text-[54px]"
+          className="max-w-[19ch] font-serif text-[34px] font-bold leading-[1.06] tracking-tight text-white sm:text-[54px]"
         >
-          The Design System We&nbsp;Killed
+          The Migration Nobody Would&nbsp;Fund
         </motion.h1>
 
         <motion.div
