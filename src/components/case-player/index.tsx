@@ -365,8 +365,10 @@ export function ScreenStage({
           <div
             className={frame.wide ? "w-full" : "w-full max-w-3xl"}
             style={{
-              maxHeight: "min(var(--screenscale), calc(100% - var(--screeninset)))",
-              maxWidth: "var(--screenscale)",
+              /* honour frame.scale here too — the image branch above already
+                 does, and a drawn frame is just as likely to want more room */
+              maxHeight: `min(${frame.scale ?? "var(--screenscale)"}, calc(100% - var(--screeninset)))`,
+              maxWidth: frame.scale ?? "var(--screenscale)",
             }}
           >
             {frame.node}
