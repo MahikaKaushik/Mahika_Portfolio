@@ -233,7 +233,7 @@ const SLIDES: Slide[] = [
     who: ME,
     say: (
       <>
-        Six phases, sequenced so <b>live users never feel it</b>.
+        So we proposed six phases — sequenced so <b>live users would never feel it</b>.
       </>
     ),
   },
@@ -309,7 +309,7 @@ const SLIDES: Slide[] = [
     who: ME,
     say: (
       <>
-        The same screen, rebuilt on Magnetic. <b>The model works.</b>
+        We redesigned one screen on Magnetic, just to show <b>it holds up in context</b>.
       </>
     ),
   },
@@ -320,11 +320,11 @@ const SLIDES: Slide[] = [
     title: "Magnetic by default. Migrate when touched.",
     body: (
       <>
-        Two rules instead of one migration. Every new scope follows Magnetic from day one, so
-        <b> the fragmentation stops growing immediately</b> — no new debt. Legacy apps never get
-        a big-bang redesign; whenever a scope reopens one, we remodel that part.{" "}
-        <b>Debt gets paid exactly where work is already happening</b>, which is the only place
-        anyone will fund it.
+        What we proposed was two rules instead of one migration. Every new scope follows
+        Magnetic from day one, so <b>the fragmentation stops growing immediately</b> — no new
+        debt. Legacy apps never get a big-bang redesign; whenever a scope reopens one, that part
+        gets remodelled. <b>Debt gets paid exactly where work is already happening</b>, which is
+        the only place anyone was ever going to fund it.
       </>
     ),
     behind: F_HARMONISED,
@@ -338,7 +338,11 @@ const SLIDES: Slide[] = [
     delta: 8,
     avatar: M.done,
     who: ME,
-    say: <>Three pillars, so it can't drift back.</>,
+    say: (
+      <>
+        And three pillars to govern it, so it <b>couldn't drift back</b>.
+      </>
+    ),
   },
 
   /* ══ CLOSE ══ */
@@ -463,12 +467,12 @@ function EndSlide() {
       <div className="mt-10 grid gap-5 sm:grid-cols-2">
         <div className="rounded-xl border border-white/20 bg-white/[0.06] px-6 py-6 text-left">
           <p className="mb-3 font-body text-[12px] font-bold uppercase tracking-[0.14em] text-amber-300 sm:text-[13px]">
-            Shipped
+            What we produced
           </p>
           <p className="font-body text-[15.5px] leading-relaxed text-white/85 sm:text-[17px]">
-            A 20-app audit and scoring baseline, a Current → Harmonised → Northstar map, a
-            six-phase migration path, and <b className="text-white">Magnetic by default</b> for
-            every new scope.
+            A 20-app audit and scoring baseline, a Current → Harmonised → Northstar map, and a
+            proposal: a six-phase migration path plus{" "}
+            <b className="text-white">Magnetic by default</b> for every new scope.
           </p>
         </div>
         <div className="rounded-xl border border-white/20 bg-white/[0.06] px-6 py-6 text-left">
