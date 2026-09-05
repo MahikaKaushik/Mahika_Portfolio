@@ -846,6 +846,16 @@ function SummarySlide() {
   const col = (v: number) => (v >= 66 ? "#4ade80" : v >= 40 ? "#fbbf24" : "#f87171");
 
   /* a label above a trough lands inside the V — drop those below instead */
+  /* A strict alternation cannot solve the V at the cost wall: the drop and
+     the recovery are adjacent and steep, so both labels land in the notch
+     between them whichever side they take. These two are placed by hand —
+     the wall drops below its own point, and the pivot moves out to the
+     right of its own point instead of sitting over the line. */
+  const PLACED: Record<string, { dx?: number; dy?: number; anchor?: "start" | "middle" | "end" }> = {
+    "nobody would fund it": { dy: 52 },
+    "the standard existed": { dx: 24, dy: 7, anchor: "start" },
+  };
+
   /* Thirteen labels averaging far wider than the gap between two points
      cannot all sit on one side of the line, whatever the width. Alternate
      strictly above and below by index, so no two neighbours ever share a
@@ -911,9 +921,9 @@ function SummarySlide() {
             b.label ? (
               <motion.text
                 key={`t${i}`}
-                x={xy[i][0]}
-                y={labelY(i)}
-                textAnchor="middle"
+                x={xy[i][0] + (PLACED[b.label]?.dx ?? 0)}
+                y={PLACED[b.label]?.dy !== undefined ? xy[i][1] + PLACED[b.label].dy! : labelY(i)}
+                textAnchor={PLACED[b.label]?.anchor ?? "middle"}
                 fill="rgba(255,255,255,.8)"
                 style={{ fontSize: 20, fontWeight: 600 }}
                 initial={{ opacity: 0 }}
