@@ -47,10 +47,15 @@ const M = {
   done: `${AV}/eu-mk-done.svg`,
 };
 
-/* Backdrop for the title slide. Swap this constant when the art lands —
-   nothing else needs to change. Until then the title falls back to the
-   player's default plate. */
-const TITLE_ART: string | null = null;
+/* A designer's desk — wireframes, swatches, sticky notes. The other two
+   studies are set where the work is used; this one is set where the work
+   is made, which is the right room for a study about craft.
+
+   It carries much lower than the tower does in CR, because this plate is
+   bright white paper and the screens on top of it are bright white UI.
+   At any higher value the screenshots stop separating from their own
+   background. */
+const TITLE_ART = `${IMG}/desk.webp`;
 
 /* ─────────────── frames ─────────────── */
 
@@ -401,7 +406,7 @@ function TitleSlide() {
             src={TITLE_ART}
             alt=""
             className="absolute inset-0 h-full w-full object-cover"
-            style={{ opacity: 0.66 }}
+            style={{ opacity: 0.58 }}
           />
         )}
         <span
@@ -626,7 +631,9 @@ export default function SystemUnificationCaseStudy() {
     <CasePlayer
       slides={SLIDES}
       fallbackAvatar={M.neutral}
-      defaultBackdrop="/case-study/office-bg.webp"
+      defaultBackdrop={`${IMG}/desk.webp`}
+      backdropOpacity={0.17}
+      backdropScrim="linear-gradient(180deg, rgba(8,8,7,.84) 0%, rgba(8,8,7,.70) 45%, rgba(8,8,7,.92) 100%), radial-gradient(70% 50% at 50% 0%, rgba(150,96,40,.16), transparent 70%)"
       renderTitle={() => <TitleSlide />}
       renderSummary={() => <SummarySlide />}
       renderEnd={() => <EndSlide />}
