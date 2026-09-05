@@ -292,7 +292,7 @@ function TwoVerticalsMock() {
 /* ─────────────── frames ─────────────── */
 
 const F_GLOBE: Frame      = { node: <GlobeMock />, wide: true };
-const F_TWO: Frame        = { node: <TwoVerticalsMock />, wide: true, scale: "84%" };
+const F_TWO: Frame        = { node: <TwoVerticalsMock />, wide: true, scale: "92%" };
 const F_CHALLENGES: Frame = { src: `${IMG}/challenges.webp`, alt: "Eight kinds of inconsistency, each with its business cost" };
 const F_AUDIT: Frame      = { src: `${IMG}/audit-assess.webp`, alt: "Every kind of component, catalogued across all twenty applications" };
 const F_BUTTONS: Frame    = { src: `${IMG}/button-variations.webp`, alt: "Thirty different button styles found across the applications" };
