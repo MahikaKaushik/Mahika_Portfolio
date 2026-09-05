@@ -401,19 +401,11 @@ function TitleSlide() {
   return (
     <div className="relative h-full">
       <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
-        {/* a blurred, blown-out copy fills the frame so the fitted plate
-            below has no hard letterbox edge */}
+        {/* edge to edge, no gaps — cropped rather than fitted */}
         <img
           src={TITLE_ART}
           alt=""
-          className="absolute inset-0 h-full w-full scale-110 object-cover"
-          style={{ opacity: 0.16, filter: "blur(34px) saturate(.75)" }}
-        />
-        {/* the whole desk, fitted rather than cropped */}
-        <img
-          src={TITLE_ART}
-          alt=""
-          className="absolute inset-0 h-full w-full object-contain"
+          className="absolute inset-0 h-full w-full object-cover"
           style={{ opacity: 0.38 }}
         />
         <span
