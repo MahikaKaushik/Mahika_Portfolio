@@ -406,7 +406,7 @@ function TitleSlide() {
           src={TITLE_ART}
           alt=""
           className="absolute inset-0 h-full w-full object-cover"
-          style={{ opacity: 0.38 }}
+          style={{ opacity: 0.50 }}
         />
         <span
           className="absolute inset-0"
