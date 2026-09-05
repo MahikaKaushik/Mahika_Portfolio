@@ -386,7 +386,11 @@ function TwoVerticalsMock({ annotated = false }: { annotated?: boolean }) {
 /* The comparison carries no labels of its own, and without them a reader
    has to infer which half is which — the arrow implies a direction but
    does not say what the two ends are. Halves are even, with the arrow on
-   the centre line, so a two-column header lines up over them. */
+   the centre line, so a two-column header lines up over them.
+
+   The image itself is left exactly as supplied: no border, no shadow, no
+   colour coding on the labels. Tinting the shipped side red would be the
+   study passing judgement before the reader has looked. */
 function DesignVsShippedMock() {
   return (
     <div className="w-full">
@@ -394,14 +398,14 @@ function DesignVsShippedMock() {
         <span className="text-center font-body text-[13px] font-bold uppercase tracking-[0.16em] text-amber-300 sm:text-[15px]">
           As designed
         </span>
-        <span className="text-center font-body text-[13px] font-bold uppercase tracking-[0.16em] text-rose-400 sm:text-[15px]">
+        <span className="text-center font-body text-[13px] font-bold uppercase tracking-[0.16em] text-amber-300 sm:text-[15px]">
           As developed
         </span>
       </div>
       <img
         src={`${IMG}/design-vs-shipped.webp`}
         alt="The comparison modal as designed, beside the version that shipped"
-        className="block w-full rounded-md border border-white/15 shadow-[0_26px_70px_-18px_rgba(0,0,0,.95)]"
+        className="block w-full"
       />
     </div>
   );
