@@ -401,19 +401,26 @@ function TitleSlide() {
   return (
     <div className="relative h-full">
       <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
-        {TITLE_ART && (
-          <img
-            src={TITLE_ART}
-            alt=""
-            className="absolute inset-0 h-full w-full object-cover"
-            style={{ opacity: 0.58 }}
-          />
-        )}
+        {/* a blurred, blown-out copy fills the frame so the fitted plate
+            below has no hard letterbox edge */}
+        <img
+          src={TITLE_ART}
+          alt=""
+          className="absolute inset-0 h-full w-full scale-110 object-cover"
+          style={{ opacity: 0.16, filter: "blur(34px) saturate(.75)" }}
+        />
+        {/* the whole desk, fitted rather than cropped */}
+        <img
+          src={TITLE_ART}
+          alt=""
+          className="absolute inset-0 h-full w-full object-contain"
+          style={{ opacity: 0.38 }}
+        />
         <span
           className="absolute inset-0"
           style={{
             background:
-              "radial-gradient(58% 56% at 50% 47%, rgba(8,8,7,.92) 0%, rgba(8,8,7,.78) 42%, rgba(8,8,7,.40) 76%, rgba(8,8,7,.22) 100%)",
+              "radial-gradient(62% 60% at 50% 47%, rgba(8,8,7,.96) 0%, rgba(8,8,7,.88) 40%, rgba(8,8,7,.66) 74%, rgba(8,8,7,.52) 100%)",
           }}
         />
       </div>
@@ -632,8 +639,8 @@ export default function SystemUnificationCaseStudy() {
       slides={SLIDES}
       fallbackAvatar={M.neutral}
       defaultBackdrop={`${IMG}/desk.webp`}
-      backdropOpacity={0.17}
-      backdropScrim="linear-gradient(180deg, rgba(8,8,7,.84) 0%, rgba(8,8,7,.70) 45%, rgba(8,8,7,.92) 100%), radial-gradient(70% 50% at 50% 0%, rgba(150,96,40,.16), transparent 70%)"
+      backdropOpacity={0.12}
+      backdropScrim="linear-gradient(180deg, rgba(8,8,7,.90) 0%, rgba(8,8,7,.80) 45%, rgba(8,8,7,.95) 100%), radial-gradient(70% 50% at 50% 0%, rgba(150,96,40,.12), transparent 70%)"
       renderTitle={() => <TitleSlide />}
       renderSummary={() => <SummarySlide />}
       renderEnd={() => <EndSlide />}
