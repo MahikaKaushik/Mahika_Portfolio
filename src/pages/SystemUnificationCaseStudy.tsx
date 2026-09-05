@@ -869,10 +869,6 @@ function SummarySlide() {
 
   return (
     <div className="mx-auto flex h-full w-full flex-col items-center justify-center px-8 pb-16 text-center">
-      <p className="mb-6 font-body text-[13px] font-bold uppercase tracking-[0.18em] text-white/70 sm:text-[15px]">
-        One proposal, end to end
-      </p>
-
       <div className="relative w-full">
         <svg viewBox={`-190 -100 ${W + 330} ${H + 232}`} className="w-full">
           <defs>
