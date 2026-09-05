@@ -120,6 +120,7 @@ const SLIDES: Slide[] = [
     kind: "scene",
     avatar: M.flat,
     who: ME,
+    beat: "no mandate",
     psych: 40,
     say: (
       <>
@@ -254,6 +255,7 @@ const SLIDES: Slide[] = [
     kind: "scene",
     avatar: M.happy,
     who: ME,
+    beat: "rebuild it all",
     psych: 88,
     say: (
       <>
@@ -289,6 +291,7 @@ const SLIDES: Slide[] = [
     kind: "scene",
     avatar: M.doubt,
     who: ME,
+    beat: "nobody would fund it",
     psych: 56,
     say: (
       <>
@@ -312,7 +315,7 @@ const SLIDES: Slide[] = [
   {
     kind: "ui",
     frame: F_HARMONISED,
-    beat: "the model works",
+    beat: "proved on one screen",
     psych: 84,
     delta: 10,
     avatar: M.happy,
@@ -448,15 +451,103 @@ function TitleSlide() {
 
 function SummarySlide() {
   const beats = useMemo(() => journeyBeats(SLIDES), []);
+  const pts = beats.map((b) => b.v);
+
+  const W = 900;
+  const H = 320;
+  const step = W / Math.max(pts.length - 1, 1);
+  const xy = pts.map((p, i) => [i * step, H - (p / 100) * H] as const);
+  const col = (v: number) => (v >= 66 ? "#4ade80" : v >= 40 ? "#fbbf24" : "#f87171");
+
+  /* a label above a trough lands inside the V — drop those below instead */
+  const labelY = (i: number) => {
+    const before = pts[i - 1] ?? pts[i];
+    const after = pts[i + 1] ?? pts[i];
+    const trough = pts[i] <= before && pts[i] <= after;
+    return xy[i][1] + (trough ? 36 : -22);
+  };
+
   return (
-    <div className="relative mx-auto flex h-full max-w-5xl flex-col justify-center px-6 py-16">
-      <p className="mb-2 font-body text-[12px] font-bold uppercase tracking-[0.16em] text-amber-300">
-        The whole arc
+    <div className="mx-auto flex h-full max-w-6xl flex-col items-center justify-center px-6 pb-20">
+      <p className="mb-6 font-body text-[13px] font-bold uppercase tracking-[0.18em] text-white/70 sm:text-[15px]">
+        One proposal, end to end
       </p>
-      <h2 className="mb-10 max-w-[22ch] font-serif text-[30px] font-bold leading-[1.1] tracking-tight text-white sm:text-[42px]">
-        Confidence is not a straight line.
-      </h2>
-      <Sticky beats={beats} />
+
+      <div className="relative w-full max-w-5xl">
+        <svg viewBox={`-92 -34 ${W + 190} ${H + 116}`} className="w-full">
+          <defs>
+            <marker id="euah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M0 0 L10 5 L0 10 z" fill="rgba(255,255,255,.55)" />
+            </marker>
+          </defs>
+
+          <line x1="0" y1={H} x2={W + 34} y2={H} stroke="rgba(255,255,255,.5)" strokeWidth="3" markerEnd="url(#euah)" />
+          <line x1="0" y1={H} x2="0" y2="-18" stroke="rgba(255,255,255,.5)" strokeWidth="3" markerEnd="url(#euah)" />
+          <line
+            x1="0" y1={H / 2} x2={W + 20} y2={H / 2}
+            stroke="rgba(255,255,255,.35)" strokeWidth="2" strokeDasharray="9 9"
+          />
+
+          {xy.slice(0, -1).map(([x1, y1], i) => {
+            const [x2, y2] = xy[i + 1];
+            return (
+              <motion.line
+                key={`s${i}`}
+                x1={x1} y1={y1} x2={x2} y2={y2}
+                stroke={col(pts[i + 1])}
+                strokeWidth="5"
+                strokeLinecap="round"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.2 + i * 0.07, duration: 0.25 }}
+              />
+            );
+          })}
+
+          {xy.map(([x, y], i) => (
+            <motion.circle
+              key={`c${i}`}
+              cx={x} cy={y} r="8"
+              fill={col(pts[i])}
+              stroke="#0d0c0b"
+              strokeWidth="3"
+              initial={{ opacity: 0, scale: 0 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.25 + i * 0.07, duration: 0.2 }}
+            />
+          ))}
+
+          {beats.map((b, i) =>
+            b.label ? (
+              <motion.text
+                key={`t${i}`}
+                x={xy[i][0]}
+                y={labelY(i)}
+                textAnchor="middle"
+                fill="rgba(255,255,255,.8)"
+                style={{ fontSize: 17, fontWeight: 600 }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.5 + i * 0.07, duration: 0.3 }}
+              >
+                {b.label}
+              </motion.text>
+            ) : null
+          )}
+
+          <text x="-14" y="10" textAnchor="end" fill="rgba(255,255,255,.5)" style={{ fontSize: 15 }}>
+            we have a case
+          </text>
+          <text x="-14" y={H} textAnchor="end" fill="rgba(255,255,255,.5)" style={{ fontSize: 15 }}>
+            no way through
+          </text>
+        </svg>
+      </div>
+
+      <p className="mt-4 max-w-2xl text-center font-body text-[15px] leading-relaxed text-white/70 sm:text-[17px]">
+        The audit didn't fix a single screen.{" "}
+        <b className="text-white">It made the problem fundable.</b>
+      </p>
     </div>
   );
 }
@@ -507,7 +598,7 @@ function EndSlide() {
 
       <Link
         to="/#work"
-        className="group mt-10 inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 font-body text-[15px] font-semibold text-slate-900 shadow-[0_10px_30px_-8px_rgba(0,0,0,.7)] transition hover:bg-white/90"
+        className="group mt-10 inline-flex self-start items-center gap-2 rounded-full bg-white px-6 py-3 font-body text-[15px] font-semibold text-slate-900 shadow-[0_10px_30px_-8px_rgba(0,0,0,.7)] transition hover:bg-white/90"
       >
         <ArrowLeft size={16} strokeWidth={2.4} className="transition-transform group-hover:-translate-x-0.5" />
         Back to all work

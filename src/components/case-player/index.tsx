@@ -45,6 +45,8 @@ export type Slide =
       who?: string;
       say: ReactNode;
       psych?: number;
+      /** Label this point on the summary graph, as `ui` slides can. */
+      beat?: string;
       /** Full-bleed illustration in place of the default plate. */
       backdrop?: string;
       /** Where the thought sits. Defaults to bottom-left beside the avatar. */
