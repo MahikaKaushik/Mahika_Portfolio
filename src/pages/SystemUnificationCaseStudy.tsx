@@ -312,7 +312,7 @@ function Marks({ marks }: { marks: Mark[] }) {
   );
 }
 
-function TwoVerticalsMock() {
+function TwoVerticalsMock({ annotated = false }: { annotated?: boolean }) {
   const shots = [
     { src: `${IMG}/v-quotes.webp`, name: "Quotes", marks: QUOTES_MARKS },
     { src: `${IMG}/v-renewals.webp`, name: "Renewals", marks: RENEWALS_MARKS },
@@ -337,12 +337,13 @@ function TwoVerticalsMock() {
                 alt={`The items screen in ${s.name}`}
                 className="block w-full rounded-md border border-white/20 shadow-[0_26px_70px_-18px_rgba(0,0,0,.95)]"
               />
-              <Marks marks={s.marks} />
+              {annotated && <Marks marks={s.marks} />}
             </div>
           </figure>
         ))}
       </div>
 
+      {annotated && (
       <ul className="mt-3.5 grid grid-cols-2 gap-x-6 gap-y-1.5 sm:mt-4 sm:grid-cols-4">
         {legend.map(([n, label, detail]) => (
           <li key={n} className="flex items-start gap-2">
@@ -360,6 +361,7 @@ function TwoVerticalsMock() {
           </li>
         ))}
       </ul>
+      )}
     </div>
   );
 }
@@ -368,6 +370,7 @@ function TwoVerticalsMock() {
 
 const F_GLOBE: Frame      = { node: <GlobeMock />, wide: true };
 const F_TWO: Frame        = { node: <TwoVerticalsMock />, wide: true, scale: "92%" };
+const F_TWO_MARKED: Frame = { node: <TwoVerticalsMock annotated />, wide: true, scale: "92%" };
 const F_CHALLENGES: Frame = { src: `${IMG}/challenges.webp`, alt: "Eight kinds of inconsistency, each with its business cost" };
 const F_AUDIT: Frame      = { src: `${IMG}/audit-assess.webp`, alt: "Every kind of component, catalogued across all twenty applications" };
 const F_BUTTONS: Frame    = { src: `${IMG}/button-variations.webp`, alt: "Thirty different button styles found across the applications" };
@@ -420,10 +423,13 @@ const SLIDES: Slide[] = [
     ),
   },
   {
-    kind: "scene",
+    kind: "ui",
+    frame: F_TWO_MARKED,
+    beat: "four things to re-learn",
+    psych: 52,
+    delta: -8,
     avatar: M.worried,
     who: ME,
-    psych: 52,
     say: (
       <>
         So people had to <b>re-learn the interface</b> every time they moved between products.
