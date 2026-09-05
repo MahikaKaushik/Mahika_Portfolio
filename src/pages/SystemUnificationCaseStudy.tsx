@@ -345,11 +345,11 @@ function TwoVerticalsMock({ annotated = false }: { annotated?: boolean }) {
             <li key={n} className="flex items-start gap-2">
               <span
                 className="mt-[2px] flex shrink-0 items-center justify-center rounded-full font-body font-bold text-white"
-                style={{ width: "17px", height: "17px", fontSize: "10.5px", background: "#f4353f" }}
+                style={{ width: "18px", height: "18px", fontSize: "11.5px", background: "#f4353f" }}
               >
                 {n}
               </span>
-              <span className="font-body text-[11.5px] leading-snug text-white/60 sm:text-[13px]">
+              <span className="font-body text-[12.5px] leading-snug text-white/60 sm:text-[14px]">
                 <b className="text-white/90">{label}</b>
                 <br />
                 {detail}
