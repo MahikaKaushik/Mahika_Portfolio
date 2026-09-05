@@ -538,15 +538,15 @@ const SLIDES: Slide[] = [
   {
     kind: "ui",
     frame: F_BUTTONS,
-    beat: "one finding, in full",
+    beat: "what the audit found",
     psych: 72,
     delta: 10,
     avatar: M.happy,
     who: ME,
     say: (
       <>
-        One finding, as an example. <b>Six different primary buttons</b> — each with its own
-        hover, disabled and secondary state. Thirty variations, for one control.
+        This is what the audit found. <b>Thirty variations of a single button</b> — and it wasn't
+        an outlier. Several other components had twenty or more.
       </>
     ),
   },
