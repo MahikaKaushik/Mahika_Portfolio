@@ -471,26 +471,15 @@ const SLIDES: Slide[] = [
     ),
   },
   {
-    kind: "scene",
-    avatar: M.flat,
-    who: ME,
-    beat: "no mandate",
-    psych: 38,
-    say: (
-      <>
-        And nobody had asked us to fix it. No redesign project. No budget. <b>No mandate.</b>
-      </>
-    ),
-  },
-  {
     kind: "statement",
     avatar: M.driven,
     who: ME,
-    psych: 34,
+    psych: 52,
     say: (
       <>
-        So this was never a design brief. It was <b>a case we had to build</b> — and carry to the
-        executives who decide what gets funded.
+        And nobody had asked us to fix it. No project, no budget, <b>no mandate</b>. So this was
+        never a design brief — it was <b>a case we had to build</b>, and carry to the people who
+        decide what gets funded.
       </>
     ),
   },
@@ -498,8 +487,8 @@ const SLIDES: Slide[] = [
     kind: "ui",
     frame: F_AUDIT,
     beat: "we counted",
-    psych: 48,
-    delta: 14,
+    psych: 62,
+    delta: 10,
     avatar: M.driven,
     who: ME,
     say: (
@@ -524,14 +513,14 @@ const SLIDES: Slide[] = [
       </>
     ),
     behind: F_AUDIT,
-    psych: 48,
+    psych: 62,
   },
   {
     kind: "ui",
     frame: F_BUTTONS,
     beat: "the button wall",
-    psych: 62,
-    delta: 14,
+    psych: 72,
+    delta: 10,
     avatar: M.happy,
     who: ME,
     say: (
@@ -547,8 +536,8 @@ const SLIDES: Slide[] = [
     kind: "ui",
     frame: F_HUB,
     beat: "every app scored",
-    psych: 76,
-    delta: 14,
+    psych: 80,
+    delta: 8,
     avatar: M.delighted,
     who: ME,
     say: (
@@ -562,7 +551,7 @@ const SLIDES: Slide[] = [
     kind: "statement",
     avatar: M.neutral,
     who: ME,
-    psych: 76,
+    psych: 80,
     say: (
       <>
         And there was no such thing as <b>partly fixing</b> one. A team either rebuilt an
@@ -574,7 +563,7 @@ const SLIDES: Slide[] = [
     kind: "ui",
     frame: F_DEVGAP,
     beat: "design ≠ shipped",
-    psych: 68,
+    psych: 72,
     delta: -8,
     avatar: M.doubt,
     who: ME,
@@ -589,8 +578,8 @@ const SLIDES: Slide[] = [
     kind: "ui",
     frame: F_ROADMAP,
     beat: "a sequenced path",
-    psych: 80,
-    delta: 12,
+    psych: 82,
+    delta: 10,
     avatar: M.driven,
     who: ME,
     say: (
