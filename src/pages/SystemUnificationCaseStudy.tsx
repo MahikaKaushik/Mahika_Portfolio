@@ -56,14 +56,14 @@ const TITLE_ART = `${IMG}/whiteboard.webp`;
 
 /* A point-cloud earth, drawn on canvas.
 
-   SVG was the wrong tool once this needed real continents: 1761 land
-   points plus mesh lines is far too many nodes to re-create every frame.
-   Canvas draws the whole thing in one pass.
+   SVG was the wrong tool once this needed real continents: 3445 land
+   points is far too many nodes to recreate every frame. Canvas draws the
+   whole thing in one pass.
 
    Continents are real — Natural Earth 110m land, sampled to points in
-   eu-land.ts — projected orthographically and culled by depth, so the
-   sphere genuinely turns rather than looking like it does. Product names
-   ride on it at fixed coordinates and fade round the limb. */
+   eu-land.ts — projected orthographically and lit by a single directional
+   source, so there is a genuine terminator and the sphere turns through
+   it. Product names ride at fixed coordinates and fade round the limb. */
 
 const GLOBE_APPS = [
   { label: "Quoting", lat: 40, lon: -96 },
@@ -74,6 +74,11 @@ const GLOBE_APPS = [
   { label: "Subscriptions", lat: 6, lon: 20 },
   { label: "Catalog", lat: -32, lon: 142 },
   { label: "Deals", lat: 60, lon: -110 },
+];
+
+/* which products are wired to which — drawn as great circles */
+const GLOBE_LINKS: [number, number][] = [
+  [0, 1], [1, 5], [5, 2], [2, 4], [0, 3], [4, 6],
 ];
 
 function GlobeMock() {
@@ -92,23 +97,30 @@ function GlobeMock() {
     cv.height = H * dpr;
 
     const cx = W / 2;
-    const cy = H / 2 - 6;
-    const R = 232;
-    const TILT = (-16 * Math.PI) / 180; // lean the north pole toward us
-    const still = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
+    const cy = H / 2 - 4;
+    const R = 236;
+    const TILT = (-15 * Math.PI) / 180;
 
-    /* lon/lat -> screen, with the pole tilt applied after the spin */
+    /* one directional light, up and to the left, angled toward the viewer */
+    const LX = -0.52, LY = 0.46, LZ = 0.72;
+
     const project = (lonDeg: number, latDeg: number, rot: number) => {
       const lon = ((lonDeg + rot) * Math.PI) / 180;
       const lat = (latDeg * Math.PI) / 180;
-      const x = Math.cos(lat) * Math.sin(lon);
-      const yy = Math.sin(lat);
-      const zz = Math.cos(lat) * Math.cos(lon);
-      const y = yy * Math.cos(TILT) - zz * Math.sin(TILT);
-      const z = yy * Math.sin(TILT) + zz * Math.cos(TILT);
-      return { x: cx + R * x, y: cy - R * y, z };
+      const cl = Math.cos(lat);
+      const ux = cl * Math.sin(lon);
+      const uy0 = Math.sin(lat);
+      const uz0 = cl * Math.cos(lon);
+      const uy = uy0 * Math.cos(TILT) - uz0 * Math.sin(TILT);
+      const uz = uy0 * Math.sin(TILT) + uz0 * Math.cos(TILT);
+      const lit = Math.max(0, ux * LX + uy * LY + uz * LZ);
+      return { x: cx + R * ux, y: cy - R * uy, z: uz, lit };
     };
 
+    /* deterministic jitter so the sample grid does not read as halftone */
+    const jitter = (i: number) => ((Math.sin(i * 12.9898) * 43758.5453) % 1 + 1) % 1;
+
+    const still = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
     let raf = 0;
     let t0: number | null = null;
 
@@ -116,138 +128,167 @@ function GlobeMock() {
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.clearRect(0, 0, W, H);
 
-      /* atmosphere */
-      const halo = ctx.createRadialGradient(cx, cy, R * 0.92, cx, cy, R * 1.22);
-      halo.addColorStop(0, "rgba(70,140,225,0)");
-      halo.addColorStop(0.45, "rgba(70,140,225,.20)");
-      halo.addColorStop(1, "rgba(70,140,225,0)");
-      ctx.fillStyle = halo;
-      ctx.beginPath();
-      ctx.arc(cx, cy, R * 1.22, 0, Math.PI * 2);
-      ctx.fill();
-
-      /* ocean body, lit from upper left */
-      const body = ctx.createRadialGradient(cx - R * 0.34, cy - R * 0.4, R * 0.06, cx, cy, R);
-      body.addColorStop(0, "#12325c");
-      body.addColorStop(0.55, "#0b1e3c");
-      body.addColorStop(1, "#04070f");
+      /* ── ocean, very dark, faintly lit up-left ── */
+      const body = ctx.createRadialGradient(
+        cx - R * 0.42, cy - R * 0.46, R * 0.05,
+        cx, cy, R,
+      );
+      body.addColorStop(0, "#12233d");
+      body.addColorStop(0.45, "#0a1526");
+      body.addColorStop(1, "#03070e");
       ctx.fillStyle = body;
       ctx.beginPath();
       ctx.arc(cx, cy, R, 0, Math.PI * 2);
       ctx.fill();
 
-      /* graticule, faint */
-      ctx.strokeStyle = "rgba(120,175,240,.13)";
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(cx, cy, R, 0, Math.PI * 2);
+      ctx.clip();
+
+      /* ── graticule, barely there ── */
+      ctx.strokeStyle = "rgba(120,170,225,.055)";
       ctx.lineWidth = 1;
       for (let lat = -60; lat <= 60; lat += 30) {
         ctx.beginPath();
-        let started = false;
+        let on = false;
         for (let lon = -180; lon <= 180; lon += 4) {
           const p = project(lon, lat, rot);
-          if (p.z <= 0) { started = false; continue; }
-          if (!started) { ctx.moveTo(p.x, p.y); started = true; } else ctx.lineTo(p.x, p.y);
+          if (p.z <= 0) { on = false; continue; }
+          if (!on) { ctx.moveTo(p.x, p.y); on = true; } else ctx.lineTo(p.x, p.y);
         }
         ctx.stroke();
       }
       for (let lon = -180; lon < 180; lon += 30) {
         ctx.beginPath();
-        let started = false;
-        for (let lat = -88; lat <= 88; lat += 4) {
+        let on = false;
+        for (let lat = -86; lat <= 86; lat += 4) {
           const p = project(lon, lat, rot);
-          if (p.z <= 0) { started = false; continue; }
-          if (!started) { ctx.moveTo(p.x, p.y); started = true; } else ctx.lineTo(p.x, p.y);
+          if (p.z <= 0) { on = false; continue; }
+          if (!on) { ctx.moveTo(p.x, p.y); on = true; } else ctx.lineTo(p.x, p.y);
         }
         ctx.stroke();
       }
 
-      /* land */
-      const pts: { x: number; y: number; z: number }[] = [];
+      /* ── land ── */
       for (let i = 0; i < LAND.length; i += 2) {
         const p = project(LAND[i], LAND[i + 1], rot);
-        if (p.z > 0.02) pts.push(p);
-      }
-      for (const p of pts) {
-        const a = Math.min(1, p.z * 1.5);
-        ctx.fillStyle = `rgba(150,214,255,${0.30 + 0.55 * a})`;
+        if (p.z <= 0.015) continue;
+        const j = jitter(i);
+        const shade = 0.12 + 0.88 * p.lit;              // terminator
+        const edge = Math.min(1, p.z * 3.2);            // soften at the limb
+        const a = (0.10 + 0.72 * shade) * edge;
+        if (a < 0.03) continue;
+        ctx.fillStyle = `rgba(${132 + Math.round(70 * shade)},${186 + Math.round(48 * shade)},255,${a.toFixed(3)})`;
         ctx.beginPath();
-        ctx.arc(p.x, p.y, 0.9 + 1.15 * p.z, 0, Math.PI * 2);
+        ctx.arc(p.x, p.y, 0.55 + 0.85 * p.z + 0.35 * j, 0, Math.PI * 2);
         ctx.fill();
       }
 
-      /* a light mesh between nearby land points, which is what makes it
-         read as a network rather than a dot screen */
-      ctx.strokeStyle = "rgba(110,190,255,.13)";
-      ctx.lineWidth = 0.6;
-      ctx.beginPath();
-      for (let i = 0; i < pts.length; i += 3) {
-        const a = pts[i];
-        for (let j = i + 3; j < Math.min(i + 40, pts.length); j += 3) {
-          const b = pts[j];
-          const dx = a.x - b.x;
-          const dy = a.y - b.y;
-          if (dx * dx + dy * dy < 620) {
-            ctx.moveTo(a.x, a.y);
-            ctx.lineTo(b.x, b.y);
-          }
+      /* ── links between products, as great circles ── */
+      ctx.lineWidth = 1;
+      for (const [a, b] of GLOBE_LINKS) {
+        const A = GLOBE_APPS[a];
+        const B = GLOBE_APPS[b];
+        ctx.beginPath();
+        let on = false;
+        for (let t = 0; t <= 1.0001; t += 0.02) {
+          const lat = A.lat + (B.lat - A.lat) * t;
+          const lon = A.lon + (B.lon - A.lon) * t;
+          const p = project(lon, lat, rot);
+          if (p.z <= 0.04) { on = false; continue; }
+          if (!on) { ctx.moveTo(p.x, p.y); on = true; } else ctx.lineTo(p.x, p.y);
         }
+        ctx.strokeStyle = "rgba(246,182,74,.16)";
+        ctx.stroke();
       }
-      ctx.stroke();
 
-      /* rim */
-      ctx.strokeStyle = "rgba(125,185,255,.45)";
-      ctx.lineWidth = 1.3;
+      ctx.restore();
+
+      /* ── terminator wash: darkens the side facing away from the light ── */
+      const term = ctx.createRadialGradient(
+        cx + R * 0.55, cy + R * 0.5, R * 0.12,
+        cx + R * 0.4, cy + R * 0.36, R * 1.5,
+      );
+      term.addColorStop(0, "rgba(2,5,11,.72)");
+      term.addColorStop(0.55, "rgba(2,5,11,.30)");
+      term.addColorStop(1, "rgba(2,5,11,0)");
+      ctx.save();
       ctx.beginPath();
       ctx.arc(cx, cy, R, 0, Math.PI * 2);
-      ctx.stroke();
+      ctx.clip();
+      ctx.fillStyle = term;
+      ctx.fillRect(cx - R, cy - R, R * 2, R * 2);
+      ctx.restore();
 
-      /* the platform name, sitting on the body */
+      /* ── atmosphere: a thin band on the limb, brightest where lit ── */
+      const rim = ctx.createRadialGradient(cx, cy, R * 0.965, cx, cy, R * 1.055);
+      rim.addColorStop(0, "rgba(96,158,236,0)");
+      rim.addColorStop(0.45, "rgba(116,176,246,.30)");
+      rim.addColorStop(1, "rgba(96,158,236,0)");
+      ctx.fillStyle = rim;
+      ctx.beginPath();
+      ctx.arc(cx, cy, R * 1.06, 0, Math.PI * 2);
+      ctx.fill();
+
+      /* a brighter crescent on the lit edge */
+      ctx.save();
+      ctx.strokeStyle = "rgba(178,214,255,.5)";
+      ctx.lineWidth = 1.2;
+      ctx.beginPath();
+      ctx.arc(cx, cy, R - 0.5, Math.PI * 0.72, Math.PI * 1.72);
+      ctx.stroke();
+      ctx.restore();
+
+      /* ── the platform name, sitting on the body ── */
       ctx.textAlign = "center";
-      ctx.font = "700 30px system-ui, -apple-system, sans-serif";
-      ctx.fillStyle = "rgba(233,242,253,.94)";
-      ctx.shadowColor = "rgba(4,8,18,.9)";
-      ctx.shadowBlur = 14;
-      ctx.letterSpacing = "5px";
-      ctx.fillText("CISCO COMMERCE", cx, cy + 10);
+      ctx.font = "500 21px system-ui, -apple-system, sans-serif";
+      ctx.letterSpacing = "7px";
+      ctx.fillStyle = "rgba(214,230,250,.72)";
+      ctx.shadowColor = "rgba(2,6,14,.95)";
+      ctx.shadowBlur = 16;
+      ctx.fillText("CISCO COMMERCE", cx + 3, cy + 8);
       ctx.letterSpacing = "0px";
       ctx.shadowBlur = 0;
 
-      /* products */
+      /* ── products ── */
       const nodes = GLOBE_APPS.map((a) => ({ ...a, ...project(a.lon, a.lat, rot) }))
         .sort((a, b) => a.z - b.z);
 
       for (const n of nodes) {
         if (n.z <= 0) continue;
-        const fade = Math.min(1, n.z / 0.32);
+        const fade = Math.min(1, n.z / 0.34);
+        if (fade < 0.04) continue;
 
-        const g = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, 17);
-        g.addColorStop(0, `rgba(255,196,88,${0.5 * fade})`);
-        g.addColorStop(1, "rgba(255,196,88,0)");
+        const g = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, 15);
+        g.addColorStop(0, `rgba(255,194,92,${0.42 * fade})`);
+        g.addColorStop(1, "rgba(255,194,92,0)");
         ctx.fillStyle = g;
         ctx.beginPath();
-        ctx.arc(n.x, n.y, 17, 0, Math.PI * 2);
+        ctx.arc(n.x, n.y, 15, 0, Math.PI * 2);
         ctx.fill();
 
-        ctx.fillStyle = `rgba(252,192,80,${0.55 + 0.45 * fade})`;
+        ctx.fillStyle = `rgba(255,201,104,${0.65 + 0.35 * fade})`;
         ctx.beginPath();
-        ctx.arc(n.x, n.y, 4.4, 0, Math.PI * 2);
+        ctx.arc(n.x, n.y, 3, 0, Math.PI * 2);
         ctx.fill();
 
-        if (fade > 0.05) {
-          const right = n.x >= cx;
-          ctx.textAlign = right ? "left" : "right";
-          ctx.font = "600 20px system-ui, -apple-system, sans-serif";
-          ctx.shadowColor = "rgba(3,6,14,.95)";
-          ctx.shadowBlur = 9;
-          ctx.fillStyle = `rgba(240,246,253,${fade})`;
-          ctx.fillText(n.label, n.x + (right ? 14 : -14), n.y + 6);
-          ctx.shadowBlur = 0;
-        }
+        const right = n.x >= cx;
+        ctx.textAlign = right ? "left" : "right";
+        ctx.font = "500 16px system-ui, -apple-system, sans-serif";
+        ctx.letterSpacing = "0.6px";
+        ctx.shadowColor = "rgba(2,5,12,.95)";
+        ctx.shadowBlur = 10;
+        ctx.fillStyle = `rgba(226,236,250,${0.9 * fade})`;
+        ctx.fillText(n.label, n.x + (right ? 12 : -12), n.y + 5);
+        ctx.shadowBlur = 0;
+        ctx.letterSpacing = "0px";
       }
 
       ctx.textAlign = "center";
-      ctx.font = "400 17px system-ui, -apple-system, sans-serif";
-      ctx.fillStyle = "rgba(140,158,190,.9)";
-      ctx.fillText("…and twelve more. One platform, on the invoice.", cx, H - 16);
+      ctx.font = "400 16px system-ui, -apple-system, sans-serif";
+      ctx.fillStyle = "rgba(128,146,178,.85)";
+      ctx.fillText("…and twelve more. One platform, on the invoice.", cx, H - 14);
     };
 
     if (still) {
@@ -270,89 +311,33 @@ function GlobeMock() {
   );
 }
 
-/* Five verticals, one job — look at the line items on a deal. The whole
-   row lands first so the spread is visible, then two of them come forward
-   and the rest fall back to being wallpaper. It replays on every visit
-   because the player remounts the slide, which is what makes the point
-   land rather than being something you had to have caught the first time. */
+/* Two verticals, one job — look at the line items on a deal. Two rather
+   than five: at five across nothing was readable, and the claim only
+   needs two things to compare. */
 function TwoVerticalsMock() {
-  const ROW = [
-    `${IMG}/v-quotes.webp`,
-    `${IMG}/v-estimate.webp`,
-    `${IMG}/v-renewals.webp`,
-    `${IMG}/v-subscriptions.webp`,
-    `${IMG}/v-eamp.webp`,
+  const shots = [
+    { src: `${IMG}/v-quotes.webp`, name: "Quotes", note: "a six-stage stepper across the top" },
+    { src: `${IMG}/v-renewals.webp`, name: "Renewals", note: "five tabs, and no stepper at all" },
   ];
-  const HERO = [
-    { src: `${IMG}/v-quotes.webp`, name: "Quotes", note: "a six-stage stepper" },
-    { src: `${IMG}/v-renewals.webp`, name: "Renewals", note: "five tabs" },
-  ];
-
-  const [zoomed, setZoomed] = useState(false);
-  useEffect(() => {
-    if (window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches) {
-      setZoomed(true);
-      return;
-    }
-    const t = setTimeout(() => setZoomed(true), 3000);
-    return () => clearTimeout(t);
-  }, []);
-
   return (
-    <div className="relative w-full px-[3%] py-[2%]">
-      {/* every vertical, in a row */}
-      <motion.div
-        className="grid grid-cols-5 gap-2 sm:gap-3"
-        animate={{ opacity: zoomed ? 0.14 : 1, filter: zoomed ? "blur(2px)" : "blur(0px)" }}
-        transition={{ duration: 0.8, ease: "easeInOut" }}
-      >
-        {ROW.map((src) => (
+    <div className="grid w-full grid-cols-2 gap-4 sm:gap-6">
+      {shots.map((s) => (
+        <figure key={s.name} className="m-0">
+          <figcaption className="mb-2.5 text-center">
+            <span className="block font-body text-[14px] font-bold uppercase tracking-[0.16em] text-amber-300 sm:text-[17px]">
+              {s.name}
+            </span>
+            <span className="mt-1 block font-body text-[12px] leading-snug text-white/50 sm:text-[14px]">
+              {s.note}
+            </span>
+          </figcaption>
           <img
-            key={src}
-            src={src}
-            alt=""
-            aria-hidden
-            className="block w-full rounded border border-white/10"
+            src={s.src}
+            alt={`The items screen in ${s.name}`}
+            className="block w-full rounded-md border border-white/20 shadow-[0_26px_70px_-18px_rgba(0,0,0,.95)]"
           />
-        ))}
-      </motion.div>
-
-      {/* two of them, brought forward */}
-      <motion.div
-        className="absolute inset-0 flex items-center justify-center gap-[3%] px-[3%]"
-        initial={false}
-        animate={{ opacity: zoomed ? 1 : 0 }}
-        transition={{ duration: 0.75, ease: "easeOut" }}
-        style={{ pointerEvents: "none" }}
-      >
-        {HERO.map((h, i) => (
-          <motion.figure
-            key={h.name}
-            className="m-0 w-1/2"
-            initial={false}
-            animate={{
-              scale: zoomed ? 1 : 0.34,
-              y: zoomed ? 0 : "-30%",
-              x: zoomed ? 0 : i === 0 ? "-88%" : "8%",
-            }}
-            transition={{ duration: 0.85, ease: [0.22, 0.9, 0.28, 1] }}
-          >
-            <figcaption className="mb-2 text-center">
-              <span className="block font-body text-[14px] font-bold uppercase tracking-[0.16em] text-amber-300 sm:text-[17px]">
-                {h.name}
-              </span>
-              <span className="mt-0.5 block font-body text-[12px] text-white/50 sm:text-[14px]">
-                {h.note}
-              </span>
-            </figcaption>
-            <img
-              src={h.src}
-              alt={`The items screen in ${h.name}`}
-              className="block w-full rounded-md border border-white/25 shadow-[0_26px_70px_-18px_rgba(0,0,0,.95)]"
-            />
-          </motion.figure>
-        ))}
-      </motion.div>
+        </figure>
+      ))}
     </div>
   );
 }
@@ -360,7 +345,7 @@ function TwoVerticalsMock() {
 /* ─────────────── frames ─────────────── */
 
 const F_GLOBE: Frame      = { node: <GlobeMock />, wide: true };
-const F_TWO: Frame        = { node: <TwoVerticalsMock />, wide: true };
+const F_TWO: Frame        = { node: <TwoVerticalsMock />, wide: true, scale: "96%" };
 const F_CHALLENGES: Frame = { src: `${IMG}/challenges.webp`, alt: "Eight kinds of inconsistency, each with its business cost" };
 const F_AUDIT: Frame      = { src: `${IMG}/audit-assess.webp`, alt: "Every kind of component, catalogued across all twenty applications" };
 const F_BUTTONS: Frame    = { src: `${IMG}/button-variations.webp`, alt: "Thirty different button styles found across the applications" };
