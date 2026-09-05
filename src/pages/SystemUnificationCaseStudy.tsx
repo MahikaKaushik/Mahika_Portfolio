@@ -926,10 +926,17 @@ function SummarySlide() {
           )}
 
           <text x="-22" y="10" textAnchor="end" fill="rgba(255,255,255,.5)" style={{ fontSize: 18 }}>
-            we have a case
+            we can fix this
           </text>
           <text x="-22" y={H} textAnchor="end" fill="rgba(255,255,255,.5)" style={{ fontSize: 18 }}>
-            no way through
+            we can&apos;t
+          </text>
+
+          <text
+            x={W + 30} y={H + 34} textAnchor="end"
+            fill="rgba(255,255,255,.38)" style={{ fontSize: 16 }}
+          >
+            the argument, in order
           </text>
         </svg>
       </div>
