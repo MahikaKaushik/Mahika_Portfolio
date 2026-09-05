@@ -556,15 +556,16 @@ const SLIDES: Slide[] = [
   {
     kind: "ui",
     frame: F_HUB,
-    beat: "every app scored",
+    beat: "alignment, and what it costs",
     psych: 80,
     delta: 8,
     avatar: M.delighted,
     who: ME,
     say: (
       <>
-        So instead of opinions, we scored every one — shared patterns, usability, interaction
-        clarity. <b>Nothing scored above 7.5 out of ten.</b>
+        Then we assessed every application against where the platform needed to be — how far off
+        it was, and what closing the gap would take. We scored both.{" "}
+        <b>Everything here is paid for in dollars</b>, so a plan needs numbers, not opinions.
       </>
     ),
   },
