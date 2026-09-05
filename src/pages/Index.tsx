@@ -158,10 +158,11 @@ const projects = [
     href: "/work/control-tower",
     icon: <BarChart3 className="h-7 w-7" />,
     preview: <ControlTowerPreview />,
+    comingSoon: true,
   },
   {
     title: "Experience Unification",
-    description: "Twenty applications that looked like twenty different companies. We audited every component by hand, scored them, and built a design system \u2014 then killed it, because the one they would actually adopt already existed.",
+    description: "Twenty applications that looked like twenty different companies. We audited every component by hand, scored each one against where the platform needed to be, and proposed a migration the business could actually afford.",
     tags: ["20 Apps Audited", "21 Components", "1 System"],
     projectType: "Design Systems / UX Strategy",
     href: "/work/system-unification",
