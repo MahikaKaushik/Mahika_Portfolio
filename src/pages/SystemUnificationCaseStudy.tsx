@@ -340,7 +340,7 @@ function TwoVerticalsMock({ annotated = false }: { annotated?: boolean }) {
           names: by this slide the reader already knows which is which, and
           the key has to be read before the marks mean anything. */}
       {annotated && (
-        <ul className="mx-auto mb-2.5 grid w-max max-w-full grid-flow-col grid-rows-6 gap-x-12 gap-y-1 sm:mb-3 sm:grid-rows-3">
+        <ul className="mx-auto mb-2.5 grid w-max max-w-full grid-flow-col grid-rows-6 gap-x-10 gap-y-1 sm:mb-3 sm:grid-rows-2">
           {legend.map(([n, label, detail]) => (
             <li key={n} className="flex items-start gap-2">
               <span
