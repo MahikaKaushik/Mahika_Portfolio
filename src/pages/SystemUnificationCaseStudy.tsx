@@ -274,6 +274,7 @@ const QUOTES_MARKS: Mark[] = [
   { n: 2, x: "1%", y: "32%", w: "24%", h: "5%" },        // plain underlined tabs
   { n: 3, x: "87%", y: "31.8%", w: "12.3%", h: "5.4%" }, // "Save and Continue"
   { n: 4, x: "1.5%", y: "37%", w: "96.5%", h: "9.5%" },  // yellow banner, numbered list
+  { n: 5, x: "1.5%", y: "60.2%", w: "96.5%", h: "16%" },  // the table: no sorting, inline sub-row
 ];
 
 const RENEWALS_MARKS: Mark[] = [
@@ -281,6 +282,7 @@ const RENEWALS_MARKS: Mark[] = [
   { n: 4, x: "1%", y: "20.8%", w: "28%", h: "3.5%" },    // red error chips
   { n: 2, x: "1%", y: "25%", w: "39%", h: "5.4%" },      // boxed tabs with icons
   { n: 3, x: "91.5%", y: "24.9%", w: "8.5%", h: "4.6%" },// "Continue"
+  { n: 5, x: "1.5%", y: "40.8%", w: "96.5%", h: "26%" },  // the table: sortable, grey detail band
 ];
 
 function Marks({ marks }: { marks: Mark[] }) {
@@ -322,6 +324,7 @@ function TwoVerticalsMock({ annotated = false }: { annotated?: boolean }) {
     ["2", "Section tabs", "plain underlined text — or boxed, with icons"],
     ["3", "The main button", "“Save and Continue” — or just “Continue”"],
     ["4", "Something is wrong", "a yellow banner — or small red chips"],
+    ["5", "The table itself", "different columns, sorting on one only, and two ways to open a row"],
   ];
 
   return (
@@ -330,7 +333,7 @@ function TwoVerticalsMock({ annotated = false }: { annotated?: boolean }) {
           names: by this slide the reader already knows which is which, and
           the key has to be read before the marks mean anything. */}
       {annotated && (
-        <ul className="mb-3 grid grid-cols-2 gap-x-5 gap-y-1.5 sm:mb-4 sm:grid-cols-4">
+        <ul className="mb-3 grid grid-cols-2 gap-x-5 gap-y-1.5 sm:mb-4 sm:grid-cols-5">
           {legend.map(([n, label, detail]) => (
             <li key={n} className="flex items-start gap-2">
               <span
