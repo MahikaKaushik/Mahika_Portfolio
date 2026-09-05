@@ -387,7 +387,7 @@ function TwoVerticalsMock({ annotated = false }: { annotated?: boolean }) {
 const F_GLOBE: Frame      = { node: <GlobeMock />, wide: true };
 const F_TWO: Frame        = { node: <TwoVerticalsMock />, wide: true, scale: "92%" };
 const F_TWO_MARKED: Frame = { node: <TwoVerticalsMock annotated />, wide: true, scale: "92%" };
-const F_CHALLENGES: Frame = { src: `${IMG}/challenges.webp`, alt: "Eight kinds of inconsistency, each with its business cost" };
+const F_CHALLENGES: Frame = { src: `${IMG}/challenges.webp`, alt: "Eight kinds of inconsistency, each with its business cost", scale: "92%" };
 const F_AUDIT: Frame      = { src: `${IMG}/audit-assess.webp`, alt: "Every kind of component, catalogued across all twenty applications" };
 const F_BUTTONS: Frame    = { src: `${IMG}/button-variations.webp`, alt: "Thirty different button styles found across the applications" };
 const F_HUB: Frame        = { src: `${IMG}/unification-hub.webp`, alt: "Every application scored for consistency" };
@@ -461,10 +461,6 @@ const SLIDES: Slide[] = [
     delta: -8,
     avatar: M.worried,
     who: ME,
-    /* Rings the first card's IMPACT line — the thing that turns this from
-       a list of complaints into an argument. RoughCircle positions against
-       the slide, not the screenshot, so nudge x/y if it sits off. */
-    circle: { x: "27%", y: "27%", w: "26%", h: "12%" },
     say: (
       <>
         We wrote down every way they disagreed. <b>Eight kinds of damage</b> — and, next to each
