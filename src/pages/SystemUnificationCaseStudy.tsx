@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { ArrowLeft, Clock } from "lucide-react";
@@ -270,39 +270,89 @@ function GlobeMock() {
   );
 }
 
-/* Three verticals, the same job — look at the line items on a deal — and
-   three different answers. Shown together because the claim on this slide
-   is a comparison, and a comparison needs more than one thing on screen. */
-function ThreeVerticalsMock() {
-  const shots = [
-    { src: `${IMG}/v-quotes.webp`, name: "Quotes", note: "stepper, six stages" },
-    { src: `${IMG}/v-renewals.webp`, name: "Renewals", note: "tabs, five sections" },
-    { src: `${IMG}/v-subscriptions.webp`, name: "Subscriptions", note: "summary cards, then a table" },
+/* Five verticals, one job — look at the line items on a deal. The whole
+   row lands first so the spread is visible, then two of them come forward
+   and the rest fall back to being wallpaper. It replays on every visit
+   because the player remounts the slide, which is what makes the point
+   land rather than being something you had to have caught the first time. */
+function TwoVerticalsMock() {
+  const ROW = [
+    `${IMG}/v-quotes.webp`,
+    `${IMG}/v-estimate.webp`,
+    `${IMG}/v-renewals.webp`,
+    `${IMG}/v-subscriptions.webp`,
+    `${IMG}/v-eamp.webp`,
   ];
+  const HERO = [
+    { src: `${IMG}/v-quotes.webp`, name: "Quotes", note: "a six-stage stepper" },
+    { src: `${IMG}/v-renewals.webp`, name: "Renewals", note: "five tabs" },
+  ];
+
+  const [zoomed, setZoomed] = useState(false);
+  useEffect(() => {
+    if (window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches) {
+      setZoomed(true);
+      return;
+    }
+    const t = setTimeout(() => setZoomed(true), 3000);
+    return () => clearTimeout(t);
+  }, []);
+
   return (
-    <div className="w-full">
-      <div className="grid grid-cols-3 gap-4 sm:gap-5">
-        {shots.map((s) => (
-          <figure key={s.name} className="m-0">
+    <div className="relative w-full px-[3%] py-[2%]">
+      {/* every vertical, in a row */}
+      <motion.div
+        className="grid grid-cols-5 gap-2 sm:gap-3"
+        animate={{ opacity: zoomed ? 0.14 : 1, filter: zoomed ? "blur(2px)" : "blur(0px)" }}
+        transition={{ duration: 0.8, ease: "easeInOut" }}
+      >
+        {ROW.map((src) => (
+          <img
+            key={src}
+            src={src}
+            alt=""
+            aria-hidden
+            className="block w-full rounded border border-white/10"
+          />
+        ))}
+      </motion.div>
+
+      {/* two of them, brought forward */}
+      <motion.div
+        className="absolute inset-0 flex items-center justify-center gap-[3%] px-[3%]"
+        initial={false}
+        animate={{ opacity: zoomed ? 1 : 0 }}
+        transition={{ duration: 0.75, ease: "easeOut" }}
+        style={{ pointerEvents: "none" }}
+      >
+        {HERO.map((h, i) => (
+          <motion.figure
+            key={h.name}
+            className="m-0 w-1/2"
+            initial={false}
+            animate={{
+              scale: zoomed ? 1 : 0.34,
+              y: zoomed ? 0 : "-30%",
+              x: zoomed ? 0 : i === 0 ? "-88%" : "8%",
+            }}
+            transition={{ duration: 0.85, ease: [0.22, 0.9, 0.28, 1] }}
+          >
             <figcaption className="mb-2 text-center">
-              <span className="block font-body text-[13px] font-bold uppercase tracking-[0.16em] text-amber-300 sm:text-[15px]">
-                {s.name}
+              <span className="block font-body text-[14px] font-bold uppercase tracking-[0.16em] text-amber-300 sm:text-[17px]">
+                {h.name}
               </span>
-              <span className="mt-0.5 block font-body text-[11px] text-white/45 sm:text-[12.5px]">
-                {s.note}
+              <span className="mt-0.5 block font-body text-[12px] text-white/50 sm:text-[14px]">
+                {h.note}
               </span>
             </figcaption>
             <img
-              src={s.src}
-              alt={`The items screen in ${s.name}`}
-              className="block w-full rounded-md border border-white/15 shadow-[0_18px_50px_-16px_rgba(0,0,0,.9)]"
+              src={h.src}
+              alt={`The items screen in ${h.name}`}
+              className="block w-full rounded-md border border-white/25 shadow-[0_26px_70px_-18px_rgba(0,0,0,.95)]"
             />
-          </figure>
+          </motion.figure>
         ))}
-      </div>
-      <p className="mt-4 text-center font-body text-[13px] text-white/50 sm:text-[15px]">
-        Same task. Same company. Three different products.
-      </p>
+      </motion.div>
     </div>
   );
 }
@@ -310,7 +360,7 @@ function ThreeVerticalsMock() {
 /* ─────────────── frames ─────────────── */
 
 const F_GLOBE: Frame      = { node: <GlobeMock />, wide: true };
-const F_THREE: Frame      = { node: <ThreeVerticalsMock />, wide: true };
+const F_TWO: Frame        = { node: <TwoVerticalsMock />, wide: true };
 const F_CHALLENGES: Frame = { src: `${IMG}/challenges.webp`, alt: "Eight kinds of inconsistency, each with its business cost" };
 const F_AUDIT: Frame      = { src: `${IMG}/audit-assess.webp`, alt: "Every kind of component, catalogued across all twenty applications" };
 const F_BUTTONS: Frame    = { src: `${IMG}/button-variations.webp`, alt: "Thirty different button styles found across the applications" };
@@ -350,15 +400,15 @@ const SLIDES: Slide[] = [
   },
   {
     kind: "ui",
-    frame: F_THREE,
-    beat: "three different companies",
+    frame: F_TWO,
+    beat: "same job, different products",
     psych: 60,
     avatar: M.worried,
     who: ME,
     say: (
       <>
-        Open three of them side by side and you'd swear <b>three different companies</b> built
-        them.
+        Put two of them side by side and you'd <b>never guess they came from the same
+        company</b>.
       </>
     ),
   },
