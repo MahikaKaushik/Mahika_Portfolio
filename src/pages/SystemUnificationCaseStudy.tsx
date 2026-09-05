@@ -260,31 +260,106 @@ function GlobeMock() {
 
 /* Two verticals, one job — look at the line items on a deal. Two rather
    than five: at five across nothing was readable, and the claim only
-   needs two things to compare. */
+   needs two things to compare.
+
+   Marks are placed as a percentage of each screenshot, so they track the
+   image at any size. Numbers rather than four separate labels, because
+   captions on top of a screenshot at this scale become the noise they are
+   trying to point at. */
+
+type Mark = { n: number; x: string; y: string; w: string; h: string };
+
+const QUOTES_MARKS: Mark[] = [
+  { n: 1, x: "25%", y: "9.8%", w: "50%", h: "5.8%" },   // six-step stepper
+  { n: 2, x: "1%", y: "32%", w: "24%", h: "5%" },        // plain underlined tabs
+  { n: 3, x: "87%", y: "31.8%", w: "12.3%", h: "5.4%" }, // "Save and Continue"
+  { n: 4, x: "1.5%", y: "37%", w: "96.5%", h: "9.5%" },  // yellow banner, numbered list
+];
+
+const RENEWALS_MARKS: Mark[] = [
+  { n: 1, x: "25%", y: "9.8%", w: "50%", h: "10%" },     // no stepper at all
+  { n: 4, x: "1%", y: "20.8%", w: "28%", h: "3.5%" },    // red error chips
+  { n: 2, x: "1%", y: "25%", w: "39%", h: "5.4%" },      // boxed tabs with icons
+  { n: 3, x: "91.5%", y: "24.9%", w: "8.5%", h: "4.6%" },// "Continue"
+];
+
+function Marks({ marks }: { marks: Mark[] }) {
+  return (
+    <>
+      {marks.map((m) => (
+        <span
+          key={`${m.n}-${m.y}`}
+          aria-hidden
+          className="pointer-events-none absolute rounded-[3px]"
+          style={{
+            left: m.x, top: m.y, width: m.w, height: m.h,
+            border: "2px solid #f4353f",
+            boxShadow: "0 0 0 1px rgba(0,0,0,.28)",
+          }}
+        >
+          <span
+            className="absolute flex items-center justify-center rounded-full font-body font-bold text-white"
+            style={{
+              left: "-9px", top: "-9px", width: "18px", height: "18px",
+              fontSize: "11px", background: "#f4353f",
+            }}
+          >
+            {m.n}
+          </span>
+        </span>
+      ))}
+    </>
+  );
+}
+
 function TwoVerticalsMock() {
   const shots = [
-    { src: `${IMG}/v-quotes.webp`, name: "Quotes", note: "a six-stage stepper across the top" },
-    { src: `${IMG}/v-renewals.webp`, name: "Renewals", note: "five tabs, and no stepper at all" },
+    { src: `${IMG}/v-quotes.webp`, name: "Quotes", marks: QUOTES_MARKS },
+    { src: `${IMG}/v-renewals.webp`, name: "Renewals", marks: RENEWALS_MARKS },
+  ];
+  const legend = [
+    ["1", "Where am I", "a six-step stepper — or nothing at all"],
+    ["2", "Section tabs", "plain underlined text — or boxed, with icons"],
+    ["3", "The main button", "“Save and Continue” — or just “Continue”"],
+    ["4", "Something is wrong", "a yellow banner — or small red chips"],
   ];
   return (
-    <div className="grid w-full grid-cols-2 gap-4 sm:gap-6">
-      {shots.map((s) => (
-        <figure key={s.name} className="m-0">
-          <figcaption className="mb-2.5 text-center">
-            <span className="block font-body text-[14px] font-bold uppercase tracking-[0.16em] text-amber-300 sm:text-[17px]">
+    <div className="w-full">
+      <div className="grid grid-cols-2 gap-4 sm:gap-6">
+        {shots.map((s) => (
+          <figure key={s.name} className="m-0">
+            <figcaption className="mb-2 text-center font-body text-[14px] font-bold uppercase tracking-[0.16em] text-amber-300 sm:text-[17px]">
               {s.name}
+            </figcaption>
+            <div className="relative">
+              <img
+                src={s.src}
+                alt={`The items screen in ${s.name}`}
+                className="block w-full rounded-md border border-white/20 shadow-[0_26px_70px_-18px_rgba(0,0,0,.95)]"
+              />
+              <Marks marks={s.marks} />
+            </div>
+          </figure>
+        ))}
+      </div>
+
+      <ul className="mt-3.5 grid grid-cols-2 gap-x-6 gap-y-1.5 sm:mt-4 sm:grid-cols-4">
+        {legend.map(([n, label, detail]) => (
+          <li key={n} className="flex items-start gap-2">
+            <span
+              className="mt-[2px] flex shrink-0 items-center justify-center rounded-full font-body font-bold text-white"
+              style={{ width: "16px", height: "16px", fontSize: "10px", background: "#f4353f" }}
+            >
+              {n}
             </span>
-            <span className="mt-1 block font-body text-[12px] leading-snug text-white/50 sm:text-[14px]">
-              {s.note}
+            <span className="font-body text-[11.5px] leading-snug text-white/55 sm:text-[13px]">
+              <b className="text-white/85">{label}</b>
+              <br />
+              {detail}
             </span>
-          </figcaption>
-          <img
-            src={s.src}
-            alt={`The items screen in ${s.name}`}
-            className="block w-full rounded-md border border-white/20 shadow-[0_26px_70px_-18px_rgba(0,0,0,.95)]"
-          />
-        </figure>
-      ))}
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
@@ -880,8 +955,8 @@ export default function SystemUnificationCaseStudy() {
       slides={SLIDES}
       fallbackAvatar={M.neutral}
       defaultBackdrop={TITLE_ART}
-      backdropOpacity={0.20}
-      backdropScrim="linear-gradient(180deg, rgba(8,8,7,.86) 0%, rgba(8,8,7,.74) 45%, rgba(8,8,7,.93) 100%), radial-gradient(70% 50% at 50% 0%, rgba(150,110,60,.14), transparent 70%)"
+      backdropOpacity={0.42}
+      backdropScrim="linear-gradient(180deg, rgba(8,8,7,.80) 0%, rgba(8,8,7,.64) 45%, rgba(8,8,7,.88) 100%), radial-gradient(70% 50% at 50% 0%, rgba(150,110,60,.12), transparent 70%)"
       renderTitle={() => <TitleSlide />}
       renderSummary={() => <SummarySlide />}
       renderEnd={() => <EndSlide />}
