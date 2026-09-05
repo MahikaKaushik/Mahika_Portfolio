@@ -323,14 +323,40 @@ function TwoVerticalsMock({ annotated = false }: { annotated?: boolean }) {
     ["3", "The main button", "“Save and Continue” — or just “Continue”"],
     ["4", "Something is wrong", "a yellow banner — or small red chips"],
   ];
+
   return (
     <div className="w-full">
+      {/* On the annotated pass the legend takes the place of the product
+          names: by this slide the reader already knows which is which, and
+          the key has to be read before the marks mean anything. */}
+      {annotated && (
+        <ul className="mb-3 grid grid-cols-2 gap-x-5 gap-y-1.5 sm:mb-4 sm:grid-cols-4">
+          {legend.map(([n, label, detail]) => (
+            <li key={n} className="flex items-start gap-2">
+              <span
+                className="mt-[2px] flex shrink-0 items-center justify-center rounded-full font-body font-bold text-white"
+                style={{ width: "17px", height: "17px", fontSize: "10.5px", background: "#f4353f" }}
+              >
+                {n}
+              </span>
+              <span className="font-body text-[11.5px] leading-snug text-white/60 sm:text-[13px]">
+                <b className="text-white/90">{label}</b>
+                <br />
+                {detail}
+              </span>
+            </li>
+          ))}
+        </ul>
+      )}
+
       <div className="grid grid-cols-2 gap-4 sm:gap-6">
         {shots.map((s) => (
           <figure key={s.name} className="m-0">
-            <figcaption className="mb-2 text-center font-body text-[14px] font-bold uppercase tracking-[0.16em] text-amber-300 sm:text-[17px]">
-              {s.name}
-            </figcaption>
+            {!annotated && (
+              <figcaption className="mb-2 text-center font-body text-[14px] font-bold uppercase tracking-[0.16em] text-amber-300 sm:text-[17px]">
+                {s.name}
+              </figcaption>
+            )}
             <div className="relative">
               <img
                 src={s.src}
@@ -342,26 +368,6 @@ function TwoVerticalsMock({ annotated = false }: { annotated?: boolean }) {
           </figure>
         ))}
       </div>
-
-      {annotated && (
-      <ul className="mt-3.5 grid grid-cols-2 gap-x-6 gap-y-1.5 sm:mt-4 sm:grid-cols-4">
-        {legend.map(([n, label, detail]) => (
-          <li key={n} className="flex items-start gap-2">
-            <span
-              className="mt-[2px] flex shrink-0 items-center justify-center rounded-full font-body font-bold text-white"
-              style={{ width: "16px", height: "16px", fontSize: "10px", background: "#f4353f" }}
-            >
-              {n}
-            </span>
-            <span className="font-body text-[11.5px] leading-snug text-white/55 sm:text-[13px]">
-              <b className="text-white/85">{label}</b>
-              <br />
-              {detail}
-            </span>
-          </li>
-        ))}
-      </ul>
-      )}
     </div>
   );
 }
