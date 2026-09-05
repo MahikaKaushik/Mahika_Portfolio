@@ -60,7 +60,7 @@ const F_BUTTONS: Frame    = { src: `${IMG}/button-variations.webp`, alt: "Thirty
 const F_HUB: Frame        = { src: `${IMG}/unification-hub.webp`, alt: "Every application scored for consistency" };
 const F_DEVGAP: Frame     = { src: `${IMG}/design-vs-dev.webp`, alt: "What was designed, next to what engineering actually shipped" };
 const F_ROADMAP: Frame    = { src: `${IMG}/roadmap.webp`, alt: "The six-phase path from old patterns to the company standard" };
-const F_HARMONISED: Frame = { src: `${IMG}/current-vs-harmonised.webp`, alt: "The same screen, before and after, rebuilt on the company design system" };
+const F_HARMONISED: Frame = { src: `${IMG}/old-vs-new.webp`, alt: "The same Commerce screen, old design beside the rebuilt one" };
 const F_PILLARS: Frame    = { src: `${IMG}/state-of-platform.webp`, alt: "The three standing rules proposed to keep it consistent" };
 
 /* ─────────────── the story ─────────────── */
@@ -93,7 +93,7 @@ const SLIDES: Slide[] = [
     kind: "scene",
     avatar: M.worried,
     who: ME,
-    psych: 58,
+    psych: 60,
     say: (
       <>
         Open three of them side by side and you'd swear <b>three different companies</b> built
@@ -102,11 +102,23 @@ const SLIDES: Slide[] = [
     ),
   },
   {
+    kind: "scene",
+    avatar: M.worried,
+    who: ME,
+    psych: 52,
+    say: (
+      <>
+        So people had to <b>re-learn the interface</b> every time they moved between products.
+        Same company. Same afternoon.
+      </>
+    ),
+  },
+  {
     kind: "ui",
     frame: F_CHALLENGES,
     beat: "eight fractures",
-    psych: 46,
-    delta: -12,
+    psych: 44,
+    delta: -8,
     avatar: M.worried,
     who: ME,
     say: (
@@ -121,7 +133,7 @@ const SLIDES: Slide[] = [
     avatar: M.flat,
     who: ME,
     beat: "no mandate",
-    psych: 40,
+    psych: 38,
     say: (
       <>
         And nobody had asked us to fix it. No redesign project. No budget. <b>No mandate.</b>
@@ -132,7 +144,7 @@ const SLIDES: Slide[] = [
     kind: "statement",
     avatar: M.driven,
     who: ME,
-    psych: 36,
+    psych: 34,
     say: (
       <>
         So this was never a design brief. It was <b>a case we had to build</b> — and carry to the
@@ -144,7 +156,7 @@ const SLIDES: Slide[] = [
     kind: "ui",
     frame: F_AUDIT,
     beat: "we counted",
-    psych: 50,
+    psych: 48,
     delta: 14,
     avatar: M.driven,
     who: ME,
@@ -159,7 +171,7 @@ const SLIDES: Slide[] = [
     kind: "card",
     variant: "principle",
     tag: "The method",
-    title: "Zero AI, in the middle of the AI era",
+    title: "You can\u0027t fix consistency with taste. You fix it with proof.",
     body: (
       <>
         Every screen in every application, read by two people. It was a rough, relentless
@@ -170,13 +182,13 @@ const SLIDES: Slide[] = [
       </>
     ),
     behind: F_AUDIT,
-    psych: 50,
+    psych: 48,
   },
   {
     kind: "ui",
     frame: F_BUTTONS,
     beat: "the button wall",
-    psych: 64,
+    psych: 62,
     delta: 14,
     avatar: M.happy,
     who: ME,
@@ -193,14 +205,14 @@ const SLIDES: Slide[] = [
     kind: "ui",
     frame: F_HUB,
     beat: "every app scored",
-    psych: 78,
+    psych: 76,
     delta: 14,
     avatar: M.delighted,
     who: ME,
     say: (
       <>
-        Then we scored every application on how consistent it actually was.{" "}
-        <b>Nothing scored above 7.5 out of ten.</b>
+        So instead of opinions, we scored every one — shared patterns, usability, interaction
+        clarity. <b>Nothing scored above 7.5 out of ten.</b>
       </>
     ),
   },
@@ -208,7 +220,7 @@ const SLIDES: Slide[] = [
     kind: "statement",
     avatar: M.neutral,
     who: ME,
-    psych: 78,
+    psych: 76,
     say: (
       <>
         And there was no such thing as <b>partly fixing</b> one. A team either rebuilt an
@@ -220,7 +232,7 @@ const SLIDES: Slide[] = [
     kind: "ui",
     frame: F_DEVGAP,
     beat: "design ≠ shipped",
-    psych: 70,
+    psych: 68,
     delta: -8,
     avatar: M.doubt,
     who: ME,
@@ -235,7 +247,7 @@ const SLIDES: Slide[] = [
     kind: "ui",
     frame: F_ROADMAP,
     beat: "a sequenced path",
-    psych: 82,
+    psych: 80,
     delta: 12,
     avatar: M.driven,
     who: ME,
