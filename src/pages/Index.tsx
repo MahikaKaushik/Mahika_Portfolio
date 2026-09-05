@@ -161,13 +161,12 @@ const projects = [
   },
   {
     title: "Experience Unification",
-    description: "Audited product interfaces and designed a scalable system to align multiple platforms under a unified enterprise experience.",
-    tags: ["11 Verticals", "40+ Components", "1 System"],
+    description: "Twenty applications that looked like twenty different companies. We audited every component by hand, scored them, and built a design system \u2014 then killed it, because the one they would actually adopt already existed.",
+    tags: ["20 Apps Audited", "21 Components", "1 System"],
     projectType: "Design Systems / UX Strategy",
     href: "/work/system-unification",
     icon: <Layers className="h-7 w-7" />,
     preview: <UnificationBackground />,
-    comingSoon: true,
   },
 ];
 
