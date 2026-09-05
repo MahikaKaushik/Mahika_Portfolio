@@ -7,7 +7,6 @@ import { MotionConfig } from "framer-motion";
 import { ScrollToTop } from "@/components/ScrollToTop";
 import Index from "./pages/Index";
 import UCDCaseStudy from "./pages/UCDCaseStudy";
-import CRControlTowerCaseStudy from "./pages/CRControlTowerCaseStudy";
 import SystemUnificationCaseStudy from "./pages/SystemUnificationCaseStudy";
 import AboutPage from "./pages/AboutPage";
 import NotFound from "./pages/NotFound";
@@ -28,7 +27,10 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/work/ucd" element={<UCDCaseStudy />} />
-            <Route path="/work/control-tower" element={<CRControlTowerCaseStudy />} />
+            {/* CR Control Tower is finished but held back: several screens carry a
+                named employee's contact details and real customer names. Restore
+                this line and drop comingSoon on its card in Index.tsx to publish. */}
+            {/* <Route path="/work/control-tower" element={<CRControlTowerCaseStudy />} /> */}
             <Route path="/work/system-unification" element={<SystemUnificationCaseStudy />} />
             <Route path="/about" element={<AboutPage />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
