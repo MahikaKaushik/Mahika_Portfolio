@@ -382,6 +382,31 @@ function TwoVerticalsMock({ annotated = false }: { annotated?: boolean }) {
   );
 }
 
+
+/* The comparison carries no labels of its own, and without them a reader
+   has to infer which half is which — the arrow implies a direction but
+   does not say what the two ends are. Halves are even, with the arrow on
+   the centre line, so a two-column header lines up over them. */
+function DesignVsShippedMock() {
+  return (
+    <div className="w-full">
+      <div className="mb-2 grid grid-cols-2">
+        <span className="text-center font-body text-[13px] font-bold uppercase tracking-[0.16em] text-amber-300 sm:text-[15px]">
+          As designed
+        </span>
+        <span className="text-center font-body text-[13px] font-bold uppercase tracking-[0.16em] text-rose-400 sm:text-[15px]">
+          As developed
+        </span>
+      </div>
+      <img
+        src={`${IMG}/design-vs-shipped.webp`}
+        alt="The comparison modal as designed, beside the version that shipped"
+        className="block w-full rounded-md border border-white/15 shadow-[0_26px_70px_-18px_rgba(0,0,0,.95)]"
+      />
+    </div>
+  );
+}
+
 /* ─────────────── frames ─────────────── */
 
 const F_GLOBE: Frame      = { node: <GlobeMock />, wide: true };
@@ -391,7 +416,7 @@ const F_CHALLENGES: Frame = { src: `${IMG}/challenges.webp`, alt: "Eight kinds o
 const F_AUDIT: Frame      = { src: `${IMG}/audit-assess.webp`, alt: "Every kind of component, catalogued across all twenty applications", scale: "62%" };
 const F_BUTTONS: Frame    = { src: `${IMG}/button-variations.webp`, alt: "Thirty different button styles found across the applications", scale: "82%" };
 const F_HUB: Frame        = { src: `${IMG}/unification-hub.webp`, alt: "Every application scored for consistency", scale: "88%" };
-const F_DEVGAP: Frame     = { src: `${IMG}/design-vs-shipped.webp`, alt: "The comparison modal as designed, beside the version that shipped", scale: "96%" };
+const F_DEVGAP: Frame     = { node: <DesignVsShippedMock />, wide: true, scale: "96%" };
 const F_ROADMAP: Frame    = { src: `${IMG}/roadmap.webp`, alt: "The six-phase path from old patterns to the company standard", scale: "86%" };
 const F_HARMONISED: Frame = { src: `${IMG}/old-vs-new.webp`, alt: "The same Commerce screen, old design beside the rebuilt one", scale: "96%" };
 const F_PILLARS: Frame    = { src: `${IMG}/state-of-platform.webp`, alt: "The three standing rules proposed to keep it consistent", scale: "92%" };
