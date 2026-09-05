@@ -576,8 +576,8 @@ const SLIDES: Slide[] = [
     psych: 80,
     say: (
       <>
-        And there was no such thing as <b>partly fixing</b> one. A team either rebuilt an
-        application completely, or left it alone.
+        And consistency was never only ours to give. Design could hand over the same component
+        everywhere and <b>something further down the line would still break it</b>.
       </>
     ),
   },
@@ -591,8 +591,7 @@ const SLIDES: Slide[] = [
     who: ME,
     say: (
       <>
-        Then a second problem: <b>what engineering shipped often wasn't what design had
-        drawn.</b>
+        <b>What engineering shipped often wasn't what design had drawn.</b>
       </>
     ),
   },
