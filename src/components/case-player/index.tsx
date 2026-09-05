@@ -47,6 +47,9 @@ export type Slide =
       psych?: number;
       /** Label this point on the summary graph, as `ui` slides can. */
       beat?: string;
+      /** How far it moved to get here, so the meter shows a change
+          rather than a silent jump. */
+      delta?: number;
       /** Full-bleed illustration in place of the default plate. */
       backdrop?: string;
       /** Where the thought sits. Defaults to bottom-left beside the avatar. */
@@ -76,6 +79,7 @@ export type Slide =
       refs?: string[];
       behind: Frame;
       psych: number;
+      delta?: number;
       /** Lift a region of `behind` forward; the rest dims instead of blurring. */
       detail?: Detail;
       /** Leave the screen untouched and let the card overlap it. */
@@ -87,6 +91,9 @@ export type Slide =
       who?: string;
       say: ReactNode;
       psych?: number;
+      /** How far it moved to get here, so the meter shows a change
+          rather than a silent jump. */
+      delta?: number;
     }
   | { kind: "summary" }
   | { kind: "end" };
@@ -808,7 +815,9 @@ export function CasePlayer({
   const slideBackdrop = (s as { backdrop?: string }).backdrop;
   const rawPsych = (s as { psych?: number }).psych;
   const psych = rawPsych === undefined ? null : rawPsych;
-  const delta = s.kind === "ui" ? s.delta : undefined;
+  /* every slide kind that can carry psych can now carry delta; without this
+     a big move on a statement rendered as an unexplained jump in the bar */
+  const delta = (s as { delta?: number }).delta;
 
   return (
     <PlayerCfg.Provider value={cfg}>

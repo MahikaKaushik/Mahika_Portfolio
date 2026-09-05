@@ -449,6 +449,7 @@ const SLIDES: Slide[] = [
     frame: F_TWO,
     beat: "same job, different products",
     psych: 60,
+    delta: -10,
     avatar: M.worried,
     who: ME,
     say: (
@@ -617,6 +618,7 @@ const SLIDES: Slide[] = [
     avatar: M.shocked,
     who: ME,
     psych: 40,
+    delta: -32,
     say: (
       <>
         The obvious fix was to rebuild all twenty properly — one language, one system, done
@@ -631,6 +633,7 @@ const SLIDES: Slide[] = [
     avatar: M.driven,
     who: ME,
     psych: 60,
+    delta: 20,
     say: (
       <>
         So the question changed. Not <i>what should it look like</i> — but{" "}
