@@ -52,14 +52,14 @@ const TITLE_ART: string | null = null;
 
 /* ─────────────── frames ─────────────── */
 
-const F_CHALLENGES: Frame = { src: `${IMG}/challenges.webp`, alt: "The eight fractures, each with its cost" };
-const F_AUDIT: Frame      = { src: `${IMG}/audit-assess.webp`, alt: "Component inventory across the platform" };
-const F_BUTTONS: Frame    = { src: `${IMG}/button-variations.webp`, alt: "Button variations across the application" };
-const F_HUB: Frame        = { src: `${IMG}/unification-hub.webp`, alt: "Every application scored" };
-const F_DEVGAP: Frame     = { src: `${IMG}/design-vs-dev.webp`, alt: "Proposed design against what shipped" };
-const F_ROADMAP: Frame    = { src: `${IMG}/roadmap.webp`, alt: "Six-phase harmonisation path" };
-const F_HARMONISED: Frame = { src: `${IMG}/current-vs-harmonised.webp`, alt: "The same screen rebuilt on Magnetic" };
-const F_PILLARS: Frame    = { src: `${IMG}/state-of-platform.webp`, alt: "Three governance pillars" };
+const F_CHALLENGES: Frame = { src: `${IMG}/challenges.webp`, alt: "Eight kinds of inconsistency, each with its business cost" };
+const F_AUDIT: Frame      = { src: `${IMG}/audit-assess.webp`, alt: "Every kind of component, catalogued across all twenty applications" };
+const F_BUTTONS: Frame    = { src: `${IMG}/button-variations.webp`, alt: "Thirty different button styles found across the applications" };
+const F_HUB: Frame        = { src: `${IMG}/unification-hub.webp`, alt: "Every application scored for consistency" };
+const F_DEVGAP: Frame     = { src: `${IMG}/design-vs-dev.webp`, alt: "What was designed, next to what engineering actually shipped" };
+const F_ROADMAP: Frame    = { src: `${IMG}/roadmap.webp`, alt: "The six-phase path from old patterns to the company standard" };
+const F_HARMONISED: Frame = { src: `${IMG}/current-vs-harmonised.webp`, alt: "The same screen, before and after, rebuilt on the company design system" };
+const F_PILLARS: Frame    = { src: `${IMG}/state-of-platform.webp`, alt: "The three standing rules proposed to keep it consistent" };
 
 /* ─────────────── the story ─────────────── */
 
@@ -81,8 +81,9 @@ const SLIDES: Slide[] = [
     psych: 70,
     say: (
       <>
-        Cisco Commerce isn't one product. It's <b>twenty applications</b> across eleven-plus
-        verticals — sold to customers as a single platform.
+        Cisco Commerce isn't one product. It's <b>twenty separate applications</b> — quoting,
+        ordering, renewals, discounts — built by different teams over years, and sold to
+        customers as one thing.
       </>
     ),
   },
@@ -108,7 +109,8 @@ const SLIDES: Slide[] = [
     who: ME,
     say: (
       <>
-        Eight fractures. Every one with <b>a cost attached</b>.
+        We wrote down every way they disagreed. <b>Eight kinds of damage</b> — and what each one
+        costs the business.
       </>
     ),
   },
@@ -131,7 +133,7 @@ const SLIDES: Slide[] = [
     say: (
       <>
         So this was never a design brief. It was <b>a case we had to build</b> — and carry to the
-        people who own the platform.
+        executives who decide what gets funded.
       </>
     ),
   },
@@ -145,7 +147,8 @@ const SLIDES: Slide[] = [
     who: ME,
     say: (
       <>
-        So we counted. <b>Twenty applications, twenty-one components</b> — by hand.
+        So we counted. Every button, field, alert and table — <b>twenty-one kinds of
+        component, across all twenty applications</b>, by hand.
       </>
     ),
   },
@@ -176,7 +179,7 @@ const SLIDES: Slide[] = [
     who: ME,
     say: (
       <>
-        Thirty ways to draw one button. <b>Now it isn't an opinion.</b>
+        Thirty ways to draw one button. Same word, same job, <b>thirty different answers</b>.
       </>
     ),
   },
@@ -193,7 +196,8 @@ const SLIDES: Slide[] = [
     who: ME,
     say: (
       <>
-        Every app scored. <b>3.5 to 7.5</b> out of ten.
+        Then we scored every application on how consistent it actually was.{" "}
+        <b>Nothing scored above 7.5 out of ten.</b>
       </>
     ),
   },
@@ -204,8 +208,8 @@ const SLIDES: Slide[] = [
     psych: 78,
     say: (
       <>
-        Current <b>13</b>. Harmonised <b>0</b>. Northstar <b>7</b>. A vague complaint became a
-        portfolio.
+        Thirteen still looked like the old world. Seven already looked like the new one.{" "}
+        <b>Not one was anywhere in between</b> — nobody had ever done a partial migration.
       </>
     ),
   },
@@ -219,7 +223,8 @@ const SLIDES: Slide[] = [
     who: ME,
     say: (
       <>
-        Then the second gap: <b>what shipped wasn't what we designed.</b>
+        Then a second problem: <b>what engineering shipped often wasn't what design had
+        drawn.</b>
       </>
     ),
   },
@@ -233,7 +238,8 @@ const SLIDES: Slide[] = [
     who: ME,
     say: (
       <>
-        So we proposed six phases — sequenced so <b>live users would never feel it</b>.
+        So we proposed six phases — cheap visual fixes first, risky structural ones last, so{" "}
+        <b>live customers would never feel it</b>.
       </>
     ),
   },
@@ -249,7 +255,8 @@ const SLIDES: Slide[] = [
     psych: 92,
     say: (
       <>
-        And we had built our own design system. Considered. Clean. <b>Ours.</b>
+        And for all of this, we had built our own design system. Considered. Clean.{" "}
+        <b>Ours.</b>
       </>
     ),
   },
@@ -267,10 +274,10 @@ const SLIDES: Slide[] = [
     title: "Not because it was bad",
     body: (
       <>
-        Adoption stalled — no other team would standardise on a system that wasn't
-        Cisco-wide, and <b>Magnetic already was</b>. Meanwhile re-skinning twenty legacy
-        applications in one go was financially out of the question. A good system nobody
-        adopts is <b>an expensive opinion</b>.
+        No other team would adopt a design system that only our team used. And Cisco already
+        had one — <b>Magnetic</b> — that the rest of the company was standardising on.
+        Meanwhile, rebuilding twenty ageing applications in one go cost far more than anyone
+        was going to approve. A good system nobody adopts is <b>an expensive opinion</b>.
       </>
     ),
     behind: F_ROADMAP,
@@ -284,7 +291,7 @@ const SLIDES: Slide[] = [
     say: (
       <>
         So the question changed. Not <i>what should the system be</i> — but{" "}
-        <b>how do we adopt one we can afford?</b>
+        <b>how do we move twenty applications onto one we can actually afford?</b>
       </>
     ),
   },
@@ -309,7 +316,8 @@ const SLIDES: Slide[] = [
     who: ME,
     say: (
       <>
-        We redesigned one screen on Magnetic, just to show <b>it holds up in context</b>.
+        We redesigned one real screen using Magnetic, just to show <b>it holds up in actual
+        work</b>.
       </>
     ),
   },
@@ -320,11 +328,11 @@ const SLIDES: Slide[] = [
     title: "Magnetic by default. Migrate when touched.",
     body: (
       <>
-        What we proposed was two rules instead of one migration. Every new scope follows
-        Magnetic from day one, so <b>the fragmentation stops growing immediately</b> — no new
-        debt. Legacy apps never get a big-bang redesign; whenever a scope reopens one, that part
-        gets remodelled. <b>Debt gets paid exactly where work is already happening</b>, which is
-        the only place anyone was ever going to fund it.
+        What we proposed was two rules instead of one migration. Every new piece of work uses
+        Magnetic from day one, so <b>the mess stops growing immediately</b>. Old applications
+        never get a big-bang rebuild — but the moment anyone opens one up for any other reason,
+        that part gets rebuilt properly. <b>You pay the debt down exactly where someone is
+        already working</b>, which is the only place a budget was ever going to come from.
       </>
     ),
     behind: F_HARMONISED,
@@ -340,7 +348,8 @@ const SLIDES: Slide[] = [
     who: ME,
     say: (
       <>
-        And three pillars to govern it, so it <b>couldn't drift back</b>.
+        And three standing rules to hold it — one shared pattern library, one check that what
+        ships matches what was drawn, one review before anything new goes in.
       </>
     ),
   },
@@ -354,8 +363,8 @@ const SLIDES: Slide[] = [
     psych: 92,
     say: (
       <>
-        <b>Zero</b> apps fully harmonised yet. Seven in design. Legacy gated on cost — not on
-        the plan.
+        <b>Zero</b> applications fully converted so far. Seven being designed. The rest is
+        waiting on budget — <b>not on the plan</b>.
       </>
     ),
   },
@@ -470,9 +479,10 @@ function EndSlide() {
             What we produced
           </p>
           <p className="font-body text-[15.5px] leading-relaxed text-white/85 sm:text-[17px]">
-            A 20-app audit and scoring baseline, a Current → Harmonised → Northstar map, and a
-            proposal: a six-phase migration path plus{" "}
-            <b className="text-white">Magnetic by default</b> for every new scope.
+            A hand audit of all twenty applications, a consistency score for each one, and a map
+            of how far every app sat from the standard. Then the proposal: a six-phase path, and{" "}
+            <b className="text-white">use the company's design system by default</b> on anything
+            new.
           </p>
         </div>
         <div className="rounded-xl border border-white/20 bg-white/[0.06] px-6 py-6 text-left">
@@ -480,17 +490,17 @@ function EndSlide() {
             Honest state
           </p>
           <p className="font-body text-[15.5px] leading-relaxed text-white/85 sm:text-[17px]">
-            Zero applications fully harmonised. Seven in design.{" "}
-            <b className="text-white">Legacy migration is gated on cost, not on the plan.</b>
+            Zero applications fully converted. Seven being designed.{" "}
+            <b className="text-white">The rest is waiting on budget, not on the plan.</b>
           </p>
         </div>
       </div>
 
       <p className="mt-8 max-w-2xl font-body text-[15.5px] leading-relaxed text-white/70 sm:text-[17px]">
-        This was our first project at Copan, and the one that argued its way to platform
-        leadership. Unification turned out to be{" "}
-        <b className="text-white">an economics and governance problem</b> wearing a design
-        problem's clothes.
+        This was our first project at Copan, and it argued its way to the top of the platform.
+        Making twenty products feel like one turned out to be{" "}
+        <b className="text-white">a money problem wearing a design problem's clothes</b> — the
+        winning move was never a prettier interface, it was a migration anyone could afford.
       </p>
 
       <Link
