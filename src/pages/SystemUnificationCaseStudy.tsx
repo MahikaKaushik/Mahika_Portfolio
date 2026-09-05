@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { ArrowLeft, Clock } from "lucide-react";
@@ -12,6 +12,7 @@ import {
   type Frame,
   type Slide,
 } from "@/components/case-player";
+import { LAND } from "./eu-land";
 
 /* ══════════════════════════════════════════════════════════════
    EXPERIENCE UNIFICATION — slide-player case study.
@@ -53,176 +54,255 @@ const M = {
    title. */
 const TITLE_ART = `${IMG}/whiteboard.webp`;
 
-/* ─────────────── drawn mocks ───────────────
-   Slide 2 had no visual at all, so "twenty applications sold as one
-   thing" was a claim the reader had to take on faith. Drawn rather than
-   screenshotted because no single screenshot can show twenty products at
-   once — that is the whole problem.
+/* A point-cloud earth, drawn on canvas.
 
-   It genuinely revolves: node positions are an orthographic projection of
-   a real sphere, so names round the limb, fade as they pass behind, and
-   come back. Cheaper than a WebGL dependency and it matches the flat
-   illustration language the rest of the player uses. */
+   SVG was the wrong tool once this needed real continents: 1761 land
+   points plus mesh lines is far too many nodes to re-create every frame.
+   Canvas draws the whole thing in one pass.
+
+   Continents are real — Natural Earth 110m land, sampled to points in
+   eu-land.ts — projected orthographically and culled by depth, so the
+   sphere genuinely turns rather than looking like it does. Product names
+   ride on it at fixed coordinates and fade round the limb. */
 
 const GLOBE_APPS = [
-  { label: "Quoting", lat: 24 },
-  { label: "Estimates", lat: -12 },
-  { label: "Orders", lat: 40 },
-  { label: "Renewals", lat: -34 },
-  { label: "Discounts", lat: 10 },
-  { label: "Subscriptions", lat: 46 },
-  { label: "Catalog", lat: -22 },
-  { label: "Deals", lat: 30 },
+  { label: "Quoting", lat: 40, lon: -96 },
+  { label: "Estimates", lat: 52, lon: 10 },
+  { label: "Orders", lat: 22, lon: 78 },
+  { label: "Renewals", lat: -24, lon: -50 },
+  { label: "Discounts", lat: 36, lon: 138 },
+  { label: "Subscriptions", lat: 6, lon: 20 },
+  { label: "Catalog", lat: -32, lon: 142 },
+  { label: "Deals", lat: 60, lon: -110 },
 ];
 
 function GlobeMock() {
-  const [rot, setRot] = useState(0);
+  const ref = useRef<HTMLCanvasElement | null>(null);
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
-    if (window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches) return;
+    const cv = ref.current;
+    if (!cv) return;
+    const ctx = cv.getContext("2d");
+    if (!ctx) return;
+
+    const W = 1000;
+    const H = 660;
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    cv.width = W * dpr;
+    cv.height = H * dpr;
+
+    const cx = W / 2;
+    const cy = H / 2 - 6;
+    const R = 232;
+    const TILT = (-16 * Math.PI) / 180; // lean the north pole toward us
+    const still = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
+
+    /* lon/lat -> screen, with the pole tilt applied after the spin */
+    const project = (lonDeg: number, latDeg: number, rot: number) => {
+      const lon = ((lonDeg + rot) * Math.PI) / 180;
+      const lat = (latDeg * Math.PI) / 180;
+      const x = Math.cos(lat) * Math.sin(lon);
+      const yy = Math.sin(lat);
+      const zz = Math.cos(lat) * Math.cos(lon);
+      const y = yy * Math.cos(TILT) - zz * Math.sin(TILT);
+      const z = yy * Math.sin(TILT) + zz * Math.cos(TILT);
+      return { x: cx + R * x, y: cy - R * y, z };
+    };
+
     let raf = 0;
     let t0: number | null = null;
+
+    const draw = (rot: number) => {
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.clearRect(0, 0, W, H);
+
+      /* atmosphere */
+      const halo = ctx.createRadialGradient(cx, cy, R * 0.92, cx, cy, R * 1.22);
+      halo.addColorStop(0, "rgba(70,140,225,0)");
+      halo.addColorStop(0.45, "rgba(70,140,225,.20)");
+      halo.addColorStop(1, "rgba(70,140,225,0)");
+      ctx.fillStyle = halo;
+      ctx.beginPath();
+      ctx.arc(cx, cy, R * 1.22, 0, Math.PI * 2);
+      ctx.fill();
+
+      /* ocean body, lit from upper left */
+      const body = ctx.createRadialGradient(cx - R * 0.34, cy - R * 0.4, R * 0.06, cx, cy, R);
+      body.addColorStop(0, "#12325c");
+      body.addColorStop(0.55, "#0b1e3c");
+      body.addColorStop(1, "#04070f");
+      ctx.fillStyle = body;
+      ctx.beginPath();
+      ctx.arc(cx, cy, R, 0, Math.PI * 2);
+      ctx.fill();
+
+      /* graticule, faint */
+      ctx.strokeStyle = "rgba(120,175,240,.13)";
+      ctx.lineWidth = 1;
+      for (let lat = -60; lat <= 60; lat += 30) {
+        ctx.beginPath();
+        let started = false;
+        for (let lon = -180; lon <= 180; lon += 4) {
+          const p = project(lon, lat, rot);
+          if (p.z <= 0) { started = false; continue; }
+          if (!started) { ctx.moveTo(p.x, p.y); started = true; } else ctx.lineTo(p.x, p.y);
+        }
+        ctx.stroke();
+      }
+      for (let lon = -180; lon < 180; lon += 30) {
+        ctx.beginPath();
+        let started = false;
+        for (let lat = -88; lat <= 88; lat += 4) {
+          const p = project(lon, lat, rot);
+          if (p.z <= 0) { started = false; continue; }
+          if (!started) { ctx.moveTo(p.x, p.y); started = true; } else ctx.lineTo(p.x, p.y);
+        }
+        ctx.stroke();
+      }
+
+      /* land */
+      const pts: { x: number; y: number; z: number }[] = [];
+      for (let i = 0; i < LAND.length; i += 2) {
+        const p = project(LAND[i], LAND[i + 1], rot);
+        if (p.z > 0.02) pts.push(p);
+      }
+      for (const p of pts) {
+        const a = Math.min(1, p.z * 1.5);
+        ctx.fillStyle = `rgba(150,214,255,${0.30 + 0.55 * a})`;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 0.9 + 1.15 * p.z, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      /* a light mesh between nearby land points, which is what makes it
+         read as a network rather than a dot screen */
+      ctx.strokeStyle = "rgba(110,190,255,.13)";
+      ctx.lineWidth = 0.6;
+      ctx.beginPath();
+      for (let i = 0; i < pts.length; i += 3) {
+        const a = pts[i];
+        for (let j = i + 3; j < Math.min(i + 40, pts.length); j += 3) {
+          const b = pts[j];
+          const dx = a.x - b.x;
+          const dy = a.y - b.y;
+          if (dx * dx + dy * dy < 620) {
+            ctx.moveTo(a.x, a.y);
+            ctx.lineTo(b.x, b.y);
+          }
+        }
+      }
+      ctx.stroke();
+
+      /* rim */
+      ctx.strokeStyle = "rgba(125,185,255,.45)";
+      ctx.lineWidth = 1.3;
+      ctx.beginPath();
+      ctx.arc(cx, cy, R, 0, Math.PI * 2);
+      ctx.stroke();
+
+      /* the platform name, sitting on the body */
+      ctx.textAlign = "center";
+      ctx.font = "700 30px system-ui, -apple-system, sans-serif";
+      ctx.fillStyle = "rgba(233,242,253,.94)";
+      ctx.shadowColor = "rgba(4,8,18,.9)";
+      ctx.shadowBlur = 14;
+      ctx.letterSpacing = "5px";
+      ctx.fillText("CISCO COMMERCE", cx, cy + 10);
+      ctx.letterSpacing = "0px";
+      ctx.shadowBlur = 0;
+
+      /* products */
+      const nodes = GLOBE_APPS.map((a) => ({ ...a, ...project(a.lon, a.lat, rot) }))
+        .sort((a, b) => a.z - b.z);
+
+      for (const n of nodes) {
+        if (n.z <= 0) continue;
+        const fade = Math.min(1, n.z / 0.32);
+
+        const g = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, 17);
+        g.addColorStop(0, `rgba(255,196,88,${0.5 * fade})`);
+        g.addColorStop(1, "rgba(255,196,88,0)");
+        ctx.fillStyle = g;
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, 17, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = `rgba(252,192,80,${0.55 + 0.45 * fade})`;
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, 4.4, 0, Math.PI * 2);
+        ctx.fill();
+
+        if (fade > 0.05) {
+          const right = n.x >= cx;
+          ctx.textAlign = right ? "left" : "right";
+          ctx.font = "600 20px system-ui, -apple-system, sans-serif";
+          ctx.shadowColor = "rgba(3,6,14,.95)";
+          ctx.shadowBlur = 9;
+          ctx.fillStyle = `rgba(240,246,253,${fade})`;
+          ctx.fillText(n.label, n.x + (right ? 14 : -14), n.y + 6);
+          ctx.shadowBlur = 0;
+        }
+      }
+
+      ctx.textAlign = "center";
+      ctx.font = "400 17px system-ui, -apple-system, sans-serif";
+      ctx.fillStyle = "rgba(140,158,190,.9)";
+      ctx.fillText("…and twelve more. One platform, on the invoice.", cx, H - 16);
+    };
+
+    if (still) {
+      draw(0);
+      return;
+    }
     const tick = (t: number) => {
       if (t0 === null) t0 = t;
-      setRot(((t - t0) / 1000) * 5.5); // one turn a little over a minute
+      draw(((t - t0) / 1000) * 4.2); // one turn in about 85 seconds
       raf = requestAnimationFrame(tick);
     };
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
   }, []);
 
-  const cx = 500;
-  const cy = 322;
-  const R = 205;
-  const SQUASH = 0.32; // how flat the latitude rings sit — reads as tilt
-  const rad = (d: number) => (d * Math.PI) / 180;
-
-  const nodes = GLOBE_APPS.map((a, i) => {
-    const lon = rad(i * (360 / GLOBE_APPS.length) + rot);
-    const lat = rad(a.lat);
-    const x = Math.cos(lat) * Math.sin(lon);
-    const y = Math.sin(lat);
-    const z = Math.cos(lat) * Math.cos(lon);
-    return {
-      label: a.label,
-      x: cx + R * x,
-      y: cy - R * y * 0.88,
-      z,
-      right: x >= 0,
-    };
-  }).sort((a, b) => a.z - b.z);
-
-  const meridians = [0, 30, 60, 90, 120, 150].map((m) => ({
-    key: m,
-    rx: Math.abs(R * Math.sin(rad(m + rot))),
-  }));
-
   return (
     <div className="w-full">
-      <svg viewBox="0 0 1000 660" className="block w-full">
-        <defs>
-          {/* lit from upper left, falling to a dark limb lower right */}
-          <radialGradient id="euSphere" cx="34%" cy="27%" r="78%">
-            <stop offset="0%" stopColor="#6f9ddd" />
-            <stop offset="34%" stopColor="#3a68ad" />
-            <stop offset="70%" stopColor="#1c3564" />
-            <stop offset="100%" stopColor="#080f21" />
-          </radialGradient>
-          {/* atmosphere */}
-          <radialGradient id="euAtmos" cx="50%" cy="50%">
-            <stop offset="82%" stopColor="#5f97e8" stopOpacity="0" />
-            <stop offset="94%" stopColor="#5f97e8" stopOpacity=".34" />
-            <stop offset="100%" stopColor="#5f97e8" stopOpacity="0" />
-          </radialGradient>
-          {/* keeps the wireframe inside the disc */}
-          <clipPath id="euClip">
-            <circle cx={cx} cy={cy} r={R} />
-          </clipPath>
-          <filter id="euSoft" x="-30%" y="-30%" width="160%" height="160%">
-            <feGaussianBlur stdDeviation="9" />
-          </filter>
-        </defs>
+      <canvas ref={ref} className="block h-auto w-full" style={{ aspectRatio: "1000 / 660" }} />
+    </div>
+  );
+}
 
-        {/* atmospheric halo */}
-        <circle cx={cx} cy={cy} r={R * 1.16} fill="url(#euAtmos)" filter="url(#euSoft)" />
-
-        {/* the body */}
-        <circle cx={cx} cy={cy} r={R} fill="url(#euSphere)" />
-
-        <g clipPath="url(#euClip)" opacity=".5">
-          {[-60, -40, -20, 0, 20, 40, 60].map((l) => {
-            const yy = cy - R * Math.sin(rad(l)) * 0.88;
-            const rr = R * Math.cos(rad(l));
-            return (
-              <ellipse
-                key={l}
-                cx={cx} cy={yy} rx={rr} ry={rr * SQUASH}
-                fill="none" stroke="#9dc0f0" strokeWidth="1"
-              />
-            );
-          })}
-          {meridians.map((m) => (
-            <ellipse
-              key={m.key}
-              cx={cx} cy={cy} rx={m.rx} ry={R}
-              fill="none" stroke="#9dc0f0" strokeWidth="1"
+/* Three verticals, the same job — look at the line items on a deal — and
+   three different answers. Shown together because the claim on this slide
+   is a comparison, and a comparison needs more than one thing on screen. */
+function ThreeVerticalsMock() {
+  const shots = [
+    { src: `${IMG}/v-quotes.webp`, name: "Quotes", note: "stepper, six stages" },
+    { src: `${IMG}/v-renewals.webp`, name: "Renewals", note: "tabs, five sections" },
+    { src: `${IMG}/v-subscriptions.webp`, name: "Subscriptions", note: "summary cards, then a table" },
+  ];
+  return (
+    <div className="w-full">
+      <div className="grid grid-cols-3 gap-4 sm:gap-5">
+        {shots.map((s) => (
+          <figure key={s.name} className="m-0">
+            <figcaption className="mb-2 text-center">
+              <span className="block font-body text-[13px] font-bold uppercase tracking-[0.16em] text-amber-300 sm:text-[15px]">
+                {s.name}
+              </span>
+              <span className="mt-0.5 block font-body text-[11px] text-white/45 sm:text-[12.5px]">
+                {s.note}
+              </span>
+            </figcaption>
+            <img
+              src={s.src}
+              alt={`The items screen in ${s.name}`}
+              className="block w-full rounded-md border border-white/15 shadow-[0_18px_50px_-16px_rgba(0,0,0,.9)]"
             />
-          ))}
-        </g>
-
-        {/* rim light on the lit edge, and a soft shadow on the dark one */}
-        <circle cx={cx} cy={cy} r={R} fill="none" stroke="#7fb0f5" strokeWidth="1.4" opacity=".55" />
-        <circle
-          cx={cx} cy={cy} r={R} fill="none" stroke="#bcd9ff" strokeWidth="2.6"
-          strokeDasharray={`${R * 1.7} ${R * 10}`} strokeDashoffset={R * 3.15} opacity=".6"
-        />
-
-        {/* the name sits on the sphere itself; nodes are drawn after it, so
-            products pass in front as they come round */}
-        <text
-          x={cx} y={cy + 10} textAnchor="middle" fill="#eaf1fc"
-          fontSize="31" fontWeight="700" letterSpacing="4.2" fontFamily="system-ui"
-          opacity=".93"
-          style={{ paintOrder: "stroke", stroke: "rgba(6,10,20,.55)", strokeWidth: 7 }}
-        >
-          CISCO COMMERCE
-        </text>
-
-        {nodes.map((n) => {
-          const front = n.z > 0;
-          const depth = (n.z + 1) / 2;
-          const dotO = front ? 0.5 + 0.5 * n.z : 0.14;
-          const labO = front ? Math.min(1, n.z / 0.3) : 0;
-          return (
-            <g key={n.label}>
-              {front && n.z > 0.4 && (
-                <circle cx={n.x} cy={n.y} r={13} fill="#f6b53f" opacity={0.16 * n.z} />
-              )}
-              <circle cx={n.x} cy={n.y} r={4.5 + 2.8 * depth} fill="#f8bc4e" opacity={dotO} />
-              {labO > 0.02 && (
-                <text
-                  x={n.x + (n.right ? 15 : -15)}
-                  y={n.y + 6}
-                  textAnchor={n.right ? "start" : "end"}
-                  fill="#f2f6fd"
-                  fontSize="21"
-                  fontWeight="600"
-                  fontFamily="system-ui"
-                  opacity={labO}
-                  style={{ paintOrder: "stroke", stroke: "rgba(6,8,14,.9)", strokeWidth: 6 }}
-                >
-                  {n.label}
-                </text>
-              )}
-            </g>
-          );
-        })}
-
-        <text x="500" y="628" textAnchor="middle" fill="#8497b8" fontSize="18" fontFamily="system-ui">
-          …and twelve more. One platform, on the invoice.
-        </text>
-      </svg>
+          </figure>
+        ))}
+      </div>
+      <p className="mt-4 text-center font-body text-[13px] text-white/50 sm:text-[15px]">
+        Same task. Same company. Three different products.
+      </p>
     </div>
   );
 }
@@ -230,6 +310,7 @@ function GlobeMock() {
 /* ─────────────── frames ─────────────── */
 
 const F_GLOBE: Frame      = { node: <GlobeMock />, wide: true };
+const F_THREE: Frame      = { node: <ThreeVerticalsMock />, wide: true };
 const F_CHALLENGES: Frame = { src: `${IMG}/challenges.webp`, alt: "Eight kinds of inconsistency, each with its business cost" };
 const F_AUDIT: Frame      = { src: `${IMG}/audit-assess.webp`, alt: "Every kind of component, catalogued across all twenty applications" };
 const F_BUTTONS: Frame    = { src: `${IMG}/button-variations.webp`, alt: "Thirty different button styles found across the applications" };
@@ -268,10 +349,12 @@ const SLIDES: Slide[] = [
     ),
   },
   {
-    kind: "scene",
+    kind: "ui",
+    frame: F_THREE,
+    beat: "three different companies",
+    psych: 60,
     avatar: M.worried,
     who: ME,
-    psych: 60,
     say: (
       <>
         Open three of them side by side and you'd swear <b>three different companies</b> built
